@@ -63,7 +63,7 @@ export function CropCard({ crop }: CropCardProps) {
         </div>
       </CardHeader>
       <CardContent className="p-6 pt-0">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
              <SensorCard
                 title="Clima e Ambiente"
                 icon={Wind}
@@ -80,6 +80,24 @@ export function CropCard({ crop }: CropCardProps) {
                 metric2={{ label: "Vento", value: `${crop.windSpeed.toFixed(1)} km/h`, unit: crop.windDirection }}
                 data={crop.history}
                 dataKey="co2Concentration"
+                chartConfig={chartConfig}
+            />
+            <SensorCard
+                title="Umidade do Solo"
+                icon={Droplets}
+                metric={{ label: "Umidade", value: "62.5", unit: "%" }}
+                metric2={{ label: "Tensão da Água", value: "15", unit: "kPa" }}
+                data={crop.history}
+                dataKey="airHumidity"
+                chartConfig={chartConfig}
+            />
+             <SensorCard
+                title="Nutrientes do Solo"
+                icon={Thermometer}
+                metric={{ label: "Nitrogênio (N)", value: "120", unit: "ppm" }}
+                metric2={{ label: "pH do Solo", value: "6.8", unit: "" }}
+                data={crop.history}
+                dataKey="airTemperature"
                 chartConfig={chartConfig}
             />
         </div>
