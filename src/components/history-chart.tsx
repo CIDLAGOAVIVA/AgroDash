@@ -4,7 +4,7 @@ import { Area, AreaChart, CartesianGrid, XAxis, YAxis, Tooltip } from "recharts"
 import { ChartConfig, ChartContainer, ChartTooltipContent } from "@/components/ui/chart"
 import type { HistoryData } from "@/types"
 
-const chartConfig = {
+export const chartConfig = {
   soilTemperature: {
     label: "Temp. Solo (°C)",
     color: "hsl(var(--chart-2))",
@@ -17,6 +17,18 @@ const chartConfig = {
     label: "Umidade do Solo (%)",
     color: "hsl(var(--chart-4))",
   },
+  airHumidity: {
+    label: "Umidade do Ar (%)",
+    color: "hsl(var(--chart-5))",
+  },
+  solarRadiation: {
+    label: "Radiação Solar (W/m²)",
+    color: "hsl(var(--chart-3))",
+  },
+  vegetationIndex: {
+    label: "Índice Vegetativo (NDVI)",
+    color: "hsl(var(--primary))",
+  }
 } satisfies ChartConfig
 
 type HistoryChartProps = {

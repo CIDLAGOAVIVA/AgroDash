@@ -3,6 +3,9 @@ export interface HistoryData {
   soilTemperature: number;
   airTemperature: number;
   soilMoisture: number;
+  airHumidity: number;
+  solarRadiation: number;
+  vegetationIndex: number;
 }
 
 export interface Crop {

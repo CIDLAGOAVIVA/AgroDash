@@ -10,20 +10,27 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 const DEVELOPMENT_STAGES = ["Muda", "Vegetativo", "Floração", "Maturidade"];
 
-const generateInitialHistory = (baseValues: { soilTemp: number; airTemp: number; soilMoisture: number }): HistoryData[] => {
+const generateInitialHistory = (baseValues: { soilTemp: number; airTemp: number; soilMoisture: number; airHumidity: number; solarRadiation: number; vegetationIndex: number }): HistoryData[] => {
   const history: HistoryData[] = [];
-  let { soilTemp, airTemp, soilMoisture } = baseValues;
+  let { soilTemp, airTemp, soilMoisture, airHumidity, solarRadiation, vegetationIndex } = baseValues;
   for (let i = 29; i >= 0; i--) {
     const time = new Date(Date.now() - i * 24 * 60 * 60000).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
     soilTemp += (Math.random() - 0.5) * 0.4;
     airTemp += (Math.random() - 0.5) * 0.6;
     soilMoisture += (Math.random() - 0.5) * 1;
+    airHumidity += (Math.random() - 0.5) * 1.5;
+    solarRadiation += (Math.random() - 0.5) * 40;
+    vegetationIndex += (Math.random() - 0.5) * 0.01;
+
 
     history.push({
       time,
       soilTemperature: parseFloat(soilTemp.toFixed(1)),
       airTemperature: parseFloat(airTemp.toFixed(1)),
       soilMoisture: parseFloat(soilMoisture.toFixed(1)),
+      airHumidity: parseFloat(airHumidity.toFixed(1)),
+      solarRadiation: Math.round(solarRadiation),
+      vegetationIndex: parseFloat(vegetationIndex.toFixed(2)),
     });
   }
   return history;
@@ -41,7 +48,7 @@ const initialCrops: Crop[] = [
     solarRadiation: 850,
     plantDevelopmentStage: "Vegetativo",
     vegetationIndex: 0.78,
-    history: generateInitialHistory({ soilTemp: 22.5, airTemp: 25.1, soilMoisture: 65.3 }),
+    history: generateInitialHistory({ soilTemp: 22.5, airTemp: 25.1, soilMoisture: 65.3, airHumidity: 75.2, solarRadiation: 850, vegetationIndex: 0.78 }),
     alertMessage: "",
   },
   {
@@ -55,7 +62,7 @@ const initialCrops: Crop[] = [
     solarRadiation: 920,
     plantDevelopmentStage: "Floração",
     vegetationIndex: 0.85,
-    history: generateInitialHistory({ soilTemp: 24.1, airTemp: 26.8, soilMoisture: 58.9 }),
+    history: generateInitialHistory({ soilTemp: 24.1, airTemp: 26.8, soilMoisture: 58.9, airHumidity: 72.8, solarRadiation: 920, vegetationIndex: 0.85 }),
     alertMessage: "",
   },
   {
@@ -69,7 +76,7 @@ const initialCrops: Crop[] = [
     solarRadiation: 780,
     plantDevelopmentStage: "Muda",
     vegetationIndex: 0.65,
-    history: generateInitialHistory({ soilTemp: 19.8, airTemp: 22.4, soilMoisture: 72.1 }),
+    history: generateInitialHistory({ soilTemp: 19.8, airTemp: 22.4, soilMoisture: 72.1, airHumidity: 80.5, solarRadiation: 780, vegetationIndex: 0.65 }),
     alertMessage: "",
   },
 ];
@@ -99,19 +106,12 @@ const LoadingSkeleton = () => (
                         <Skeleton className="h-8 w-8 rounded-full" />
                         <Skeleton className="h-5 w-1/3" />
                      </div>
-                     <div className="space-y-4">
-                        <Skeleton className="h-4 w-3/4" />
-                        <Skeleton className="h-6 w-1/2" />
-                     </div>
-                     <div className="space-y-4 mt-2">
-                        <Skeleton className="h-4 w-3/4" />
-                        <Skeleton className="h-6 w-1/2" />
-                     </div>
+                     <Skeleton className="h-6 w-1/2 mb-4" />
+                     <Skeleton className="h-4 w-3/4 mb-2" />
+                     <Skeleton className="h-[120px] w-full" />
                 </CardContent></Card>
             ))}
         </div>
-        <Skeleton className="h-5 w-1/2 mb-4" />
-        <Skeleton className="h-[280px] w-full" />
      </CardContent>
     </Card>
 )
@@ -173,6 +173,9 @@ export default function Dashboard() {
             soilTemperature: parseFloat(updatedCropData.soilTemperature.toFixed(1)),
             airTemperature: parseFloat(updatedCropData.airTemperature.toFixed(1)),
             soilMoisture: parseFloat(updatedCropData.soilMoisture.toFixed(1)),
+            airHumidity: parseFloat(updatedCropData.airHumidity.toFixed(1)),
+            solarRadiation: Math.round(updatedCropData.solarRadiation),
+            vegetationIndex: parseFloat(updatedCropData.vegetationIndex.toFixed(2)),
         };
         
         return {

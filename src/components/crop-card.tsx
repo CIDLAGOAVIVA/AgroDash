@@ -1,12 +1,11 @@
 "use client"
 
-import { Leaf, Sun, Thermometer, Droplets, GitCommitHorizontal, AreaChart, Wheat, Bot, Wind } from "lucide-react";
+import { Leaf, Sun, Thermometer, Droplets, GitCommitHorizontal, Wind, Wheat, Bot } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
-import { HistoryChart } from "./history-chart";
 import { SensorCard } from "./sensor-card";
 import type { Crop } from "@/types";
+import { chartConfig } from "./history-chart";
 
 const Sprout = () => (
     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-sprout"><path d="M7 20h10"/><path d="M12 20V4"/><path d="M12 4c0-2.21-1.79-4-4-4S4 1.79 4 4c0 .62.14 1.2.38 1.72"/><path d="M12 4c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .62-.14 1.2-.38 1.72"/></svg>
@@ -47,32 +46,27 @@ export function CropCard({ crop }: CropCardProps) {
             <SensorCard 
                 title="Umidade do Solo" 
                 icon={Droplets}
-                metrics={[
-                    { label: "Umidade", value: crop.soilMoisture.toFixed(1), unit: "%" },
-                    { label: "Temperatura", value: crop.soilTemperature.toFixed(1), unit: "°C" },
-                ]}
+                metric={{ label: "Umidade Atual", value: crop.soilMoisture.toFixed(1), unit: "%" }}
+                data={crop.history}
+                dataKey="soilMoisture"
+                chartConfig={chartConfig}
+            />
+             <SensorCard 
+                title="Temperatura do Solo" 
+                icon={Thermometer}
+                metric={{ label: "Temperatura Atual", value: crop.soilTemperature.toFixed(1), unit: "°C" }}
+                data={crop.history}
+                dataKey="soilTemperature"
+                chartConfig={chartConfig}
             />
             <SensorCard 
                 title="Clima" 
                 icon={Wind}
-                metrics={[
-                    { label: "Temperatura do Ar", value: crop.airTemperature.toFixed(1), unit: "°C" },
-                    { label: "Umidade do Ar", value: crop.airHumidity.toFixed(1), unit: "%" },
-                ]}
+                metric={{ label: "Temp. do Ar", value: crop.airTemperature.toFixed(1), unit: "°C" }}
+                data={crop.history}
+                dataKey="airTemperature"
+                chartConfig={chartConfig}
             />
-            <SensorCard 
-                title="Luz e Crescimento" 
-                icon={Sun}
-                metrics={[
-                    { label: "Radiação Solar", value: Math.round(crop.solarRadiation), unit: "W/m²" },
-                    { label: "Índice Vegetativo", value: crop.vegetationIndex.toFixed(2), unit: "NDVI" },
-                ]}
-            />
-        </div>
-        <Separator className="my-6" />
-        <div>
-             <h3 className="text-xl font-semibold mb-4 text-foreground/90">Histórico de Sensores (Últimos 30 dias)</h3>
-            <HistoryChart data={crop.history} />
         </div>
       </CardContent>
 
