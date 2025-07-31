@@ -1,5 +1,5 @@
 import type { ComponentType } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { Area, AreaChart } from "recharts";
 import { ChartContainer, type ChartConfig } from "@/components/ui/chart";
 import type { HistoryData } from "@/types";
@@ -22,8 +22,8 @@ type SensorCardProps = {
 
 export function SensorCard({ icon: Icon, title, metric, metric2, data, dataKey, chartConfig }: SensorCardProps) {
   return (
-    <Card className="bg-background/50 shadow-md hover:shadow-lg transition-shadow duration-300">
-      <div className="p-3">
+    <Card className="bg-background/50 shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden">
+      <div className="p-4 pb-2">
         <div className="flex flex-row items-center justify-between mb-2">
             <h3 className="text-sm font-medium text-muted-foreground">{title}</h3>
             <Icon className="h-4 w-4 text-muted-foreground" />
@@ -47,7 +47,7 @@ export function SensorCard({ icon: Icon, title, metric, metric2, data, dataKey, 
           )}
         </div>
       </div>
-      <div className="h-8 -mx-3 -mb-3">
+      <div className="h-8 w-full">
            <ChartContainer config={chartConfig} className="w-full h-full">
               <AreaChart
                   accessibilityLayer
