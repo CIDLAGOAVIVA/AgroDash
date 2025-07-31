@@ -1,32 +1,32 @@
 'use server';
 
 /**
- * @fileOverview A flow for generating anomaly alerts for crop data.
+ * @fileOverview Um fluxo para gerar alertas de anomalias para dados de culturas.
  *
- * - generateAnomalyAlerts - A function that generates anomaly alerts based on crop data.
- * - AnomalyAlertsInput - The input type for the generateAnomalyAlerts function.
- * - AnomalyAlertsOutput - The return type for the generateAnomalyAlerts function.
+ * - generateAnomalyAlerts - Uma função que gera alertas de anomalias com base nos dados da cultura.
+ * - AnomalyAlertsInput - O tipo de entrada para a função generateAnomalyAlerts.
+ * - AnomalyAlertsOutput - O tipo de retorno para a função generateAnomalyAlerts.
  */
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
 const AnomalyAlertsInputSchema = z.object({
-  cropType: z.string().describe('The type of crop (e.g., soybeans, corn).'),
-  fieldName: z.string().describe('The name of the field.'),
-  soilTemperature: z.number().describe('The soil temperature in Celsius.'),
-  airTemperature: z.number().describe('The air temperature in Celsius.'),
-  soilMoisture: z.number().describe('The soil moisture level (percentage).'),
-  solarRadiation: z.number().describe('The solar radiation level (W/m^2).'),
+  cropType: z.string().describe('O tipo de cultura (por exemplo, soja, milho).'),
+  fieldName: z.string().describe('O nome do campo.'),
+  soilTemperature: z.number().describe('A temperatura do solo em Celsius.'),
+  airTemperature: z.number().describe('A temperatura do ar em Celsius.'),
+  soilMoisture: z.number().describe('O nível de umidade do solo (percentual).'),
+  solarRadiation: z.number().describe('O nível de radiação solar (W/m^2).'),
   plantDevelopmentStage: z
     .string()
-    .describe('The current development stage of the plant (e.g., seedling, flowering).'),
-  vegetationIndex: z.number().describe('The vegetation index (e.g., NDVI).'),
+    .describe('O estágio de desenvolvimento atual da planta (por exemplo, muda, floração).'),
+  vegetationIndex: z.number().describe('O índice de vegetação (por exemplo, NDVI).'),
 });
 export type AnomalyAlertsInput = z.infer<typeof AnomalyAlertsInputSchema>;
 
 const AnomalyAlertsOutputSchema = z.object({
-  alertMessage: z.string().describe('The anomaly alert message, if any.'),
+  alertMessage: z.string().describe('A mensagem de alerta de anomalia, se houver.'),
 });
 export type AnomalyAlertsOutput = z.infer<typeof AnomalyAlertsOutputSchema>;
 
@@ -40,18 +40,18 @@ const prompt = ai.definePrompt({
   name: 'anomalyAlertsPrompt',
   input: {schema: AnomalyAlertsInputSchema},
   output: {schema: AnomalyAlertsOutputSchema},
-  prompt: `You are an expert agricultural advisor. You analyze real-time crop data to identify potential issues and generate alerts.
+  prompt: `Você é um consultor agrícola especialista. Você analisa dados de culturas em tempo real para identificar possíveis problemas e gerar alertas.
 
-  Consider the following data for {{cropType}} in {{fieldName}}:
+  Considere os seguintes dados para {{cropType}} em {{fieldName}}:
 
-  - Soil Temperature: {{soilTemperature}} °C
-  - Air Temperature: {{airTemperature}} °C
-  - Soil Moisture: {{soilMoisture}}%
-  - Solar Radiation: {{solarRadiation}} W/m^2
-  - Plant Development Stage: {{plantDevelopmentStage}}
-  - Vegetation Index: {{vegetationIndex}}
+  - Temperatura do Solo: {{soilTemperature}} °C
+  - Temperatura do Ar: {{airTemperature}} °C
+  - Umidade do Solo: {{soilMoisture}}%
+  - Radiação Solar: {{solarRadiation}} W/m^2
+  - Estágio de Desenvolvimento da Planta: {{plantDevelopmentStage}}
+  - Índice de Vegetação: {{vegetationIndex}}
 
-  Based on this data, determine if there are any anomalies or potential problems that require attention. Consider reasonable thresholds for each data point based on the crop type and development stage. If there are any issues, generate a concise alert message describing the problem. If everything is normal, return an empty string.
+  Com base nestes dados, determine se existem anomalias ou problemas potenciais que requerem atenção. Considere limiares razoáveis para cada ponto de dados com base no tipo de cultura и no estágio de desenvolvimento. Se houver algum problema, gere uma mensagem de alerta concisa descrevendo o problema. Se tudo estiver normal, retorne uma string vazia.
   `,
 });
 

@@ -6,8 +6,9 @@ import { generateAnomalyAlerts } from "@/app/actions";
 import type { Crop, HistoryData } from "@/types";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
-const DEVELOPMENT_STAGES = ["Seedling", "Vegetative", "Flowering", "Maturity"];
+const DEVELOPMENT_STAGES = ["Muda", "Vegetativo", "Floração", "Maturidade"];
 
 const generateInitialHistory = (baseValues: { soilTemp: number; airTemp: number; soilMoisture: number }): HistoryData[] => {
   const history: HistoryData[] = [];
@@ -31,39 +32,39 @@ const generateInitialHistory = (baseValues: { soilTemp: number; airTemp: number;
 const initialCrops: Crop[] = [
   {
     id: "soy-1",
-    cropType: "Soybeans",
-    fieldName: "North Field 7",
+    cropType: "Soja",
+    fieldName: "Campo Norte 7",
     soilTemperature: 22.5,
     airTemperature: 25.1,
     soilMoisture: 65.3,
     solarRadiation: 850,
-    plantDevelopmentStage: "Vegetative",
+    plantDevelopmentStage: "Vegetativo",
     vegetationIndex: 0.78,
     history: generateInitialHistory({ soilTemp: 22.5, airTemp: 25.1, soilMoisture: 65.3 }),
     alertMessage: "",
   },
   {
     id: "corn-1",
-    cropType: "Corn",
-    fieldName: "East Ridge Plot",
+    cropType: "Milho",
+    fieldName: "Lote Cume Leste",
     soilTemperature: 24.1,
     airTemperature: 26.8,
     soilMoisture: 58.9,
     solarRadiation: 920,
-    plantDevelopmentStage: "Flowering",
+    plantDevelopmentStage: "Floração",
     vegetationIndex: 0.85,
     history: generateInitialHistory({ soilTemp: 24.1, airTemp: 26.8, soilMoisture: 58.9 }),
     alertMessage: "",
   },
   {
     id: "wheat-1",
-    cropType: "Wheat",
-    fieldName: "Valley Bottom",
+    cropType: "Trigo",
+    fieldName: "Fundo do Vale",
     soilTemperature: 19.8,
     airTemperature: 22.4,
     soilMoisture: 72.1,
     solarRadiation: 780,
-    plantDevelopmentStage: "Seedling",
+    plantDevelopmentStage: "Muda",
     vegetationIndex: 0.65,
     history: generateInitialHistory({ soilTemp: 19.8, airTemp: 22.4, soilMoisture: 72.1 }),
     alertMessage: "",
@@ -75,7 +76,6 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Simulate initial loading
     const timer = setTimeout(() => {
       setCrops(initialCrops);
       setLoading(false);
@@ -84,19 +84,19 @@ export default function Dashboard() {
   }, []);
 
   useEffect(() => {
-    if (loading) return;
+    if (loading || crops.length === 0) return;
 
     const interval = setInterval(() => {
       const updatePromises = crops.map(async (crop) => {
         // Simulate data changes
         const newSoilTemp = crop.soilTemperature + (Math.random() - 0.5) * 0.2;
         const newAirTemp = crop.airTemperature + (Math.random() - 0.5) * 0.3;
-        const newSoilMoisture = crop.soilMoisture + (Math.random() - 0.55) * 1; // Tend to decrease slightly
+        const newSoilMoisture = crop.soilMoisture + (Math.random() - 0.55) * 1;
         const newSolarRadiation = crop.solarRadiation + (Math.random() - 0.5) * 20;
-        const newVegetationIndex = crop.vegetationIndex + (Math.random() - 0.48) * 0.005; // Tend to increase slightly
+        const newVegetationIndex = crop.vegetationIndex + (Math.random() - 0.48) * 0.005;
 
         let stageIndex = DEVELOPMENT_STAGES.indexOf(crop.plantDevelopmentStage);
-        if (Math.random() < 0.05) { // 5% chance to change stage
+        if (Math.random() < 0.05) { 
           stageIndex = (stageIndex + 1) % DEVELOPMENT_STAGES.length;
         }
 
@@ -139,50 +139,53 @@ export default function Dashboard() {
         setCrops(newCrops);
       });
 
-    }, 5000); // Update every 5 seconds
+    }, 5000);
 
     return () => clearInterval(interval);
   }, [crops, loading]);
 
   if (loading) {
     return (
-      <div className="space-y-8">
-        {[...Array(3)].map((_, i) => (
-           <Card key={i} className="w-full">
-            <CardHeader>
-              <div className="flex items-center space-x-3">
-                <Skeleton className="h-12 w-12 rounded-full" />
-                <div className="space-y-2">
-                  <Skeleton className="h-4 w-[250px]" />
-                  <Skeleton className="h-4 w-[200px]" />
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-6">
-               <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                  {[...Array(6)].map((_, j) => (
-                    <div key={j} className="flex items-center space-x-4 p-4 bg-background/50 rounded-lg">
-                        <Skeleton className="h-10 w-10 rounded-lg" />
-                        <div className="space-y-2">
-                            <Skeleton className="h-4 w-[100px]" />
-                            <Skeleton className="h-6 w-[80px]" />
-                        </div>
+       <Card className="w-full">
+        <CardHeader>
+          <div className="flex items-center space-x-3">
+            <Skeleton className="h-12 w-12 rounded-full" />
+            <div className="space-y-2">
+              <Skeleton className="h-4 w-[250px]" />
+              <Skeleton className="h-4 w-[200px]" />
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent className="space-y-6">
+           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+              {[...Array(6)].map((_, j) => (
+                <div key={j} className="flex items-center space-x-4 p-4 bg-background/50 rounded-lg">
+                    <Skeleton className="h-10 w-10 rounded-lg" />
+                    <div className="space-y-2">
+                        <Skeleton className="h-4 w-[100px]" />
+                        <Skeleton className="h-6 w-[80px]" />
                     </div>
-                  ))}
-               </div>
-               <Skeleton className="h-64 w-full rounded-lg" />
-            </CardContent>
-           </Card>
-        ))}
-      </div>
+                </div>
+              ))}
+           </div>
+           <Skeleton className="h-64 w-full rounded-lg" />
+        </CardContent>
+       </Card>
     );
   }
 
   return (
-    <div className="space-y-8">
+    <Tabs defaultValue={initialCrops[0].id} className="w-full">
+      <TabsList className="grid w-full grid-cols-3">
+        {crops.map((crop) => (
+          <TabsTrigger key={crop.id} value={crop.id}>{crop.cropType}</TabsTrigger>
+        ))}
+      </TabsList>
       {crops.map((crop) => (
-        <CropCard key={crop.id} crop={crop} />
+        <TabsContent key={crop.id} value={crop.id} className="mt-4">
+          <CropCard crop={crop} />
+        </TabsContent>
       ))}
-    </div>
+    </Tabs>
   );
 }

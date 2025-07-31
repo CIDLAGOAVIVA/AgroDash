@@ -9,7 +9,7 @@ export default function Home() {
             AgriDash
           </h1>
           <p className="mt-2 text-lg text-muted-foreground">
-            Your real-time crop monitoring dashboard
+            Seu painel de monitoramento de culturas em tempo real
           </p>
         </header>
         <Dashboard />

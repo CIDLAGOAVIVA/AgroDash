@@ -12,9 +12,9 @@ const Sprout = () => (
 )
 
 const cropIcons: { [key: string]: React.ComponentType<{ className?: string }> } = {
-  "Soybeans": Leaf,
-  "Corn": Sprout,
-  "Wheat": Wheat,
+  "Soja": Leaf,
+  "Milho": Sprout,
+  "Trigo": Wheat,
 };
 
 type CropCardProps = {
@@ -24,12 +24,12 @@ type CropCardProps = {
 export function CropCard({ crop }: CropCardProps) {
   const CropIcon = cropIcons[crop.cropType] || Leaf;
 
-  const cardStyle = crop.cropType === 'Corn' ? { backgroundColor: 'hsl(202 44% 25%)', color: 'hsl(210 40% 98%)' } : {};
-  const cardTitleStyle = crop.cropType === 'Corn' ? { color: 'hsl(210 40% 98%)' } : {};
-  const cardDescriptionStyle = crop.cropType === 'Corn' ? { color: 'hsl(210 40% 80%)' } : {};
+  const cardStyle = crop.cropType === 'Milho' ? { backgroundColor: 'hsl(202 44% 25%)', color: 'hsl(210 40% 98%)' } : {};
+  const cardTitleStyle = crop.cropType === 'Milho' ? { color: 'hsl(210 40% 98%)' } : {};
+  const cardDescriptionStyle = crop.cropType === 'Milho' ? { color: 'hsl(210 40% 80%)' } : {};
 
   return (
-    <Card style={cardStyle} className="w-full overflow-hidden transition-all duration-300 hover:shadow-xl hover:border-primary/30 animate-in fade-in-50 shadow-md">
+    <Card style={cardStyle} className="w-full overflow-hidden transition-all duration-300 shadow-md border-0">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
         <div className="flex items-center space-x-4">
           <div className="bg-primary/10 p-3 rounded-full">
@@ -45,20 +45,20 @@ export function CropCard({ crop }: CropCardProps) {
         {crop.alertMessage && (
           <Alert variant="destructive" className="mb-6 animate-in fade-in-0 zoom-in-95">
             <AlertTriangle className="h-4 w-4" />
-            <AlertTitle>Anomaly Detected!</AlertTitle>
+            <AlertTitle>Anomalia Detectada!</AlertTitle>
             <AlertDescription>{crop.alertMessage}</AlertDescription>
           </Alert>
         )}
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 mb-6">
-          <DataMetric cropType={crop.cropType} icon={Thermometer} label="Air Temperature" value={crop.airTemperature.toFixed(1)} unit="°C" />
-          <DataMetric cropType={crop.cropType} icon={Thermometer} label="Soil Temperature" value={crop.soilTemperature.toFixed(1)} unit="°C" />
-          <DataMetric cropType={crop.cropType} icon={Droplets} label="Soil Moisture" value={crop.soilMoisture.toFixed(1)} unit="%" />
-          <DataMetric cropType={crop.cropType} icon={Sun} label="Solar Radiation" value={Math.round(crop.solarRadiation)} unit="W/m²" />
-          <DataMetric cropType={crop.cropType} icon={GitCommitHorizontal} label="Dev. Stage" value={crop.plantDevelopmentStage} />
-          <DataMetric cropType={crop.cropType} icon={AreaChart} label="Vegetation Index" value={crop.vegetationIndex.toFixed(2)} />
+          <DataMetric cropType={crop.cropType} icon={Thermometer} label="Temperatura do Ar" value={crop.airTemperature.toFixed(1)} unit="°C" />
+          <DataMetric cropType={crop.cropType} icon={Thermometer} label="Temperatura do Solo" value={crop.soilTemperature.toFixed(1)} unit="°C" />
+          <DataMetric cropType={crop.cropType} icon={Droplets} label="Umidade do Solo" value={crop.soilMoisture.toFixed(1)} unit="%" />
+          <DataMetric cropType={crop.cropType} icon={Sun} label="Radiação Solar" value={Math.round(crop.solarRadiation)} unit="W/m²" />
+          <DataMetric cropType={crop.cropType} icon={GitCommitHorizontal} label="Estágio de Desenv." value={crop.plantDevelopmentStage} />
+          <DataMetric cropType={crop.cropType} icon={AreaChart} label="Índice de Vegetação" value={crop.vegetationIndex.toFixed(2)} />
         </div>
         <div>
-          <h3 style={cardTitleStyle} className="text-lg font-semibold mb-2 text-foreground/90">Recent History</h3>
+          <h3 style={cardTitleStyle} className="text-lg font-semibold mb-2 text-foreground/90">Histórico Recente</h3>
           <HistoryChart data={crop.history} cropType={crop.cropType}/>
         </div>
       </CardContent>

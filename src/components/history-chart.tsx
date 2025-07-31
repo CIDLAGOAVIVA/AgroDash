@@ -6,15 +6,15 @@ import type { HistoryData } from "@/types"
 
 const chartConfig = {
   soilTemperature: {
-    label: "Soil Temp",
+    label: "Temp. Solo",
     color: "hsl(var(--chart-2))",
   },
   airTemperature: {
-    label: "Air Temp",
+    label: "Temp. Ar",
     color: "hsl(var(--chart-4))",
   },
   soilMoisture: {
-    label: "Moisture",
+    label: "Umidade",
     color: "hsl(var(--chart-3))",
   },
 } satisfies ChartConfig
@@ -25,7 +25,7 @@ type HistoryChartProps = {
 }
 
 export function HistoryChart({ data, cropType }: HistoryChartProps) {
-  const isCorn = cropType === 'Corn';
+  const isCorn = cropType === 'Milho';
   const tickColor = isCorn ? 'hsl(210 40% 70%)' : 'hsl(var(--muted-foreground))';
   const gridColor = isCorn ? 'hsl(202 44% 35%)' : 'hsl(var(--border) / 0.5)';
 
@@ -59,7 +59,7 @@ export function HistoryChart({ data, cropType }: HistoryChartProps) {
         />
         <Line
           dataKey="soilTemperature"
-          name="Soil Temp (°C)"
+          name="Temp. Solo (°C)"
           type="monotone"
           stroke="var(--color-soilTemperature)"
           strokeWidth={2}
@@ -68,7 +68,7 @@ export function HistoryChart({ data, cropType }: HistoryChartProps) {
         />
         <Line
           dataKey="airTemperature"
-          name="Air Temp (°C)"
+          name="Temp. Ar (°C)"
           type="monotone"
           stroke="var(--color-airTemperature)"
           strokeWidth={2}
@@ -77,7 +77,7 @@ export function HistoryChart({ data, cropType }: HistoryChartProps) {
         />
         <Line
           dataKey="soilMoisture"
-          name="Moisture (%)"
+          name="Umidade (%)"
           type="monotone"
           stroke="var(--color-soilMoisture)"
           strokeWidth={2}

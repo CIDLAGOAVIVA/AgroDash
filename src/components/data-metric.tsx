@@ -11,9 +11,9 @@ type DataMetricProps = {
 };
 
 export function DataMetric({ icon: Icon, label, value, unit, cropType }: DataMetricProps) {
-  const cardStyle = cropType === 'Corn' ? { backgroundColor: 'hsl(202 44% 30%)' } : {backgroundColor: 'hsl(var(--background))'};
-  const textStyle = cropType === 'Corn' ? { color: 'hsl(210 40% 98%)' } : {};
-  const mutedTextStyle = cropType === 'Corn' ? { color: 'hsl(210 40% 70%)' } : {};
+  const cardStyle = cropType === 'Milho' ? { backgroundColor: 'hsl(202 44% 30%)' } : {backgroundColor: 'hsl(var(--background))'};
+  const textStyle = cropType === 'Milho' ? { color: 'hsl(210 40% 98%)' } : {};
+  const mutedTextStyle = cropType === 'Milho' ? { color: 'hsl(210 40% 70%)' } : {};
   
   return (
     <Card style={cardStyle} className="p-4 bg-background/50 hover:bg-muted/40 transition-colors border-0 shadow-none">
