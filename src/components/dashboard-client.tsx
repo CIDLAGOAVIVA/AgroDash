@@ -32,29 +32,17 @@ export function DashboardClient({ initialCrop }: { initialCrop: Crop }) {
   const [fieldImage, setFieldImage] = useState<string | null>(initialCrop.imageUrl);
   const updateCounter = useRef(0);
 
-  useEffect(() => {
-    // Generate the initial image when the component mounts
-    generateFieldImage(`${initialCrop.cropType}, ${initialCrop.alertMessage}, ${initialCrop.alertSeverity} severity`)
-      .then(result => {
-        if (result.imageUrl) {
-          setFieldImage(result.imageUrl);
-        }
-      })
-      .catch(error => console.error("Failed to generate initial field image:", error));
-  }, [initialCrop]);
-  
   const updateCropData = useCallback(async () => {
-    setCrop(currentCrop => {
-      // Create a mutable copy to work with
-      const nextCrop = { ...currentCrop };
+    try {
+      const currentCrop = crop;
 
-      // Simulate new sensor data based on the current state
-      const newAirTemp = nextCrop.airTemperature + (Math.random() - 0.5) * 0.3;
-      const newAirHumidity = nextCrop.airHumidity + (Math.random() - 0.5) * 0.5;
-      const newWindSpeed = nextCrop.windSpeed + (Math.random() - 0.5) * 0.5;
-      const newCo2Concentration = nextCrop.co2Concentration + (Math.random() - 0.5) * 2;
+      // 1. Simulate new sensor data
+      const newAirTemp = currentCrop.airTemperature + (Math.random() - 0.5) * 0.3;
+      const newAirHumidity = currentCrop.airHumidity + (Math.random() - 0.5) * 0.5;
+      const newWindSpeed = currentCrop.windSpeed + (Math.random() - 0.5) * 0.5;
+      const newCo2Concentration = currentCrop.co2Concentration + (Math.random() - 0.5) * 2;
 
-      let windDirectionIndex = WIND_DIRECTIONS.indexOf(nextCrop.windDirection);
+      let windDirectionIndex = WIND_DIRECTIONS.indexOf(currentCrop.windDirection);
       if (Math.random() < 0.1) {
           windDirectionIndex = (windDirectionIndex + Math.floor(Math.random() * 3) - 1 + WIND_DIRECTIONS.length) % WIND_DIRECTIONS.length;
       }
@@ -67,48 +55,14 @@ export function DashboardClient({ initialCrop }: { initialCrop: Crop }) {
         co2Concentration: Math.max(380, Math.min(450, newCo2Concentration)),
       };
 
-      // Don't update state here yet. First, run the async operations.
-      (async () => {
-        try {
-          const alertResult = await generateAnomalyAlerts({
-            cropType: nextCrop.cropType,
-            fieldName: nextCrop.fieldName,
-            ...simulatedData,
-          });
+      // 2. Get AI anomaly alert
+      const alertResult = await generateAnomalyAlerts({
+        cropType: currentCrop.cropType,
+        fieldName: currentCrop.fieldName,
+        ...simulatedData,
+      });
 
-          const newHistoryEntry: HistoryData = {
-            time: new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }),
-            airTemperature: parseFloat(simulatedData.airTemperature.toFixed(1)),
-            airHumidity: parseFloat(simulatedData.airHumidity.toFixed(1)),
-            windSpeed: parseFloat(simulatedData.windSpeed.toFixed(1)),
-            windDirection: simulatedData.windDirection,
-            co2Concentration: Math.round(simulatedData.co2Concentration),
-          };
-
-          // Now update the state once with all new information
-          setCrop({
-            ...nextCrop,
-            ...simulatedData,
-            history: [...nextCrop.history.slice(1), newHistoryEntry],
-            alertMessage: alertResult.alertMessage,
-            alertSeverity: alertResult.alertSeverity,
-          });
-          
-          updateCounter.current += 1;
-          if (updateCounter.current % 12 === 0) {
-            const imageResult = await generateFieldImage(`${nextCrop.cropType}, ${alertResult.alertMessage}, ${alertResult.alertSeverity} severity`);
-            if (imageResult.imageUrl) {
-              setFieldImage(imageResult.imageUrl);
-            }
-          }
-        } catch (error) {
-          console.error("Error updating crop data:", error);
-        }
-      })();
-      
-      // Return the current state for the optimistic update. This prevents UI lag.
-      // The "real" state update with AI data will follow shortly.
-      // To prevent HMR error, we return an optimistic update without the async part.
+      // 3. Create new history entry
       const newHistoryEntry: HistoryData = {
         time: new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }),
         airTemperature: parseFloat(simulatedData.airTemperature.toFixed(1)),
@@ -118,15 +72,38 @@ export function DashboardClient({ initialCrop }: { initialCrop: Crop }) {
         co2Concentration: Math.round(simulatedData.co2Concentration),
       };
 
-      return {
-          ...currentCrop,
-          ...simulatedData,
-          history: [...currentCrop.history.slice(1), newHistoryEntry],
-          alertMessage: currentCrop.alertMessage,
-          alertSeverity: currentCrop.alertSeverity,
-      };
-    });
-  }, []);
+      // 4. Update crop state once with all new data
+      setCrop({
+        ...currentCrop,
+        ...simulatedData,
+        history: [...currentCrop.history.slice(1), newHistoryEntry],
+        alertMessage: alertResult.alertMessage,
+        alertSeverity: alertResult.alertSeverity,
+      });
+
+      // 5. Update image periodically
+      updateCounter.current += 1;
+      if (updateCounter.current % 12 === 0) {
+        const imageResult = await generateFieldImage(`${currentCrop.cropType}, ${alertResult.alertMessage}, ${alertResult.alertSeverity} severity`);
+        if (imageResult.imageUrl) {
+          setFieldImage(imageResult.imageUrl);
+        }
+      }
+    } catch (error) {
+      console.error("Error updating crop data:", error);
+    }
+  }, [crop]);
+
+  useEffect(() => {
+    // Generate the initial image when the component mounts
+    generateFieldImage(`${initialCrop.cropType}, ${initialCrop.alertMessage}, ${initialCrop.alertSeverity} severity`)
+      .then(result => {
+        if (result.imageUrl) {
+          setFieldImage(result.imageUrl);
+        }
+      })
+      .catch(error => console.error("Failed to generate initial field image:", error));
+  }, [initialCrop]);
 
   useInterval(updateCropData, 5000);
 
