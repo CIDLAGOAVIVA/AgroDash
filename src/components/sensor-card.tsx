@@ -46,7 +46,7 @@ export function SensorCard({ icon: Icon, title, metric, metric2, data, dataKey, 
             </div>
           )}
         </div>
-        <div className="h-20 -mx-6 -mb-6 mt-4">
+        <div className="h-16 -mx-6 -mb-6 mt-2">
              <ChartContainer config={chartConfig} className="w-full h-full">
                 <AreaChart
                     accessibilityLayer
