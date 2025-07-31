@@ -44,7 +44,7 @@ export function FieldMap({ crops, activeCropId, onMarkerClick }: FieldMapProps) 
                 <div className="relative w-full h-96 bg-muted/50 rounded-lg overflow-hidden border">
                     {/* Placeholder for map background, e.g., an image of a satellite map */}
                     <img 
-                      src="https://storage.googleapis.com/project-spark-341200.appspot.com/static/bu_9814a0f4-5232-4161-b461-8930c29210c8/v_8_31_0/user_6a793a62-42c1-4b77-80f4-c9233f2e1329_image.jpeg"
+                      src="https://storage.googleapis.com/project-spark-341200.appspot.com/static/bu_9814a0f4-5232-4161-b461-8930c29210c8/v_8_31_0/user_4e277717-31c3-4876-a079-43c3d0c6488a_image.jpeg"
                       alt="Mapa da fazenda"
                       className="w-full h-full object-cover"
                     />
