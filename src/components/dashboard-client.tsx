@@ -44,15 +44,17 @@ export function DashboardClient({ initialCrop }: { initialCrop: Crop }) {
   }, [initialCrop]);
   
   const updateCropData = useCallback(async () => {
-    // Get the latest crop data using a functional update to avoid stale state
     setCrop(currentCrop => {
-      // Simulate new sensor data based on the current state
-      const newAirTemp = currentCrop.airTemperature + (Math.random() - 0.5) * 0.3;
-      const newAirHumidity = currentCrop.airHumidity + (Math.random() - 0.5) * 0.5;
-      const newWindSpeed = currentCrop.windSpeed + (Math.random() - 0.5) * 0.5;
-      const newCo2Concentration = currentCrop.co2Concentration + (Math.random() - 0.5) * 2;
+      // Create a mutable copy to work with
+      const nextCrop = { ...currentCrop };
 
-      let windDirectionIndex = WIND_DIRECTIONS.indexOf(currentCrop.windDirection);
+      // Simulate new sensor data based on the current state
+      const newAirTemp = nextCrop.airTemperature + (Math.random() - 0.5) * 0.3;
+      const newAirHumidity = nextCrop.airHumidity + (Math.random() - 0.5) * 0.5;
+      const newWindSpeed = nextCrop.windSpeed + (Math.random() - 0.5) * 0.5;
+      const newCo2Concentration = nextCrop.co2Concentration + (Math.random() - 0.5) * 2;
+
+      let windDirectionIndex = WIND_DIRECTIONS.indexOf(nextCrop.windDirection);
       if (Math.random() < 0.1) {
           windDirectionIndex = (windDirectionIndex + Math.floor(Math.random() * 3) - 1 + WIND_DIRECTIONS.length) % WIND_DIRECTIONS.length;
       }
@@ -65,50 +67,48 @@ export function DashboardClient({ initialCrop }: { initialCrop: Crop }) {
         co2Concentration: Math.max(380, Math.min(450, newCo2Concentration)),
       };
 
-      // Trigger the async operations, but don't update state here yet
+      // Don't update state here yet. First, run the async operations.
       (async () => {
-          try {
-              const alertResult = await generateAnomalyAlerts({
-                  cropType: currentCrop.cropType,
-                  fieldName: currentCrop.fieldName,
-                  ...simulatedData,
-              });
-              
-              const newHistoryEntry: HistoryData = {
-                time: new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }),
-                airTemperature: parseFloat(simulatedData.airTemperature.toFixed(1)),
-                airHumidity: parseFloat(simulatedData.airHumidity.toFixed(1)),
-                windSpeed: parseFloat(simulatedData.windSpeed.toFixed(1)),
-                windDirection: simulatedData.windDirection,
-                co2Concentration: Math.round(simulatedData.co2Concentration),
-              };
+        try {
+          const alertResult = await generateAnomalyAlerts({
+            cropType: nextCrop.cropType,
+            fieldName: nextCrop.fieldName,
+            ...simulatedData,
+          });
 
-              // Now, update the state once with all the new information
-              setCrop({
-                  ...currentCrop,
-                  ...simulatedData,
-                  history: [...currentCrop.history.slice(1), newHistoryEntry],
-                  alertMessage: alertResult.alertMessage,
-                  alertSeverity: alertResult.alertSeverity,
-              });
-              
-              // Handle image generation separately based on a counter
-              updateCounter.current += 1;
-              if (updateCounter.current % 12 === 0) {
-                  const imageResult = await generateFieldImage(`${currentCrop.cropType}, ${alertResult.alertMessage}, ${alertResult.alertSeverity} severity`);
-                  if (imageResult.imageUrl) {
-                      setFieldImage(imageResult.imageUrl);
-                  }
-              }
-          } catch (error) {
-              console.error("Error updating crop data:", error);
+          const newHistoryEntry: HistoryData = {
+            time: new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }),
+            airTemperature: parseFloat(simulatedData.airTemperature.toFixed(1)),
+            airHumidity: parseFloat(simulatedData.airHumidity.toFixed(1)),
+            windSpeed: parseFloat(simulatedData.windSpeed.toFixed(1)),
+            windDirection: simulatedData.windDirection,
+            co2Concentration: Math.round(simulatedData.co2Concentration),
+          };
+
+          // Now update the state once with all new information
+          setCrop({
+            ...nextCrop,
+            ...simulatedData,
+            history: [...nextCrop.history.slice(1), newHistoryEntry],
+            alertMessage: alertResult.alertMessage,
+            alertSeverity: alertResult.alertSeverity,
+          });
+          
+          updateCounter.current += 1;
+          if (updateCounter.current % 12 === 0) {
+            const imageResult = await generateFieldImage(`${nextCrop.cropType}, ${alertResult.alertMessage}, ${alertResult.alertSeverity} severity`);
+            if (imageResult.imageUrl) {
+              setFieldImage(imageResult.imageUrl);
+            }
           }
+        } catch (error) {
+          console.error("Error updating crop data:", error);
+        }
       })();
       
-      // Return the current crop data for the optimistic update. 
-      // This is important to prevent the UI from lagging while waiting for the async operations.
-      // However, the real state update with AI data will follow shortly.
-      // To prevent HMR error, we will return an optimistic update without the async part.
+      // Return the current state for the optimistic update. This prevents UI lag.
+      // The "real" state update with AI data will follow shortly.
+      // To prevent HMR error, we return an optimistic update without the async part.
       const newHistoryEntry: HistoryData = {
         time: new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }),
         airTemperature: parseFloat(simulatedData.airTemperature.toFixed(1)),
@@ -122,12 +122,11 @@ export function DashboardClient({ initialCrop }: { initialCrop: Crop }) {
           ...currentCrop,
           ...simulatedData,
           history: [...currentCrop.history.slice(1), newHistoryEntry],
-          // Keep old alert message until new one arrives
           alertMessage: currentCrop.alertMessage,
           alertSeverity: currentCrop.alertSeverity,
       };
     });
-  }, []); // Empty dependency array ensures this function is created only once
+  }, []);
 
   useInterval(updateCropData, 5000);
 
