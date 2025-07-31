@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { CropCard } from "./crop-card";
-import { generateAnomalyAlerts } from "@/app/actions";
+import { generateAnomalyAlerts, generateFieldImage } from "@/app/actions";
 import type { Crop, HistoryData, Period } from "@/types";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -53,7 +53,8 @@ const initialCrops: Crop[] = [
     history: generateInitialHistory({ soilTemp: 22.5, airTemp: 25.1, soilMoisture: 65.3, airHumidity: 75.2, solarRadiation: 850, vegetationIndex: 0.78 }),
     alertMessage: "Condições ideais para o desenvolvimento vegetativo. Nenhuma ação necessária.",
     alertSeverity: "Normal",
-    location: { lat: -23.5505, lng: -46.6333 }
+    location: { lat: -23.5505, lng: -46.6333 },
+    imageUrl: "https://placehold.co/500x500/228B22/FFFFFF?text=Soja"
   },
   {
     id: "corn-1",
@@ -69,7 +70,8 @@ const initialCrops: Crop[] = [
     history: generateInitialHistory({ soilTemp: 24.1, airTemp: 26.8, soilMoisture: 58.9, airHumidity: 72.8, solarRadiation: 920, vegetationIndex: 0.85 }),
     alertMessage: "A umidade do solo está ligeiramente abaixo do ideal para a floração. Monitore a irrigação.",
     alertSeverity: "Atenção",
-    location: { lat: -23.561, lng: -46.645 }
+    location: { lat: -23.561, lng: -46.645 },
+    imageUrl: "https://placehold.co/500x500/228B22/FFFFFF?text=Milho"
   },
   {
     id: "wheat-1",
@@ -85,7 +87,8 @@ const initialCrops: Crop[] = [
     history: generateInitialHistory({ soilTemp: 19.8, airTemp: 22.4, soilMoisture: 72.1, airHumidity: 80.5, solarRadiation: 780, vegetationIndex: 0.65 }),
     alertMessage: "Alta umidade do ar e temperatura moderada podem favorecer o surgimento de doenças fúngicas.",
     alertSeverity: "Crítico",
-    location: { lat: -23.545, lng: -46.62 }
+    location: { lat: -23.545, lng: -46.62 },
+    imageUrl: "https://placehold.co/500x500/228B22/FFFFFF?text=Trigo"
   },
 ];
 
@@ -181,17 +184,20 @@ export default function Dashboard() {
           vegetationIndex: Math.max(0.1, Math.min(0.95, newVegetationIndex)),
         };
 
-        const alertResult = await generateAnomalyAlerts({
-          cropType: updatedCropData.cropType,
-          fieldName: updatedCropData.fieldName,
-          soilTemperature: updatedCropData.soilTemperature,
-          airTemperature: updatedCropData.airTemperature,
-          soilMoisture: updatedCropData.soilMoisture,
-          solarRadiation: updatedCropData.solarRadiation,
-          plantDevelopmentStage: updatedCropData.plantDevelopmentStage,
-          vegetationIndex: updatedCropData.vegetationIndex,
-          airHumidity: updatedCropData.airHumidity,
-        });
+        const [alertResult, imageResult] = await Promise.all([
+          generateAnomalyAlerts({
+            cropType: updatedCropData.cropType,
+            fieldName: updatedCropData.fieldName,
+            soilTemperature: updatedCropData.soilTemperature,
+            airTemperature: updatedCropData.airTemperature,
+            soilMoisture: updatedCropData.soilMoisture,
+            solarRadiation: updatedCropData.solarRadiation,
+            plantDevelopmentStage: updatedCropData.plantDevelopmentStage,
+            vegetationIndex: updatedCropData.vegetationIndex,
+            airHumidity: updatedCropData.airHumidity,
+          }),
+          generateFieldImage(`${updatedCropData.cropType}, ${updatedCropData.plantDevelopmentStage}, ${updatedCropData.alertMessage}`)
+        ]);
 
         const newHistoryEntry: HistoryData = {
             time: new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }),
@@ -208,6 +214,7 @@ export default function Dashboard() {
           alertMessage: alertResult.alertMessage,
           alertSeverity: alertResult.alertSeverity,
           history: [...crop.history.slice(1), newHistoryEntry],
+          imageUrl: imageResult.imageUrl,
         };
       });
 
@@ -251,10 +258,8 @@ export default function Dashboard() {
             </Card>
         </div>
         <div className="lg:col-span-1">
-            <FieldMap crops={crops} activeCropId={activeTab} onMarkerClick={setActiveTab} />
+            <FieldMap crops={crops} activeCrop={activeCrop} onMarkerClick={setActiveTab} />
         </div>
     </div>
   );
 }
-
-    

@@ -26,6 +26,7 @@ export interface Crop {
     lat: number;
     lng: number;
   };
+  imageUrl: string;
 }
 
 export type Period = '24h' | '7d' | '30d';
