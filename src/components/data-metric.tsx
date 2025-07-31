@@ -7,20 +7,25 @@ type DataMetricProps = {
   label: string;
   value: string | number;
   unit?: string;
+  cropType: string;
 };
 
-export function DataMetric({ icon: Icon, label, value, unit }: DataMetricProps) {
+export function DataMetric({ icon: Icon, label, value, unit, cropType }: DataMetricProps) {
+  const cardStyle = cropType === 'Corn' ? { backgroundColor: 'hsl(202 44% 30%)' } : {backgroundColor: 'hsl(var(--background))'};
+  const textStyle = cropType === 'Corn' ? { color: 'hsl(210 40% 98%)' } : {};
+  const mutedTextStyle = cropType === 'Corn' ? { color: 'hsl(210 40% 70%)' } : {};
+  
   return (
-    <Card className="p-4 bg-background/50 hover:bg-muted/40 transition-colors">
+    <Card style={cardStyle} className="p-4 bg-background/50 hover:bg-muted/40 transition-colors border-0 shadow-none">
       <div className="flex items-center space-x-4">
-        <div className="bg-muted p-3 rounded-lg">
+        <div className="bg-primary/10 p-3 rounded-lg">
           <Icon className="h-6 w-6 text-primary" />
         </div>
         <div>
-          <p className="text-sm text-muted-foreground">{label}</p>
-          <p className="text-2xl font-semibold">
+          <p style={mutedTextStyle} className="text-sm text-muted-foreground">{label}</p>
+          <p style={textStyle} className="text-2xl font-semibold">
             {value}
-            {unit && <span className="text-sm font-normal text-muted-foreground ml-1">{unit}</span>}
+            {unit && <span style={mutedTextStyle} className="text-sm font-normal text-muted-foreground ml-1">{unit}</span>}
           </p>
         </div>
       </div>

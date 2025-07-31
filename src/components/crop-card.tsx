@@ -24,16 +24,20 @@ type CropCardProps = {
 export function CropCard({ crop }: CropCardProps) {
   const CropIcon = cropIcons[crop.cropType] || Leaf;
 
+  const cardStyle = crop.cropType === 'Corn' ? { backgroundColor: 'hsl(202 44% 25%)', color: 'hsl(210 40% 98%)' } : {};
+  const cardTitleStyle = crop.cropType === 'Corn' ? { color: 'hsl(210 40% 98%)' } : {};
+  const cardDescriptionStyle = crop.cropType === 'Corn' ? { color: 'hsl(210 40% 80%)' } : {};
+
   return (
-    <Card className="w-full overflow-hidden transition-all duration-300 hover:shadow-2xl hover:border-primary/50 animate-in fade-in-50">
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4 bg-card">
+    <Card style={cardStyle} className="w-full overflow-hidden transition-all duration-300 hover:shadow-xl hover:border-primary/30 animate-in fade-in-50 shadow-md">
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
         <div className="flex items-center space-x-4">
-          <div className="bg-primary/20 p-3 rounded-full">
+          <div className="bg-primary/10 p-3 rounded-full">
             <CropIcon className="h-8 w-8 text-primary"/>
           </div>
           <div>
-            <CardTitle className="text-2xl font-bold">{crop.cropType}</CardTitle>
-            <CardDescription className="text-base">{crop.fieldName}</CardDescription>
+            <CardTitle style={cardTitleStyle} className="text-2xl font-bold">{crop.cropType}</CardTitle>
+            <CardDescription style={cardDescriptionStyle} className="text-base">{crop.fieldName}</CardDescription>
           </div>
         </div>
       </CardHeader>
@@ -46,16 +50,16 @@ export function CropCard({ crop }: CropCardProps) {
           </Alert>
         )}
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 mb-6">
-          <DataMetric icon={Thermometer} label="Air Temperature" value={crop.airTemperature.toFixed(1)} unit="°C" />
-          <DataMetric icon={Thermometer} label="Soil Temperature" value={crop.soilTemperature.toFixed(1)} unit="°C" />
-          <DataMetric icon={Droplets} label="Soil Moisture" value={crop.soilMoisture.toFixed(1)} unit="%" />
-          <DataMetric icon={Sun} label="Solar Radiation" value={Math.round(crop.solarRadiation)} unit="W/m²" />
-          <DataMetric icon={GitCommitHorizontal} label="Dev. Stage" value={crop.plantDevelopmentStage} />
-          <DataMetric icon={AreaChart} label="Vegetation Index" value={crop.vegetationIndex.toFixed(2)} />
+          <DataMetric cropType={crop.cropType} icon={Thermometer} label="Air Temperature" value={crop.airTemperature.toFixed(1)} unit="°C" />
+          <DataMetric cropType={crop.cropType} icon={Thermometer} label="Soil Temperature" value={crop.soilTemperature.toFixed(1)} unit="°C" />
+          <DataMetric cropType={crop.cropType} icon={Droplets} label="Soil Moisture" value={crop.soilMoisture.toFixed(1)} unit="%" />
+          <DataMetric cropType={crop.cropType} icon={Sun} label="Solar Radiation" value={Math.round(crop.solarRadiation)} unit="W/m²" />
+          <DataMetric cropType={crop.cropType} icon={GitCommitHorizontal} label="Dev. Stage" value={crop.plantDevelopmentStage} />
+          <DataMetric cropType={crop.cropType} icon={AreaChart} label="Vegetation Index" value={crop.vegetationIndex.toFixed(2)} />
         </div>
         <div>
-          <h3 className="text-lg font-semibold mb-2 text-foreground/90">Recent History</h3>
-          <HistoryChart data={crop.history} />
+          <h3 style={cardTitleStyle} className="text-lg font-semibold mb-2 text-foreground/90">Recent History</h3>
+          <HistoryChart data={crop.history} cropType={crop.cropType}/>
         </div>
       </CardContent>
     </Card>
