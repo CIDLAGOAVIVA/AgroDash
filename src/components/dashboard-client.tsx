@@ -8,12 +8,13 @@ import type { Crop, HistoryData } from "@/types";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import Image from "next/image";
 import { WIND_DIRECTIONS } from "@/lib/data";
-import { HistoryChart, chartConfig } from "./history-chart";
+import { HistoryChart } from "./history-chart";
 import { Cloud, Droplets, Leaf, Thermometer, Wind } from "lucide-react";
 import { WeatherForecast } from "./weather-forecast";
 import { DataMetric } from "./data-metric";
 import { PeriodSelector } from "./period-selector";
 import type { Period } from "@/types";
+import { Separator } from "./ui/separator";
 
 function useInterval(callback: () => void, delay: number | null) {
   const savedCallback = useRef<() => void>();
@@ -158,15 +159,38 @@ export function DashboardClient({ initialCrop }: { initialCrop: Crop }) {
             </CardContent>
           </Card>
           <Card>
-             <CardHeader className="flex flex-row justify-between items-center">
+             <CardHeader className="flex flex-row justify-between items-start">
                 <div>
                     <CardTitle>Histórico de Dados</CardTitle>
                     <CardDescription>Variação das métricas ao longo do tempo.</CardDescription>
                 </div>
                 <PeriodSelector period={period} setPeriod={setPeriod} />
             </CardHeader>
-            <CardContent>
-              <HistoryChart data={historyData} />
+            <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-8">
+                <div>
+                    <CardTitle as="h3" className="text-base font-semibold mb-2">Temperatura do Ar (°C)</CardTitle>
+                    <HistoryChart 
+                        data={historyData} 
+                        dataKey="airTemperature"
+                        stroke="hsl(var(--chart-1))"
+                    />
+                </div>
+                <div>
+                    <CardTitle as="h3" className="text-base font-semibold mb-2">Umidade do Ar (%)</CardTitle>
+                    <HistoryChart 
+                        data={historyData} 
+                        dataKey="airHumidity"
+                        stroke="hsl(var(--chart-2))"
+                    />
+                </div>
+                <div className="md:col-span-2">
+                    <CardTitle as="h3" className="text-base font-semibold mb-2">Concentração de CO2 (ppm)</CardTitle>
+                    <HistoryChart 
+                        data={historyData} 
+                        dataKey="co2Concentration"
+                        stroke="hsl(var(--foreground))"
+                    />
+                </div>
             </CardContent>
           </Card>
         </div>
