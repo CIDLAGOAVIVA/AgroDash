@@ -44,10 +44,9 @@ export function FieldMap({ crops, activeCropId, onMarkerClick }: FieldMapProps) 
                 <div className="relative w-full h-96 bg-muted/50 rounded-lg overflow-hidden border">
                     {/* Placeholder for map background, e.g., an image of a satellite map */}
                     <img 
-                      src="https://placehold.co/600x400.png"
+                      src="https://upload.wikimedia.org/wikipedia/commons/4/43/Center_pivot_irrigation_in_Kansas.jpg"
                       alt="Mapa da fazenda"
-                      data-ai-hint="farm satellite map"
-                      className="w-full h-full object-cover opacity-30"
+                      className="w-full h-full object-cover opacity-40"
                     />
 
                     {crops.map(crop => {
