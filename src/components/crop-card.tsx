@@ -3,7 +3,7 @@
 
 import { Leaf, ShieldAlert, ShieldCheck, ShieldX, Wheat } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
+import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import type { Crop } from "@/types";
 import { cn } from "@/lib/utils";
 
@@ -50,7 +50,7 @@ export function CropCard({ crop }: CropCardProps) {
 
   return (
     <Card className="w-full overflow-hidden transition-all duration-300 shadow-lg border-border bg-card">
-      <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-4 bg-card">
+      <CardHeader className="flex flex-row items-center justify-between p-6">
         <div className="flex items-center space-x-4">
           <div className="bg-primary/10 p-3 rounded-lg border border-primary/20">
             <CropIcon className="h-8 w-8 text-primary"/>
@@ -60,17 +60,17 @@ export function CropCard({ crop }: CropCardProps) {
             <CardDescription className="text-base">{crop.fieldName}</CardDescription>
           </div>
         </div>
-      </CardHeader>
-      
-      <CardFooter className={cn("p-6 border-t rounded-b-xl", config.className)}>
-         <Alert variant="default" className="w-full border-0 p-0 bg-transparent flex items-center">
-          <AlertIcon className={cn("h-6 w-6 flex-shrink-0", config.iconColor)} />
-          <div className="ml-4 flex items-baseline gap-2">
-            <AlertTitle className="font-bold text-lg whitespace-nowrap">{config.title}:</AlertTitle>
-            <AlertDescription className="text-base">{crop.alertMessage}</AlertDescription>
-          </div>
+        
+        <Alert variant="default" className={cn("w-auto max-w-md border-2 p-3 rounded-lg", config.className)}>
+            <div className="flex items-center">
+                <AlertIcon className={cn("h-6 w-6 flex-shrink-0", config.iconColor)} />
+                <div className="ml-3 flex items-baseline gap-2">
+                    <AlertTitle className="font-bold text-base whitespace-nowrap">{config.title}</AlertTitle>
+                    <AlertDescription className="text-sm">{crop.alertMessage}</AlertDescription>
+                </div>
+            </div>
         </Alert>
-      </CardFooter>
+      </CardHeader>
     </Card>
   );
 }
