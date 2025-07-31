@@ -1,11 +1,10 @@
+
 "use client"
 
-import { Leaf, Sun, Thermometer, Droplets, GitCommitHorizontal, Wind, Wheat, Bot, ShieldAlert, ShieldCheck, ShieldX, Cloud, Compass } from "lucide-react";
+import { Leaf, ShieldAlert, ShieldCheck, ShieldX, Wheat } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
-import { SensorCard } from "./sensor-card";
 import type { Crop } from "@/types";
-import { chartConfig } from "./history-chart";
 import { cn } from "@/lib/utils";
 
 const Sprout = () => (
@@ -62,55 +61,16 @@ export function CropCard({ crop }: CropCardProps) {
           </div>
         </div>
       </CardHeader>
-      <CardContent className="p-6 pt-0">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-             <SensorCard
-                title="Clima e Ambiente"
-                icon={Wind}
-                metric={{ label: "Temp. do Ar", value: crop.airTemperature.toFixed(1), unit: "°C" }}
-                metric2={{ label: "Umidade do Ar", value: crop.airHumidity.toFixed(1), unit: "%" }}
-                data={crop.history}
-                dataKey="airTemperature"
-                chartConfig={chartConfig}
-            />
-            <SensorCard
-                title="Atmosfera"
-                icon={Cloud}
-                metric={{ label: "Concentração CO2", value: crop.co2Concentration.toFixed(0), unit: "ppm" }}
-                metric2={{ label: "Vento", value: `${crop.windSpeed.toFixed(1)} km/h`, unit: crop.windDirection }}
-                data={crop.history}
-                dataKey="co2Concentration"
-                chartConfig={chartConfig}
-            />
-            <SensorCard
-                title="Umidade do Solo"
-                icon={Droplets}
-                metric={{ label: "Umidade", value: "62.5", unit: "%" }}
-                metric2={{ label: "Tensão da Água", value: "15", unit: "kPa" }}
-                data={crop.history}
-                dataKey="airHumidity"
-                chartConfig={chartConfig}
-            />
-             <SensorCard
-                title="Nutrientes do Solo"
-                icon={Thermometer}
-                metric={{ label: "Nitrogênio (N)", value: "120", unit: "ppm" }}
-                metric2={{ label: "pH do Solo", value: "6.8", unit: "" }}
-                data={crop.history}
-                dataKey="airTemperature"
-                chartConfig={chartConfig}
-            />
-        </div>
-      </CardContent>
-        <CardFooter className={cn("p-6 border-t", config.className)}>
-             <Alert variant="default" className="w-full border-0 p-0 bg-transparent flex items-start">
-              <AlertIcon className={cn("h-6 w-6 mt-1", config.iconColor)} />
-              <div className="ml-4">
-                <AlertTitle className="font-bold text-lg">{config.title}</AlertTitle>
-                <AlertDescription className="text-base">{crop.alertMessage}</AlertDescription>
-              </div>
-            </Alert>
-        </CardFooter>
+      
+      <CardFooter className={cn("p-6 border-t rounded-b-xl", config.className)}>
+         <Alert variant="default" className="w-full border-0 p-0 bg-transparent flex items-start">
+          <AlertIcon className={cn("h-6 w-6 mt-1 flex-shrink-0", config.iconColor)} />
+          <div className="ml-4">
+            <AlertTitle className="font-bold text-lg">{config.title}</AlertTitle>
+            <AlertDescription className="text-base">{crop.alertMessage}</AlertDescription>
+          </div>
+        </Alert>
+      </CardFooter>
     </Card>
   );
 }
