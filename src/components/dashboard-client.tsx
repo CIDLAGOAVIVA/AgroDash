@@ -14,7 +14,6 @@ import { WeatherForecast } from "./weather-forecast";
 import { DataMetric } from "./data-metric";
 import { PeriodSelector } from "./period-selector";
 import type { Period } from "@/types";
-import { Separator } from "./ui/separator";
 
 function useInterval(callback: () => void, delay: number | null) {
   const savedCallback = useRef<() => void>();
@@ -112,113 +111,111 @@ export function DashboardClient({ initialCrop }: { initialCrop: Crop }) {
     <div className="flex flex-col gap-6">
       <CropCard crop={crop} />
       
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 flex flex-col gap-6">
-          <Card>
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+        <Card className="xl:col-span-1">
+          <CardHeader>
+            <CardTitle>Métricas Atuais</CardTitle>
+            <CardDescription>Dados dos sensores em tempo real.</CardDescription>
+          </CardHeader>
+          <CardContent className="grid grid-cols-2 md:grid-cols-2 gap-x-6 gap-y-8">
+            <DataMetric
+              icon={Thermometer}
+              label="Temp. do Ar"
+              value={crop.airTemperature.toFixed(1)}
+              unit="°C"
+            />
+            <DataMetric
+              icon={Droplets}
+              label="Umidade do Ar"
+              value={crop.airHumidity.toFixed(1)}
+              unit="%"
+            />
+            <DataMetric
+              icon={Wind}
+              label="Vento"
+              value={`${crop.windSpeed.toFixed(1)} km/h`}
+              unit={crop.windDirection}
+            />
+            <DataMetric
+              icon={Cloud}
+              label="Concentração CO2"
+              value={crop.co2Concentration.toFixed(0)}
+              unit="ppm"
+            />
+              <DataMetric
+              icon={Leaf}
+              label="Umidade do Solo"
+              value="62.5"
+              unit="%"
+            />
+              <DataMetric
+              icon={Thermometer}
+              label="Nitrogênio (N)"
+              value="120"
+              unit="ppm"
+            />
+          </CardContent>
+        </Card>
+        
+        <Card className="xl:col-span-2 flex flex-col">
             <CardHeader>
-              <CardTitle>Métricas Atuais</CardTitle>
-              <CardDescription>Dados dos sensores em tempo real.</CardDescription>
+                <CardTitle>Visualização e Previsão</CardTitle>
+                <CardDescription>Imagem da cultura gerada por IA e previsão do tempo.</CardDescription>
             </CardHeader>
-            <CardContent className="grid grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-8">
-              <DataMetric
-                icon={Thermometer}
-                label="Temp. do Ar"
-                value={crop.airTemperature.toFixed(1)}
-                unit="°C"
-              />
-              <DataMetric
-                icon={Droplets}
-                label="Umidade do Ar"
-                value={crop.airHumidity.toFixed(1)}
-                unit="%"
-              />
-              <DataMetric
-                icon={Wind}
-                label="Vento"
-                value={`${crop.windSpeed.toFixed(1)} km/h`}
-                unit={crop.windDirection}
-              />
-              <DataMetric
-                icon={Cloud}
-                label="Concentração CO2"
-                value={crop.co2Concentration.toFixed(0)}
-                unit="ppm"
-              />
-               <DataMetric
-                icon={Leaf}
-                label="Umidade do Solo"
-                value="62.5"
-                unit="%"
-              />
-               <DataMetric
-                icon={Thermometer}
-                label="Nitrogênio (N)"
-                value="120"
-                unit="ppm"
-              />
-            </CardContent>
-          </Card>
-          <Card>
-             <CardHeader className="flex flex-row justify-between items-start">
-                <div>
-                    <CardTitle>Histórico de Dados</CardTitle>
-                    <CardDescription>Variação das métricas ao longo do tempo.</CardDescription>
-                </div>
-                <PeriodSelector period={period} setPeriod={setPeriod} />
-            </CardHeader>
-            <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-8">
-                <div>
-                    <CardTitle as="h3" className="text-base font-semibold mb-2">Temperatura do Ar (°C)</CardTitle>
-                    <HistoryChart 
-                        data={historyData} 
-                        dataKey="airTemperature"
-                        stroke="hsl(var(--chart-1))"
+            <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6 flex-grow">
+                 <div className="relative aspect-square w-full bg-muted/50 rounded-lg overflow-hidden border flex items-center justify-center">
+                    {isImageLoading ? (
+                    <div className="spinner"></div>
+                    ) : fieldImage && (
+                    <Image 
+                        src={fieldImage}
+                        alt={`Imagem gerada por IA de ${crop.fieldName}`}
+                        fill
+                        className="object-cover transition-all duration-500"
+                        key={fieldImage}
                     />
+                    )}
                 </div>
-                <div>
-                    <CardTitle as="h3" className="text-base font-semibold mb-2">Umidade do Ar (%)</CardTitle>
-                    <HistoryChart 
-                        data={historyData} 
-                        dataKey="airHumidity"
-                        stroke="hsl(var(--chart-2))"
-                    />
-                </div>
-                <div className="md:col-span-2">
-                    <CardTitle as="h3" className="text-base font-semibold mb-2">Concentração de CO2 (ppm)</CardTitle>
-                    <HistoryChart 
-                        data={historyData} 
-                        dataKey="co2Concentration"
-                        stroke="hsl(var(--foreground))"
-                    />
-                </div>
+                <WeatherForecast />
             </CardContent>
-          </Card>
-        </div>
-
-        <div className="lg:col-span-1 flex flex-col gap-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Visualização do Talhão (IA)</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="relative aspect-square w-full bg-muted/50 rounded-lg overflow-hidden border flex items-center justify-center">
-                {isImageLoading ? (
-                   <div className="spinner"></div>
-                ) : fieldImage && (
-                  <Image 
-                    src={fieldImage}
-                    alt={`Imagem gerada por IA de ${crop.fieldName}`}
-                    fill
-                    className="object-cover transition-all duration-500"
-                    key={fieldImage}
-                  />
-                )}
-              </div>
-            </CardContent>
-          </Card>
-          <WeatherForecast />
-        </div>
+        </Card>
       </div>
+
+      <Card>
+          <CardHeader className="flex flex-row justify-between items-start">
+            <div>
+                <CardTitle>Histórico de Dados</CardTitle>
+                <CardDescription>Variação das métricas ao longo do tempo.</CardDescription>
+            </div>
+            <PeriodSelector period={period} setPeriod={setPeriod} />
+        </CardHeader>
+        <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-8">
+            <div>
+                <h3 className="text-base font-semibold mb-2 text-foreground">Temperatura do Ar (°C)</h3>
+                <HistoryChart 
+                    data={historyData} 
+                    dataKey="airTemperature"
+                    stroke="hsl(var(--chart-1))"
+                />
+            </div>
+            <div>
+                <h3 className="text-base font-semibold mb-2 text-foreground">Umidade do Ar (%)</h3>
+                <HistoryChart 
+                    data={historyData} 
+                    dataKey="airHumidity"
+                    stroke="hsl(var(--chart-2))"
+                />
+            </div>
+            <div>
+                <h3 className="text-base font-semibold mb-2 text-foreground">Concentração de CO2 (ppm)</h3>
+                <HistoryChart 
+                    data={historyData} 
+                    dataKey="co2Concentration"
+                    stroke="hsl(var(--foreground))"
+                />
+            </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }

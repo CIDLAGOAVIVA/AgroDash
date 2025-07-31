@@ -1,13 +1,13 @@
 
 "use client"
 
-import { Area, AreaChart, CartesianGrid, XAxis, YAxis, Tooltip } from "recharts"
+import { Area, AreaChart, CartesianGrid, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts"
 import { ChartConfig, ChartContainer, ChartTooltipContent } from "@/components/ui/chart"
 import type { HistoryData } from "@/types"
 
 type HistoryChartProps = {
   data: HistoryData[];
-  dataKey: keyof HistoryData;
+  dataKey: keyof Omit<HistoryData, 'time' | 'windDirection'>;
   stroke: string;
 }
 
@@ -15,13 +15,13 @@ export function HistoryChart({ data, dataKey, stroke }: HistoryChartProps) {
     
   const chartConfig = {
     [dataKey]: {
-      label: dataKey,
+      label: dataKey.toString(),
       color: stroke,
     },
   } satisfies ChartConfig
 
   return (
-    <ChartContainer config={chartConfig} className="h-60 w-full">
+    <ChartContainer config={chartConfig} className="h-52 w-full">
       <AreaChart 
         accessibilityLayer 
         data={data} 
@@ -44,14 +44,14 @@ export function HistoryChart({ data, dataKey, stroke }: HistoryChartProps) {
           tickCount={5}
           stroke="hsl(var(--muted-foreground))"
           fontSize={12}
-          domain={['dataMin - 1', 'dataMax + 1']}
+          domain={['auto', 'auto']}
         />
         <Tooltip
           cursor={true}
           content={<ChartTooltipContent 
             indicator="dot" 
             labelClassName="font-semibold" 
-            formatter={(value, name) => `${value}`}
+            formatter={(value) => [`${value}`, '']}
           />}
         />
         <defs>
