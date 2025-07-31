@@ -5,29 +5,17 @@ import { ChartConfig, ChartContainer, ChartTooltipContent } from "@/components/u
 import type { HistoryData } from "@/types"
 
 export const chartConfig = {
-  soilTemperature: {
-    label: "Temp. Solo (°C)",
-    color: "hsl(var(--chart-2))",
-  },
   airTemperature: {
     label: "Temp. Ar (°C)",
     color: "hsl(var(--chart-1))",
-  },
-  soilMoisture: {
-    label: "Umidade do Solo (%)",
-    color: "hsl(var(--chart-4))",
   },
   airHumidity: {
     label: "Umidade do Ar (%)",
     color: "hsl(var(--chart-5))",
   },
-  solarRadiation: {
-    label: "Radiação Solar (W/m²)",
-    color: "hsl(var(--chart-3))",
-  },
-  vegetationIndex: {
-    label: "Índice Vegetativo (NDVI)",
-    color: "hsl(var(--primary))",
+  co2Concentration: {
+    label: "CO2 (ppm)",
+    color: "hsl(var(--secondary-foreground))",
   }
 } satisfies ChartConfig
 
@@ -73,13 +61,13 @@ export function HistoryChart({ data }: HistoryChartProps) {
             <stop offset="5%" stopColor="var(--color-airTemperature)" stopOpacity={0.8}/>
             <stop offset="95%" stopColor="var(--color-airTemperature)" stopOpacity={0.1}/>
           </linearGradient>
-          <linearGradient id="fillSoilTemperature" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="5%" stopColor="var(--color-soilTemperature)" stopOpacity={0.8}/>
-            <stop offset="95%" stopColor="var(--color-soilTemperature)" stopOpacity={0.1}/>
+           <linearGradient id="fillCo2Concentration" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="5%" stopColor="var(--color-co2Concentration)" stopOpacity={0.8}/>
+            <stop offset="95%" stopColor="var(--color-co2Concentration)" stopOpacity={0.1}/>
           </linearGradient>
-           <linearGradient id="fillSoilMoisture" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="5%" stopColor="var(--color-soilMoisture)" stopOpacity={0.8}/>
-            <stop offset="95%" stopColor="var(--color-soilMoisture)" stopOpacity={0.1}/>
+           <linearGradient id="fillAirHumidity" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="5%" stopColor="var(--color-airHumidity)" stopOpacity={0.8}/>
+            <stop offset="95%" stopColor="var(--color-airHumidity)" stopOpacity={0.1}/>
           </linearGradient>
         </defs>
         <Area
@@ -92,21 +80,21 @@ export function HistoryChart({ data }: HistoryChartProps) {
           isAnimationActive={false}
         />
         <Area
-          dataKey="soilTemperature"
+          dataKey="airHumidity"
           type="natural"
-          fill="url(#fillSoilTemperature)"
-          stroke="var(--color-soilTemperature)"
-          strokeWidth={2.5}
-          stackId="b"
-          isAnimationActive={false}
-        />
-        <Area
-          dataKey="soilMoisture"
-          type="natural"
-          fill="url(#fillSoilMoisture)"
-          stroke="var(--color-soilMoisture)"
+          fill="url(#fillAirHumidity)"
+          stroke="var(--color-airHumidity)"
           strokeWidth={2.5}
           stackId="c"
+          isAnimationActive={false}
+        />
+         <Area
+          dataKey="co2Concentration"
+          type="natural"
+          fill="url(#fillCo2Concentration)"
+          stroke="var(--color-co2Concentration)"
+          strokeWidth={2.5}
+          stackId="d"
           isAnimationActive={false}
         />
       </AreaChart>

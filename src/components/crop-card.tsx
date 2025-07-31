@@ -1,6 +1,6 @@
 "use client"
 
-import { Leaf, Sun, Thermometer, Droplets, GitCommitHorizontal, Wind, Wheat, Bot, ShieldAlert, ShieldCheck, ShieldX } from "lucide-react";
+import { Leaf, Sun, Thermometer, Droplets, GitCommitHorizontal, Wind, Wheat, Bot, ShieldAlert, ShieldCheck, ShieldX, Cloud, Compass } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { SensorCard } from "./sensor-card";
@@ -61,23 +61,11 @@ export function CropCard({ crop }: CropCardProps) {
             <CardDescription className="text-base">{crop.fieldName}</CardDescription>
           </div>
         </div>
-        <div className="flex items-center gap-4 text-sm text-muted-foreground">
-          <GitCommitHorizontal className="h-5 w-5" />
-          <span>{crop.plantDevelopmentStage}</span>
-        </div>
       </CardHeader>
       <CardContent className="p-6 pt-0">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-            <SensorCard
-                title="Umidade do Solo"
-                icon={Droplets}
-                metric={{ label: "Umidade Atual", value: crop.soilMoisture.toFixed(1), unit: "%" }}
-                data={crop.history}
-                dataKey="soilMoisture"
-                chartConfig={chartConfig}
-            />
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 mb-6">
              <SensorCard
-                title="Clima"
+                title="Clima e Ambiente"
                 icon={Wind}
                 metric={{ label: "Temp. do Ar", value: crop.airTemperature.toFixed(1), unit: "°C" }}
                 metric2={{ label: "Umidade do Ar", value: crop.airHumidity.toFixed(1), unit: "%" }}
@@ -86,12 +74,12 @@ export function CropCard({ crop }: CropCardProps) {
                 chartConfig={chartConfig}
             />
             <SensorCard
-                title="Luz e Crescimento"
-                icon={Sun}
-                metric={{ label: "Radiação Solar", value: crop.solarRadiation.toFixed(0), unit: "W/m²" }}
-                metric2={{ label: "Índice Vegetativo", value: crop.vegetationIndex.toFixed(2), unit: "NDVI" }}
+                title="Atmosfera"
+                icon={Cloud}
+                metric={{ label: "Concentração CO2", value: crop.co2Concentration.toFixed(0), unit: "ppm" }}
+                metric2={{ label: "Vento", value: `${crop.windSpeed.toFixed(1)} km/h`, unit: crop.windDirection }}
                 data={crop.history}
-                dataKey="vegetationIndex"
+                dataKey="co2Concentration"
                 chartConfig={chartConfig}
             />
         </div>

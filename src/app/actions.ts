@@ -28,10 +28,12 @@ export async function generateFieldImage(
 ): Promise<GenerateFieldImageOutput> {
   try {
     const result = await genkitGenerateFieldImage(prompt);
+    if (!result.imageUrl) {
+      throw new Error("A API não retornou uma URL de imagem.");
+    }
     return result;
   } catch (error) {
     console.error('Error generating field image:', error);
-    // Return a placeholder or a specific error indicator
     return { imageUrl: "https://placehold.co/512x512/ff0000/FFFFFF?text=Error" };
   }
 }
