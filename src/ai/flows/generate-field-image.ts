@@ -44,6 +44,10 @@ const generateFieldImageFlow = ai.defineFlow(
       },
     });
 
+    if (!media.url) {
+      throw new Error("A API não retornou uma URL de imagem.");
+    }
+    
     return { imageUrl: media.url };
   }
 );
