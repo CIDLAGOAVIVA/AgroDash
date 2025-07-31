@@ -23,7 +23,7 @@ type SensorCardProps = {
 export function SensorCard({ icon: Icon, title, metric, metric2, data, dataKey, chartConfig }: SensorCardProps) {
   return (
     <Card className="bg-background/50 shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden">
-      <div className="p-4 pb-2">
+      <div className="p-4">
         <div className="flex flex-row items-center justify-between mb-2">
             <h3 className="text-sm font-medium text-muted-foreground">{title}</h3>
             <Icon className="h-4 w-4 text-muted-foreground" />
