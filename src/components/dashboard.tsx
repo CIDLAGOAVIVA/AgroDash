@@ -73,44 +73,43 @@ const initialCrops: Crop[] = [
 
 const LoadingSkeleton = () => (
     <Card className="w-full overflow-hidden shadow-lg">
-     <CardHeader className="p-6 bg-muted/20">
-       <div className="flex items-center space-x-4">
-         <Skeleton className="h-16 w-16 rounded-lg" />
-         <div className="space-y-2">
-           <Skeleton className="h-6 w-[200px]" />
-           <Skeleton className="h-4 w-[150px]" />
-         </div>
+     <CardHeader className="p-6 bg-card">
+       <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-4">
+                <Skeleton className="h-16 w-16 rounded-lg" />
+                <div className="space-y-2">
+                    <Skeleton className="h-6 w-[200px]" />
+                    <Skeleton className="h-4 w-[150px]" />
+                </div>
+            </div>
+            <div className="flex items-center space-x-4">
+                <Skeleton className="h-6 w-6 rounded-full" />
+                <Skeleton className="h-4 w-[100px]" />
+            </div>
        </div>
      </CardHeader>
-     <CardContent className="p-0">
-        <div className="grid grid-cols-1 md:grid-cols-3">
-            <div className="col-span-1 p-6 space-y-4">
-                <Skeleton className="h-5 w-3/4 mb-4" />
-                {[...Array(5)].map((_, i) => (
-                    <div key={i} className="flex items-center space-x-4">
-                        <Skeleton className="h-10 w-10 rounded-full" />
-                        <div className="space-y-2">
-                            <Skeleton className="h-4 w-[120px]" />
-                            <Skeleton className="h-5 w-[80px]" />
-                        </div>
-                    </div>
-                ))}
-            </div>
-            <div className="col-span-2 p-6 border-l">
-                 <Skeleton className="h-5 w-1/2 mb-4" />
-                <Skeleton className="h-[280px] w-full" />
-            </div>
+     <CardContent className="p-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+            {[...Array(3)].map((_, i) => (
+                <Card key={i}><CardContent className="p-6 space-y-4">
+                     <div className="flex items-center space-x-4 mb-4">
+                        <Skeleton className="h-8 w-8 rounded-full" />
+                        <Skeleton className="h-5 w-1/3" />
+                     </div>
+                     <div className="space-y-4">
+                        <Skeleton className="h-4 w-3/4" />
+                        <Skeleton className="h-6 w-1/2" />
+                     </div>
+                     <div className="space-y-4 mt-2">
+                        <Skeleton className="h-4 w-3/4" />
+                        <Skeleton className="h-6 w-1/2" />
+                     </div>
+                </CardContent></Card>
+            ))}
         </div>
+        <Skeleton className="h-5 w-1/2 mb-4" />
+        <Skeleton className="h-[280px] w-full" />
      </CardContent>
-     <CardHeader className="p-6 bg-muted/20">
-        <div className="flex items-center space-x-4">
-            <Skeleton className="h-10 w-10 rounded-full" />
-            <div className="space-y-2">
-                <Skeleton className="h-4 w-[180px]" />
-                <Skeleton className="h-5 w-[100px]" />
-            </div>
-        </div>
-     </CardHeader>
     </Card>
 )
 
@@ -182,7 +181,7 @@ export default function Dashboard() {
         setCrops(newCrops);
       });
 
-    }, 8000);
+    }, 5000);
 
     return () => clearInterval(interval);
   }, [crops, loading]);
@@ -193,9 +192,9 @@ export default function Dashboard() {
 
   return (
     <Tabs defaultValue={initialCrops[0].id} className="w-full">
-      <TabsList className="grid w-full grid-cols-3 mb-6">
+      <TabsList className="grid w-full grid-cols-3 mb-6 bg-primary/5 border border-primary/10">
         {crops.map((crop) => (
-          <TabsTrigger key={crop.id} value={crop.id} className="py-2 text-base font-semibold">{crop.cropType}</TabsTrigger>
+          <TabsTrigger key={crop.id} value={crop.id} className="py-2.5 text-base font-semibold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg">{crop.cropType}</TabsTrigger>
         ))}
       </TabsList>
       {crops.map((crop) => (

@@ -1,11 +1,11 @@
 "use client"
 
-import { AlertTriangle, Leaf, Sun, Thermometer, Droplets, GitCommitHorizontal, AreaChart, Wheat } from "lucide-react";
+import { Leaf, Sun, Thermometer, Droplets, GitCommitHorizontal, AreaChart, Wheat, Bot } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { DataMetric } from "./data-metric";
 import { HistoryChart } from "./history-chart";
+import { SensorCard } from "./sensor-card";
 import type { Crop } from "@/types";
 
 const Sprout = () => (
@@ -26,8 +26,8 @@ export function CropCard({ crop }: CropCardProps) {
   const CropIcon = cropIcons[crop.cropType] || Leaf;
 
   return (
-    <Card className="w-full overflow-hidden transition-all duration-300 shadow-lg border-border">
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4 bg-muted/20">
+    <Card className="w-full overflow-hidden transition-all duration-300 shadow-lg border-border bg-card">
+      <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-4 bg-card">
         <div className="flex items-center space-x-4">
           <div className="bg-primary/10 p-3 rounded-lg border border-primary/20">
             <CropIcon className="h-8 w-8 text-primary"/>
@@ -37,36 +37,53 @@ export function CropCard({ crop }: CropCardProps) {
             <CardDescription className="text-base">{crop.fieldName}</CardDescription>
           </div>
         </div>
+        <div className="flex items-center gap-4 text-sm text-muted-foreground">
+          <GitCommitHorizontal className="h-5 w-5" />
+          <span>{crop.plantDevelopmentStage}</span>
+        </div>
       </CardHeader>
-      <CardContent className="p-0">
-        <div className="grid grid-cols-1 md:grid-cols-3">
-          <div className="col-span-1 md:col-span-1 p-6 space-y-4">
-             <h3 className="text-lg font-semibold text-foreground/90">Métricas Atuais</h3>
-             <DataMetric icon={Thermometer} label="Temperatura do Ar" value={crop.airTemperature.toFixed(1)} unit="°C" />
-             <DataMetric icon={Thermometer} label="Temperatura do Solo" value={crop.soilTemperature.toFixed(1)} unit="°C" />
-             <DataMetric icon={Droplets} label="Umidade do Solo" value={crop.soilMoisture.toFixed(1)} unit="%" />
-             <DataMetric icon={Sun} label="Radiação Solar" value={Math.round(crop.solarRadiation)} unit="W/m²" />
-             <DataMetric icon={AreaChart} label="Índice de Vegetação" value={crop.vegetationIndex.toFixed(2)} />
-          </div>
-          <div className="col-span-1 md:col-span-2 p-6 border-l border-border">
-             <h3 className="text-lg font-semibold mb-4 text-foreground/90">Histórico de Sensores</h3>
+      <CardContent className="p-6 pt-0">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+            <SensorCard 
+                title="Temperatura" 
+                icon={Thermometer}
+                metrics={[
+                    { label: "Ar", value: crop.airTemperature.toFixed(1), unit: "°C" },
+                    { label: "Solo", value: crop.soilTemperature.toFixed(1), unit: "°C" },
+                ]}
+            />
+            <SensorCard 
+                title="Solo e Ambiente" 
+                icon={Sun}
+                metrics={[
+                    { label: "Umidade do Solo", value: crop.soilMoisture.toFixed(1), unit: "%" },
+                    { label: "Radiação Solar", value: Math.round(crop.solarRadiation), unit: "W/m²" },
+                ]}
+            />
+            <SensorCard 
+                title="Saúde da Planta" 
+                icon={AreaChart}
+                metrics={[
+                    { label: "Índice de Vegetação", value: crop.vegetationIndex.toFixed(2), unit: "NDVI" },
+                ]}
+            />
+        </div>
+        <Separator className="my-6" />
+        <div>
+             <h3 className="text-xl font-semibold mb-4 text-foreground/90">Histórico de Sensores (Últimos 30 dias)</h3>
             <HistoryChart data={crop.history} />
-          </div>
         </div>
       </CardContent>
-      <Separator />
-      <CardFooter className="p-6 bg-muted/20 flex-col items-start gap-4">
-        <div className="flex items-center gap-4">
-          <DataMetric icon={GitCommitHorizontal} label="Estágio de Desenvolvimento" value={crop.plantDevelopmentStage} />
-        </div>
-        {crop.alertMessage && (
-          <Alert variant="destructive" className="w-full animate-in fade-in-0 zoom-in-95 mt-4">
-            <AlertTriangle className="h-5 w-5" />
-            <AlertTitle className="font-bold">Alerta: Anomalia Detectada!</AlertTitle>
-            <AlertDescription>{crop.alertMessage}</AlertDescription>
-          </Alert>
-        )}
-      </CardFooter>
+
+      {crop.alertMessage && (
+        <CardFooter className="p-6 bg-destructive/10 border-t border-destructive/20">
+            <Alert variant="destructive" className="w-full border-0 p-0">
+              <Bot className="h-6 w-6 text-destructive" />
+              <AlertTitle className="font-bold text-lg">Recomendação da IA</AlertTitle>
+              <AlertDescription className="text-base text-destructive/90">{crop.alertMessage}</AlertDescription>
+            </Alert>
+        </CardFooter>
+      )}
     </Card>
   );
 }
