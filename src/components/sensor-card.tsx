@@ -22,12 +22,12 @@ type SensorCardProps = {
 
 export function SensorCard({ icon: Icon, title, metric, metric2, data, dataKey, chartConfig }: SensorCardProps) {
   return (
-    <Card className="bg-background/50 shadow-md hover:shadow-lg transition-shadow duration-300 flex flex-col">
+    <Card className="bg-background/50 shadow-md hover:shadow-lg transition-shadow duration-300">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 p-3 pb-0">
             <CardTitle className="text-sm font-medium text-muted-foreground">{title}</CardTitle>
             <Icon className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
-      <CardContent className="flex-grow flex flex-col justify-between p-3 pt-1">
+      <CardContent className="p-3 pt-1">
         <div className="flex items-start justify-between gap-4">
           <div>
             <p className="text-sm text-foreground/80">{metric.label}</p>
@@ -46,7 +46,7 @@ export function SensorCard({ icon: Icon, title, metric, metric2, data, dataKey, 
             </div>
           )}
         </div>
-        <div className="h-8 -mx-3 -mb-3 mt-1">
+        <div className="h-8 -mx-3 -mb-3 mt-2">
              <ChartContainer config={chartConfig} className="w-full h-full">
                 <AreaChart
                     accessibilityLayer
