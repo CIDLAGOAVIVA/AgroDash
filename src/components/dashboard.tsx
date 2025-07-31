@@ -14,10 +14,10 @@ const generateInitialHistory = (baseValues: { soilTemp: number; airTemp: number;
   const history: HistoryData[] = [];
   let { soilTemp, airTemp, soilMoisture } = baseValues;
   for (let i = 29; i >= 0; i--) {
-    const time = new Date(Date.now() - i * 5 * 60000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
-    soilTemp += (Math.random() - 0.5) * 0.2;
-    airTemp += (Math.random() - 0.5) * 0.3;
-    soilMoisture += (Math.random() - 0.5) * 0.5;
+    const time = new Date(Date.now() - i * 24 * 60 * 60000).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+    soilTemp += (Math.random() - 0.5) * 0.4;
+    airTemp += (Math.random() - 0.5) * 0.6;
+    soilMoisture += (Math.random() - 0.5) * 1;
 
     history.push({
       time,
@@ -71,6 +71,49 @@ const initialCrops: Crop[] = [
   },
 ];
 
+const LoadingSkeleton = () => (
+    <Card className="w-full overflow-hidden shadow-lg">
+     <CardHeader className="p-6 bg-muted/20">
+       <div className="flex items-center space-x-4">
+         <Skeleton className="h-16 w-16 rounded-lg" />
+         <div className="space-y-2">
+           <Skeleton className="h-6 w-[200px]" />
+           <Skeleton className="h-4 w-[150px]" />
+         </div>
+       </div>
+     </CardHeader>
+     <CardContent className="p-0">
+        <div className="grid grid-cols-1 md:grid-cols-3">
+            <div className="col-span-1 p-6 space-y-4">
+                <Skeleton className="h-5 w-3/4 mb-4" />
+                {[...Array(5)].map((_, i) => (
+                    <div key={i} className="flex items-center space-x-4">
+                        <Skeleton className="h-10 w-10 rounded-full" />
+                        <div className="space-y-2">
+                            <Skeleton className="h-4 w-[120px]" />
+                            <Skeleton className="h-5 w-[80px]" />
+                        </div>
+                    </div>
+                ))}
+            </div>
+            <div className="col-span-2 p-6 border-l">
+                 <Skeleton className="h-5 w-1/2 mb-4" />
+                <Skeleton className="h-[280px] w-full" />
+            </div>
+        </div>
+     </CardContent>
+     <CardHeader className="p-6 bg-muted/20">
+        <div className="flex items-center space-x-4">
+            <Skeleton className="h-10 w-10 rounded-full" />
+            <div className="space-y-2">
+                <Skeleton className="h-4 w-[180px]" />
+                <Skeleton className="h-5 w-[100px]" />
+            </div>
+        </div>
+     </CardHeader>
+    </Card>
+)
+
 export default function Dashboard() {
   const [crops, setCrops] = useState<Crop[]>([]);
   const [loading, setLoading] = useState(true);
@@ -96,7 +139,7 @@ export default function Dashboard() {
         const newVegetationIndex = crop.vegetationIndex + (Math.random() - 0.48) * 0.005;
 
         let stageIndex = DEVELOPMENT_STAGES.indexOf(crop.plantDevelopmentStage);
-        if (Math.random() < 0.05) { 
+        if (Math.random() < 0.01) { 
           stageIndex = (stageIndex + 1) % DEVELOPMENT_STAGES.length;
         }
 
@@ -122,7 +165,7 @@ export default function Dashboard() {
         });
 
         const newHistoryEntry: HistoryData = {
-            time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false }),
+            time: new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }),
             soilTemperature: parseFloat(updatedCropData.soilTemperature.toFixed(1)),
             airTemperature: parseFloat(updatedCropData.airTemperature.toFixed(1)),
             soilMoisture: parseFloat(updatedCropData.soilMoisture.toFixed(1)),
@@ -139,46 +182,20 @@ export default function Dashboard() {
         setCrops(newCrops);
       });
 
-    }, 5000);
+    }, 8000);
 
     return () => clearInterval(interval);
   }, [crops, loading]);
 
   if (loading) {
-    return (
-       <Card className="w-full">
-        <CardHeader>
-          <div className="flex items-center space-x-3">
-            <Skeleton className="h-12 w-12 rounded-full" />
-            <div className="space-y-2">
-              <Skeleton className="h-4 w-[250px]" />
-              <Skeleton className="h-4 w-[200px]" />
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent className="space-y-6">
-           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-              {[...Array(6)].map((_, j) => (
-                <div key={j} className="flex items-center space-x-4 p-4 bg-background/50 rounded-lg">
-                    <Skeleton className="h-10 w-10 rounded-lg" />
-                    <div className="space-y-2">
-                        <Skeleton className="h-4 w-[100px]" />
-                        <Skeleton className="h-6 w-[80px]" />
-                    </div>
-                </div>
-              ))}
-           </div>
-           <Skeleton className="h-64 w-full rounded-lg" />
-        </CardContent>
-       </Card>
-    );
+    return <LoadingSkeleton />;
   }
 
   return (
     <Tabs defaultValue={initialCrops[0].id} className="w-full">
-      <TabsList className="grid w-full grid-cols-3">
+      <TabsList className="grid w-full grid-cols-3 mb-6">
         {crops.map((crop) => (
-          <TabsTrigger key={crop.id} value={crop.id}>{crop.cropType}</TabsTrigger>
+          <TabsTrigger key={crop.id} value={crop.id} className="py-2 text-base font-semibold">{crop.cropType}</TabsTrigger>
         ))}
       </TabsList>
       {crops.map((crop) => (
