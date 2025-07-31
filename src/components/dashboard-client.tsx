@@ -32,10 +32,8 @@ export function DashboardClient({ initialCrop }: { initialCrop: Crop }) {
   const [crop, setCrop] = useState<Crop>(initialCrop);
   const [fieldImage, setFieldImage] = useState<string | null>(null);
   const [isImageLoading, setIsImageLoading] = useState<boolean>(true);
-  const updateCounter = useRef(0);
 
   const updateCropData = useCallback(async () => {
-    // 1. Simulate new sensor data based on the current state
     const newAirTemp = crop.airTemperature + (Math.random() - 0.5) * 0.3;
     const newAirHumidity = crop.airHumidity + (Math.random() - 0.5) * 0.5;
     const newWindSpeed = crop.windSpeed + (Math.random() - 0.5) * 0.5;
@@ -55,14 +53,12 @@ export function DashboardClient({ initialCrop }: { initialCrop: Crop }) {
     };
     
     try {
-        // 2. Get AI anomaly alert
         const alertResult = await generateAnomalyAlerts({
             cropType: crop.cropType,
             fieldName: crop.fieldName,
             ...simulatedData,
         });
 
-        // 3. Create new history entry
         const newHistoryEntry: HistoryData = {
             time: new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }),
             airTemperature: parseFloat(simulatedData.airTemperature.toFixed(1)),
@@ -72,36 +68,22 @@ export function DashboardClient({ initialCrop }: { initialCrop: Crop }) {
             co2Concentration: Math.round(simulatedData.co2Concentration),
         };
 
-        // 4. Update crop state once with all new data
-        setCrop({
-            ...crop,
+        setCrop(prevCrop => ({
+            ...prevCrop,
             ...simulatedData,
-            history: [...crop.history.slice(1), newHistoryEntry],
+            history: [...prevCrop.history.slice(1), newHistoryEntry],
             alertMessage: alertResult.alertMessage,
             alertSeverity: alertResult.alertSeverity,
-        });
+        }));
         
-        // 5. Update image periodically
-        updateCounter.current += 1;
-        if (updateCounter.current % 12 === 0) {
-            setIsImageLoading(true);
-            generateFieldImage(`${crop.cropType}, ${alertResult.alertMessage}, ${alertResult.alertSeverity} severity`).then(imageResult => {
-                if (imageResult.imageUrl) {
-                    setFieldImage(imageResult.imageUrl);
-                }
-            }).finally(() => {
-                setIsImageLoading(false);
-            });
-        }
     } catch (error) {
         console.error("Error updating crop data:", error);
     }
-  }, [crop]);
+  }, [crop.cropType, crop.fieldName, crop.airTemperature, crop.airHumidity, crop.windSpeed, crop.windDirection, crop.co2Concentration, crop.history]);
 
   useEffect(() => {
-    // Generate the initial image when the component mounts
     setIsImageLoading(true);
-    generateFieldImage(`${initialCrop.cropType}, ${initialCrop.alertMessage}, ${initialCrop.alertSeverity} severity`)
+    generateFieldImage(`${initialCrop.cropType} field, high resolution photograph, aerial view`)
       .then(result => {
         if (result.imageUrl) {
           setFieldImage(result.imageUrl);
@@ -111,7 +93,7 @@ export function DashboardClient({ initialCrop }: { initialCrop: Crop }) {
       .finally(() => {
         setIsImageLoading(false);
       });
-  }, [initialCrop]);
+  }, [initialCrop.cropType]);
 
   useInterval(updateCropData, 5000);
 
