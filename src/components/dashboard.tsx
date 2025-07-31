@@ -8,7 +8,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { PeriodSelector } from "./period-selector";
-import { FieldMap } from "./field-map";
+import Image from "next/image";
 
 const DEVELOPMENT_STAGES = ["Muda", "Vegetativo", "Floração", "Maturidade"];
 
@@ -93,52 +93,38 @@ const initialCrops: Crop[] = [
 ];
 
 const LoadingSkeleton = () => (
-  <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-    <div className="lg:col-span-2">
-      <Card className="w-full overflow-hidden shadow-lg">
-      <CardHeader className="p-6 bg-card">
-        <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-4">
-                  <Skeleton className="h-16 w-16 rounded-lg" />
-                  <div className="space-y-2">
-                      <Skeleton className="h-6 w-[200px]" />
-                      <Skeleton className="h-4 w-[150px]" />
-                  </div>
+  <Card className="w-full overflow-hidden shadow-lg">
+  <CardHeader className="p-6 bg-card">
+    <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-4">
+              <Skeleton className="h-16 w-16 rounded-lg" />
+              <div className="space-y-2">
+                  <Skeleton className="h-6 w-[200px]" />
+                  <Skeleton className="h-4 w-[150px]" />
               </div>
-              <div className="flex items-center space-x-4">
-                  <Skeleton className="h-6 w-6 rounded-full" />
-                  <Skeleton className="h-4 w-[100px]" />
-              </div>
-        </div>
-      </CardHeader>
-      <CardContent className="p-6">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-              {[...Array(3)].map((_, i) => (
-                  <Card key={i}><CardContent className="p-6 space-y-4">
-                      <div className="flex items-center space-x-4 mb-4">
-                          <Skeleton className="h-8 w-8 rounded-full" />
-                          <Skeleton className="h-5 w-1/3" />
-                      </div>
-                      <Skeleton className="h-6 w-1/2 mb-4" />
-                      <Skeleton className="h-4 w-3/4 mb-2" />
-                      <Skeleton className="h-[120px] w-full" />
-                  </CardContent></Card>
-              ))}
           </div>
-      </CardContent>
-      </Card>
+          <div className="flex items-center space-x-4">
+              <Skeleton className="h-6 w-6 rounded-full" />
+              <Skeleton className="h-4 w-[100px]" />
+          </div>
     </div>
-    <div className="lg:col-span-1">
-        <Card>
-            <CardHeader>
-                <CardTitle>Mapa dos Talhões</CardTitle>
-            </CardHeader>
-            <CardContent>
-                <Skeleton className="h-96 w-full rounded-lg" />
-            </CardContent>
-        </Card>
-    </div>
-</div>
+  </CardHeader>
+  <CardContent className="p-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+          {[...Array(3)].map((_, i) => (
+              <Card key={i}><CardContent className="p-6 space-y-4">
+                  <div className="flex items-center space-x-4 mb-4">
+                      <Skeleton className="h-8 w-8 rounded-full" />
+                      <Skeleton className="h-5 w-1/3" />
+                  </div>
+                  <Skeleton className="h-6 w-1/2 mb-4" />
+                  <Skeleton className="h-4 w-3/4 mb-2" />
+                  <Skeleton className="h-[120px] w-full" />
+              </CardContent></Card>
+          ))}
+      </div>
+  </CardContent>
+  </Card>
 )
 
 export default function Dashboard() {
@@ -146,6 +132,7 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<string>(initialCrops[0].id);
   const [period, setPeriod] = useState<Period>('30d');
+  const [fieldImage, setFieldImage] = useState<string | null>(null);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -184,8 +171,7 @@ export default function Dashboard() {
           vegetationIndex: Math.max(0.1, Math.min(0.95, newVegetationIndex)),
         };
 
-        const [alertResult, imageResult] = await Promise.all([
-          generateAnomalyAlerts({
+        const alertResult = await generateAnomalyAlerts({
             cropType: updatedCropData.cropType,
             fieldName: updatedCropData.fieldName,
             soilTemperature: updatedCropData.soilTemperature,
@@ -195,9 +181,7 @@ export default function Dashboard() {
             plantDevelopmentStage: updatedCropData.plantDevelopmentStage,
             vegetationIndex: updatedCropData.vegetationIndex,
             airHumidity: updatedCropData.airHumidity,
-          }),
-          generateFieldImage(`${updatedCropData.cropType}, ${updatedCropData.plantDevelopmentStage}, ${updatedCropData.alertMessage}`)
-        ]);
+        });
 
         const newHistoryEntry: HistoryData = {
             time: new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }),
@@ -214,7 +198,6 @@ export default function Dashboard() {
           alertMessage: alertResult.alertMessage,
           alertSeverity: alertResult.alertSeverity,
           history: [...crop.history.slice(1), newHistoryEntry],
-          imageUrl: imageResult.imageUrl,
         };
       });
 
@@ -226,6 +209,35 @@ export default function Dashboard() {
 
     return () => clearInterval(interval);
   }, [crops, loading]);
+  
+  useEffect(() => {
+    if (loading) return;
+    const activeCrop = crops.find(c => c.id === activeTab);
+    if (!activeCrop) return;
+
+    const imageGenerationInterval = setInterval(() => {
+        generateFieldImage(`${activeCrop.cropType}, ${activeCrop.plantDevelopmentStage}, ${activeCrop.alertMessage}, ${activeCrop.alertSeverity} severity`)
+          .then(result => {
+             if (result.imageUrl) {
+                setFieldImage(result.imageUrl);
+             }
+          })
+          .catch(error => console.error("Failed to generate field image:", error));
+    }, 6000);
+
+    // Initial image generation
+    generateFieldImage(`${activeCrop.cropType}, ${activeCrop.plantDevelopmentStage}, ${activeCrop.alertMessage}, ${activeCrop.alertSeverity} severity`)
+      .then(result => {
+          if (result.imageUrl) {
+            setFieldImage(result.imageUrl);
+          }
+      })
+      .catch(error => console.error("Failed to generate field image:", error));
+
+    return () => clearInterval(imageGenerationInterval);
+
+  }, [activeTab, crops, loading]);
+
 
   if (loading) {
     return <LoadingSkeleton />;
@@ -235,7 +247,7 @@ export default function Dashboard() {
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
-        <div className="lg:col-span-2">
+        <div className="lg:col-span-3">
             <Card className="mb-8">
               <CardHeader className="flex flex-row items-center justify-between">
                   <CardTitle>Visão Geral das Culturas</CardTitle>
@@ -248,17 +260,43 @@ export default function Dashboard() {
                         <TabsTrigger key={crop.id} value={crop.id} className="py-2.5 text-base font-semibold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg">{crop.cropType}</TabsTrigger>
                       ))}
                     </TabsList>
-                    {crops.map((crop) => (
-                      <TabsContent key={crop.id} value={crop.id} className="m-0">
-                        <CropCard crop={crop} />
-                      </TabsContent>
-                    ))}
+                    
+                    <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
+                        <div className="lg:col-span-3">
+                            {crops.map((crop) => (
+                              <TabsContent key={crop.id} value={crop.id} className="m-0">
+                                <CropCard crop={crop} />
+                              </TabsContent>
+                            ))}
+                        </div>
+                        <div className="lg:col-span-2">
+                            <Card>
+                                <CardHeader>
+                                    <CardTitle>Visualização do Talhão (IA)</CardTitle>
+                                </CardHeader>
+                                <CardContent>
+                                    <div className="relative aspect-square w-full bg-muted/50 rounded-lg overflow-hidden border">
+                                        {fieldImage ? (
+                                             <Image 
+                                                src={fieldImage}
+                                                alt={`Imagem gerada por IA de ${activeCrop?.fieldName}`}
+                                                fill
+                                                className="object-cover transition-all duration-500"
+                                                key={fieldImage}
+                                            />
+                                        ) : (
+                                            <div className="w-full h-full flex items-center justify-center">
+                                                <Skeleton className="w-full h-full" />
+                                            </div>
+                                        )}
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        </div>
+                    </div>
                   </Tabs>
               </CardContent>
             </Card>
-        </div>
-        <div className="lg:col-span-1">
-            <FieldMap crops={crops} activeCrop={activeCrop} onMarkerClick={setActiveTab} />
         </div>
     </div>
   );
