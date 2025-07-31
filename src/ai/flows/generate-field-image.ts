@@ -38,7 +38,7 @@ const generateFieldImageFlow = ai.defineFlow(
   async (prompt) => {
     const { media } = await ai.generate({
       model: 'googleai/gemini-2.0-flash-preview-image-generation',
-      prompt: `Gere uma imagem de satélite de um campo agrícola. Condições: ${prompt}. Estilo: realista, vista de cima.`,
+      prompt: `Fotografia em close-up de folhas de ${prompt}. Estilo: realista, foco nos detalhes da folha.`,
       config: {
         responseModalities: ['TEXT', 'IMAGE'],
       },
