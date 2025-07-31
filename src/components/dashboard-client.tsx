@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
@@ -29,80 +30,87 @@ function useInterval(callback: () => void, delay: number | null) {
 
 export function DashboardClient({ initialCrop }: { initialCrop: Crop }) {
   const [crop, setCrop] = useState<Crop>(initialCrop);
-  const [fieldImage, setFieldImage] = useState<string | null>(initialCrop.imageUrl);
+  const [fieldImage, setFieldImage] = useState<string | null>(null);
+  const [isImageLoading, setIsImageLoading] = useState<boolean>(true);
   const updateCounter = useRef(0);
 
   const updateCropData = useCallback(async () => {
+    // 1. Simulate new sensor data based on the current state
+    const newAirTemp = crop.airTemperature + (Math.random() - 0.5) * 0.3;
+    const newAirHumidity = crop.airHumidity + (Math.random() - 0.5) * 0.5;
+    const newWindSpeed = crop.windSpeed + (Math.random() - 0.5) * 0.5;
+    const newCo2Concentration = crop.co2Concentration + (Math.random() - 0.5) * 2;
+
+    let windDirectionIndex = WIND_DIRECTIONS.indexOf(crop.windDirection);
+    if (Math.random() < 0.1) {
+        windDirectionIndex = (windDirectionIndex + Math.floor(Math.random() * 3) - 1 + WIND_DIRECTIONS.length) % WIND_DIRECTIONS.length;
+    }
+
+    const simulatedData = {
+      airTemperature: Math.max(10, Math.min(45, newAirTemp)),
+      airHumidity: Math.max(30, Math.min(95, newAirHumidity)),
+      windSpeed: Math.max(0, Math.min(40, newWindSpeed)),
+      windDirection: WIND_DIRECTIONS[windDirectionIndex],
+      co2Concentration: Math.max(380, Math.min(450, newCo2Concentration)),
+    };
+    
     try {
-      const currentCrop = crop;
+        // 2. Get AI anomaly alert
+        const alertResult = await generateAnomalyAlerts({
+            cropType: crop.cropType,
+            fieldName: crop.fieldName,
+            ...simulatedData,
+        });
 
-      // 1. Simulate new sensor data
-      const newAirTemp = currentCrop.airTemperature + (Math.random() - 0.5) * 0.3;
-      const newAirHumidity = currentCrop.airHumidity + (Math.random() - 0.5) * 0.5;
-      const newWindSpeed = currentCrop.windSpeed + (Math.random() - 0.5) * 0.5;
-      const newCo2Concentration = currentCrop.co2Concentration + (Math.random() - 0.5) * 2;
+        // 3. Create new history entry
+        const newHistoryEntry: HistoryData = {
+            time: new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }),
+            airTemperature: parseFloat(simulatedData.airTemperature.toFixed(1)),
+            airHumidity: parseFloat(simulatedData.airHumidity.toFixed(1)),
+            windSpeed: parseFloat(simulatedData.windSpeed.toFixed(1)),
+            windDirection: simulatedData.windDirection,
+            co2Concentration: Math.round(simulatedData.co2Concentration),
+        };
 
-      let windDirectionIndex = WIND_DIRECTIONS.indexOf(currentCrop.windDirection);
-      if (Math.random() < 0.1) {
-          windDirectionIndex = (windDirectionIndex + Math.floor(Math.random() * 3) - 1 + WIND_DIRECTIONS.length) % WIND_DIRECTIONS.length;
-      }
-
-      const simulatedData = {
-        airTemperature: Math.max(10, Math.min(45, newAirTemp)),
-        airHumidity: Math.max(30, Math.min(95, newAirHumidity)),
-        windSpeed: Math.max(0, Math.min(40, newWindSpeed)),
-        windDirection: WIND_DIRECTIONS[windDirectionIndex],
-        co2Concentration: Math.max(380, Math.min(450, newCo2Concentration)),
-      };
-
-      // 2. Get AI anomaly alert
-      const alertResult = await generateAnomalyAlerts({
-        cropType: currentCrop.cropType,
-        fieldName: currentCrop.fieldName,
-        ...simulatedData,
-      });
-
-      // 3. Create new history entry
-      const newHistoryEntry: HistoryData = {
-        time: new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }),
-        airTemperature: parseFloat(simulatedData.airTemperature.toFixed(1)),
-        airHumidity: parseFloat(simulatedData.airHumidity.toFixed(1)),
-        windSpeed: parseFloat(simulatedData.windSpeed.toFixed(1)),
-        windDirection: simulatedData.windDirection,
-        co2Concentration: Math.round(simulatedData.co2Concentration),
-      };
-
-      // 4. Update crop state once with all new data
-      setCrop({
-        ...currentCrop,
-        ...simulatedData,
-        history: [...currentCrop.history.slice(1), newHistoryEntry],
-        alertMessage: alertResult.alertMessage,
-        alertSeverity: alertResult.alertSeverity,
-      });
-
-      // 5. Update image periodically
-      updateCounter.current += 1;
-      if (updateCounter.current % 12 === 0) {
-        const imageResult = await generateFieldImage(`${currentCrop.cropType}, ${alertResult.alertMessage}, ${alertResult.alertSeverity} severity`);
-        if (imageResult.imageUrl) {
-          setFieldImage(imageResult.imageUrl);
+        // 4. Update crop state once with all new data
+        setCrop({
+            ...crop,
+            ...simulatedData,
+            history: [...crop.history.slice(1), newHistoryEntry],
+            alertMessage: alertResult.alertMessage,
+            alertSeverity: alertResult.alertSeverity,
+        });
+        
+        // 5. Update image periodically
+        updateCounter.current += 1;
+        if (updateCounter.current % 12 === 0) {
+            setIsImageLoading(true);
+            generateFieldImage(`${crop.cropType}, ${alertResult.alertMessage}, ${alertResult.alertSeverity} severity`).then(imageResult => {
+                if (imageResult.imageUrl) {
+                    setFieldImage(imageResult.imageUrl);
+                }
+            }).finally(() => {
+                setIsImageLoading(false);
+            });
         }
-      }
     } catch (error) {
-      console.error("Error updating crop data:", error);
+        console.error("Error updating crop data:", error);
     }
   }, [crop]);
 
   useEffect(() => {
     // Generate the initial image when the component mounts
+    setIsImageLoading(true);
     generateFieldImage(`${initialCrop.cropType}, ${initialCrop.alertMessage}, ${initialCrop.alertSeverity} severity`)
       .then(result => {
         if (result.imageUrl) {
           setFieldImage(result.imageUrl);
         }
       })
-      .catch(error => console.error("Failed to generate initial field image:", error));
+      .catch(error => console.error("Failed to generate initial field image:", error))
+      .finally(() => {
+        setIsImageLoading(false);
+      });
   }, [initialCrop]);
 
   useInterval(updateCropData, 5000);
@@ -119,7 +127,11 @@ export function DashboardClient({ initialCrop }: { initialCrop: Crop }) {
           </CardHeader>
           <CardContent>
             <div className="relative aspect-square w-full bg-muted/50 rounded-lg overflow-hidden border">
-              {fieldImage ? (
+              {isImageLoading || !fieldImage ? (
+                 <div className="w-full h-full flex items-center justify-center">
+                    <Skeleton className="w-full h-full" />
+                </div>
+              ) : (
                 <Image 
                   src={fieldImage}
                   alt={`Imagem gerada por IA de ${crop.fieldName}`}
@@ -127,10 +139,6 @@ export function DashboardClient({ initialCrop }: { initialCrop: Crop }) {
                   className="object-cover transition-all duration-500"
                   key={fieldImage}
                 />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center">
-                  <Skeleton className="w-full h-full" />
-                </div>
               )}
             </div>
           </CardContent>
