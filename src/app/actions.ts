@@ -26,6 +26,12 @@ export async function generateAnomalyAlerts(
 export async function generateFieldImage(
   prompt: GenerateFieldImageInput
 ): Promise<GenerateFieldImageOutput> {
+  try {
     const result = await genkitGenerateFieldImage(prompt);
     return result;
+  } catch (error) {
+    console.error('Error generating field image:', error);
+    // Return a placeholder or a specific error indicator
+    return { imageUrl: "https://placehold.co/512x512/ff0000/FFFFFF?text=Error" };
+  }
 }
