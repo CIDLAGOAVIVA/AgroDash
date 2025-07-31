@@ -110,6 +110,42 @@ export function DashboardClient({ initialCrop }: { initialCrop: Crop }) {
   return (
     <div className="flex flex-col gap-6">
       <CropCard crop={crop} />
+
+      <Card>
+          <CardHeader className="flex flex-row justify-between items-start">
+            <div>
+                <CardTitle>Histórico de Dados</CardTitle>
+                <CardDescription>Variação das métricas ao longo do tempo.</CardDescription>
+            </div>
+            <PeriodSelector period={period} setPeriod={setPeriod} />
+        </CardHeader>
+        <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-8">
+            <div>
+                <h3 className="text-base font-semibold mb-2 text-foreground">Temperatura do Ar (°C)</h3>
+                <HistoryChart 
+                    data={historyData} 
+                    dataKey="airTemperature"
+                    stroke="hsl(var(--chart-1))"
+                />
+            </div>
+            <div>
+                <h3 className="text-base font-semibold mb-2 text-foreground">Umidade do Ar (%)</h3>
+                <HistoryChart 
+                    data={historyData} 
+                    dataKey="airHumidity"
+                    stroke="hsl(var(--chart-2))"
+                />
+            </div>
+            <div>
+                <h3 className="text-base font-semibold mb-2 text-foreground">Concentração de CO2 (ppm)</h3>
+                <HistoryChart 
+                    data={historyData} 
+                    dataKey="co2Concentration"
+                    stroke="hsl(var(--foreground))"
+                />
+            </div>
+        </CardContent>
+      </Card>
       
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
         <Card className="xl:col-span-1">
@@ -181,41 +217,6 @@ export function DashboardClient({ initialCrop }: { initialCrop: Crop }) {
         </Card>
       </div>
 
-      <Card>
-          <CardHeader className="flex flex-row justify-between items-start">
-            <div>
-                <CardTitle>Histórico de Dados</CardTitle>
-                <CardDescription>Variação das métricas ao longo do tempo.</CardDescription>
-            </div>
-            <PeriodSelector period={period} setPeriod={setPeriod} />
-        </CardHeader>
-        <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-8">
-            <div>
-                <h3 className="text-base font-semibold mb-2 text-foreground">Temperatura do Ar (°C)</h3>
-                <HistoryChart 
-                    data={historyData} 
-                    dataKey="airTemperature"
-                    stroke="hsl(var(--chart-1))"
-                />
-            </div>
-            <div>
-                <h3 className="text-base font-semibold mb-2 text-foreground">Umidade do Ar (%)</h3>
-                <HistoryChart 
-                    data={historyData} 
-                    dataKey="airHumidity"
-                    stroke="hsl(var(--chart-2))"
-                />
-            </div>
-            <div>
-                <h3 className="text-base font-semibold mb-2 text-foreground">Concentração de CO2 (ppm)</h3>
-                <HistoryChart 
-                    data={historyData} 
-                    dataKey="co2Concentration"
-                    stroke="hsl(var(--foreground))"
-                />
-            </div>
-        </CardContent>
-      </Card>
     </div>
   );
 }
