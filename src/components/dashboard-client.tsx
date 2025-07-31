@@ -108,11 +108,9 @@ export function DashboardClient({ initialCrop }: { initialCrop: Crop }) {
             <CardTitle>Visualização do Talhão (IA)</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="relative aspect-square w-full bg-muted/50 rounded-lg overflow-hidden border">
+            <div className="relative aspect-square w-full bg-muted/50 rounded-lg overflow-hidden border flex items-center justify-center">
               {isImageLoading ? (
-                 <div className="w-full h-full flex items-center justify-center">
-                    <Skeleton className="w-full h-full" />
-                </div>
+                 <div className="spinner"></div>
               ) : fieldImage && (
                 <Image 
                   src={fieldImage}

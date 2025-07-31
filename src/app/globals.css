@@ -62,3 +62,9 @@
     @apply bg-background text-foreground;
   }
 }
+
+@layer components {
+  .spinner {
+    @apply w-12 h-12 border-4 border-primary border-solid border-t-transparent rounded-full animate-spin;
+  }
+}
