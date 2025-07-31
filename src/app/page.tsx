@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Leaf, Wheat } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { generateFieldImage } from "./actions";
+import DashboardLayout from "./dashboard/layout";
 
 const Sprout = () => (
     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-sprout"><path d="M7 20h10"/><path d="M12 20V4"/><path d="M12 4c0-2.21-1.79-4-4-4S4 1.79 4 4c0 .62.14 1.2.38 1.72"/><path d="M12 4c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .62-.14 1.2-.38 1.72"/></svg>
@@ -26,7 +27,7 @@ const cropPositions: { [key: string]: string } = {
 export default async function Home() {
   const farmImage = await generateFieldImage("mapa aéreo de uma fazenda com plantações de soja, milho e trigo, campos irrigados por pivô central, estilo de imagem de satélite");
 
-  return (
+  const mainContent = (
     <main className="min-h-screen w-full bg-background text-foreground flex flex-col items-center justify-center p-4">
       <div className="text-center mb-8">
         <h1 className="text-5xl font-bold tracking-tight text-primary sm:text-6xl">
@@ -70,5 +71,11 @@ export default async function Home() {
         </CardContent>
       </Card>
     </main>
+  );
+
+  return (
+    <DashboardLayout crops={initialCrops}>
+      {mainContent}
+    </DashboardLayout>
   );
 }

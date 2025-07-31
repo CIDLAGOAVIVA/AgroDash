@@ -1,8 +1,9 @@
-import { Sidebar, SidebarContent, SidebarHeader, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
+import { Sidebar, SidebarContent, SidebarHeader, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarTrigger } from "@/components/ui/sidebar";
 import { initialCrops } from "@/lib/data";
-import { Home, Leaf, PanelLeft, Wheat } from "lucide-react";
+import { Home, Leaf, Wheat } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import type { Crop } from "@/types";
 
 const Sprout = () => (
     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-sprout"><path d="M7 20h10"/><path d="M12 20V4"/><path d="M12 4c0-2.21-1.79-4-4-4S4 1.79 4 4c0 .62.14 1.2.38 1.72"/><path d="M12 4c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .62-.14 1.2-.38 1.72"/></svg>
@@ -16,8 +17,10 @@ const cropIcons: { [key: string]: React.ComponentType<{ className?: string }> } 
 
 export default function DashboardLayout({
   children,
+  crops = initialCrops,
 }: {
   children: React.ReactNode;
+  crops?: Crop[];
 }) {
   return (
     <div className="flex min-h-screen">
@@ -40,7 +43,7 @@ export default function DashboardLayout({
                 </SidebarMenuButton>
             </SidebarMenuItem>
             
-            {initialCrops.map((crop) => {
+            {crops.map((crop) => {
               const Icon = cropIcons[crop.cropType] || Leaf;
               return (
                 <SidebarMenuItem key={crop.id}>
