@@ -5,13 +5,15 @@ import { useState, useEffect, useRef } from "react";
 import { CropCard } from "./crop-card";
 import { generateAnomalyAlerts, generateFieldImage } from "@/app/actions";
 import type { Crop, HistoryData } from "@/types";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import Image from "next/image";
 import { WIND_DIRECTIONS } from "@/lib/data";
-import { SensorCard } from "./sensor-card";
-import { chartConfig } from "./history-chart";
-import { Cloud, Droplets, Thermometer, Wind } from "lucide-react";
+import { HistoryChart, chartConfig } from "./history-chart";
+import { Cloud, Droplets, Leaf, Thermometer, Wind } from "lucide-react";
 import { WeatherForecast } from "./weather-forecast";
+import { DataMetric } from "./data-metric";
+import { PeriodSelector } from "./period-selector";
+import type { Period } from "@/types";
 
 function useInterval(callback: () => void, delay: number | null) {
   const savedCallback = useRef<() => void>();
@@ -35,6 +37,7 @@ export function DashboardClient({ initialCrop }: { initialCrop: Crop }) {
   const [crop, setCrop] = useState<Crop>(initialCrop);
   const [fieldImage, setFieldImage] = useState<string | null>(null);
   const [isImageLoading, setIsImageLoading] = useState(true);
+  const [period, setPeriod] = useState<Period>('30d');
 
   const updateCropData = async () => {
     const newAirTemp = crop.airTemperature + (Math.random() - 0.5) * 0.3;
@@ -100,48 +103,72 @@ export function DashboardClient({ initialCrop }: { initialCrop: Crop }) {
 
   useInterval(updateCropData, 5000);
 
+  const historyData = crop.history.slice(
+    period === '7d' ? -7 : period === '24h' ? -1 : -30
+  );
+
   return (
     <div className="flex flex-col gap-6">
       <CropCard crop={crop} />
       
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
-          <SensorCard
-              title="Clima e Ambiente"
-              icon={Wind}
-              metric={{ label: "Temp. do Ar", value: crop.airTemperature.toFixed(1), unit: "°C" }}
-              metric2={{ label: "Umidade do Ar", value: crop.airHumidity.toFixed(1), unit: "%" }}
-              data={crop.history}
-              dataKey="airTemperature"
-              chartConfig={chartConfig}
-          />
-          <SensorCard
-              title="Atmosfera"
-              icon={Cloud}
-              metric={{ label: "Concentração CO2", value: crop.co2Concentration.toFixed(0), unit: "ppm" }}
-              metric2={{ label: "Vento", value: `${crop.windSpeed.toFixed(1)} km/h`, unit: crop.windDirection }}
-              data={crop.history}
-              dataKey="co2Concentration"
-              chartConfig={chartConfig}
-          />
-          <SensorCard
-              title="Umidade do Solo"
-              icon={Droplets}
-              metric={{ label: "Umidade", value: "62.5", unit: "%" }}
-              metric2={{ label: "Tensão da Água", value: "15", unit: "kPa" }}
-              data={crop.history}
-              dataKey="airHumidity"
-              chartConfig={chartConfig}
-          />
-           <SensorCard
-              title="Nutrientes do Solo"
-              icon={Thermometer}
-              metric={{ label: "Nitrogênio (N)", value: "120", unit: "ppm" }}
-              metric2={{ label: "pH do Solo", value: "6.8", unit: "" }}
-              data={crop.history}
-              dataKey="airTemperature"
-              chartConfig={chartConfig}
-          />
+        <div className="lg:col-span-2 flex flex-col gap-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Métricas Atuais</CardTitle>
+              <CardDescription>Dados dos sensores em tempo real.</CardDescription>
+            </CardHeader>
+            <CardContent className="grid grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-8">
+              <DataMetric
+                icon={Thermometer}
+                label="Temp. do Ar"
+                value={crop.airTemperature.toFixed(1)}
+                unit="°C"
+              />
+              <DataMetric
+                icon={Droplets}
+                label="Umidade do Ar"
+                value={crop.airHumidity.toFixed(1)}
+                unit="%"
+              />
+              <DataMetric
+                icon={Wind}
+                label="Vento"
+                value={`${crop.windSpeed.toFixed(1)} km/h`}
+                unit={crop.windDirection}
+              />
+              <DataMetric
+                icon={Cloud}
+                label="Concentração CO2"
+                value={crop.co2Concentration.toFixed(0)}
+                unit="ppm"
+              />
+               <DataMetric
+                icon={Leaf}
+                label="Umidade do Solo"
+                value="62.5"
+                unit="%"
+              />
+               <DataMetric
+                icon={Thermometer}
+                label="Nitrogênio (N)"
+                value="120"
+                unit="ppm"
+              />
+            </CardContent>
+          </Card>
+          <Card>
+             <CardHeader className="flex flex-row justify-between items-center">
+                <div>
+                    <CardTitle>Histórico de Dados</CardTitle>
+                    <CardDescription>Variação das métricas ao longo do tempo.</CardDescription>
+                </div>
+                <PeriodSelector period={period} setPeriod={setPeriod} />
+            </CardHeader>
+            <CardContent>
+              <HistoryChart data={historyData} />
+            </CardContent>
+          </Card>
         </div>
 
         <div className="lg:col-span-1 flex flex-col gap-6">
