@@ -85,10 +85,12 @@ export function CropCard({ crop }: CropCardProps) {
         </div>
       </CardContent>
         <CardFooter className={cn("p-6 border-t", config.className)}>
-            <Alert variant="default" className="w-full border-0 p-0 bg-transparent">
-              <AlertIcon className={cn("h-6 w-6", config.iconColor)} />
-              <AlertTitle className="font-bold text-lg">{config.title}</AlertTitle>
-              <AlertDescription className="text-base">{crop.alertMessage}</AlertDescription>
+             <Alert variant="default" className="w-full border-0 p-0 bg-transparent flex items-start">
+              <AlertIcon className={cn("h-6 w-6 mt-1", config.iconColor)} />
+              <div className="ml-4">
+                <AlertTitle className="font-bold text-lg">{config.title}</AlertTitle>
+                <AlertDescription className="text-base">{crop.alertMessage}</AlertDescription>
+              </div>
             </Alert>
         </CardFooter>
     </Card>
