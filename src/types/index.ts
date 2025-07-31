@@ -21,4 +21,5 @@ export interface Crop {
   vegetationIndex: number;
   history: HistoryData[];
   alertMessage: string;
+  alertSeverity: 'Normal' | 'Atenção' | 'Crítico';
 }

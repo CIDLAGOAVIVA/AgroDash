@@ -26,7 +26,16 @@ const AnomalyAlertsInputSchema = z.object({
 export type AnomalyAlertsInput = z.infer<typeof AnomalyAlertsInputSchema>;
 
 const AnomalyAlertsOutputSchema = z.object({
-  alertMessage: z.string().describe('A mensagem de alerta de anomalia, se houver.'),
+  alertMessage: z
+    .string()
+    .describe(
+      'A mensagem de alerta de anomalia, se houver. Se tudo estiver normal, retorne uma mensagem tranquilizadora.'
+    ),
+  alertSeverity: z
+    .enum(['Normal', 'Atenção', 'Crítico'])
+    .describe(
+      'A severidade do alerta. "Normal" se as condições estiverem ideais, "Atenção" para desvios leves e "Crítico" para problemas que exigem ação imediata.'
+    ),
 });
 export type AnomalyAlertsOutput = z.infer<typeof AnomalyAlertsOutputSchema>;
 
@@ -40,7 +49,7 @@ const prompt = ai.definePrompt({
   name: 'anomalyAlertsPrompt',
   input: {schema: AnomalyAlertsInputSchema},
   output: {schema: AnomalyAlertsOutputSchema},
-  prompt: `Você é um consultor agrícola especialista. Você analisa dados de culturas em tempo real para identificar possíveis problemas e gerar alertas.
+  prompt: `Você é um consultor agrícola especialista. Você analisa dados de culturas em tempo real para identificar potenciais problemas e gerar alertas com níveis de severidade.
 
   Considere os seguintes dados para {{cropType}} em {{fieldName}}:
 
@@ -51,7 +60,13 @@ const prompt = ai.definePrompt({
   - Estágio de Desenvolvimento da Planta: {{plantDevelopmentStage}}
   - Índice de Vegetação: {{vegetationIndex}}
 
-  Com base nestes dados, determine se existem anomalias ou problemas potenciais que requerem atenção. Considere limiares razoáveis para cada ponto de dados com base no tipo de cultura и no estágio de desenvolvimento. Se houver algum problema, gere uma mensagem de alerta concisa descrevendo o problema. Se tudo estiver normal, retorne uma string vazia.
+  Com base nestes dados, determine se existem anomalias ou problemas potenciais que requerem atenção.
+  1.  **Avalie os dados:** Considere limiares razoáveis para cada ponto de dados com base no tipo de cultura e no estágio de desenvolvimento.
+  2.  **Determine a Severidade:**
+      - Se tudo estiver dentro dos parâmetros ideais, defina 'alertSeverity' como "Normal" e escreva uma mensagem curta e tranquilizadora em 'alertMessage'.
+      - Se houver um leve desvio que deve ser monitorado, defina 'alertSeverity' como "Atenção" e forneça uma recomendação clara.
+      - Se houver um problema sério que exige ação imediata, defina 'alertSeverity' como "Crítico" e gere uma mensagem de alerta concisa e direta.
+  3.  **Gere a Resposta:** Preencha 'alertMessage' e 'alertSeverity' de acordo com sua análise.
   `,
 });
 

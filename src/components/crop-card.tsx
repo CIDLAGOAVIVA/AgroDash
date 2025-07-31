@@ -1,11 +1,12 @@
 "use client"
 
-import { Leaf, Sun, Thermometer, Droplets, GitCommitHorizontal, Wind, Wheat, Bot } from "lucide-react";
+import { Leaf, Sun, Thermometer, Droplets, GitCommitHorizontal, Wind, Wheat, Bot, ShieldAlert, ShieldCheck, ShieldX } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { SensorCard } from "./sensor-card";
 import type { Crop } from "@/types";
 import { chartConfig } from "./history-chart";
+import { cn } from "@/lib/utils";
 
 const Sprout = () => (
     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-sprout"><path d="M7 20h10"/><path d="M12 20V4"/><path d="M12 4c0-2.21-1.79-4-4-4S4 1.79 4 4c0 .62.14 1.2.38 1.72"/><path d="M12 4c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .62-.14 1.2-.38 1.72"/></svg>
@@ -17,12 +18,36 @@ const cropIcons: { [key: string]: React.ComponentType<{ className?: string }> } 
   "Trigo": Wheat,
 };
 
+const severityConfig = {
+    "Normal": {
+        icon: ShieldCheck,
+        className: "bg-primary/10 border-primary/20 text-primary",
+        title: "Status: Normal",
+        iconColor: "text-primary"
+    },
+    "Atenção": {
+        icon: ShieldAlert,
+        className: "bg-yellow-500/10 border-yellow-500/20 text-yellow-600 dark:text-yellow-500",
+        title: "Status: Atenção",
+        iconColor: "text-yellow-500"
+    },
+    "Crítico": {
+        icon: ShieldX,
+        className: "bg-destructive/10 border-destructive/20 text-destructive",
+        title: "Status: Crítico",
+        iconColor: "text-destructive"
+    }
+}
+
 type CropCardProps = {
   crop: Crop;
 };
 
 export function CropCard({ crop }: CropCardProps) {
   const CropIcon = cropIcons[crop.cropType] || Leaf;
+  const currentSeverity = crop.alertSeverity || "Normal";
+  const config = severityConfig[currentSeverity];
+  const AlertIcon = config.icon;
 
   return (
     <Card className="w-full overflow-hidden transition-all duration-300 shadow-lg border-border bg-card">
@@ -43,42 +68,41 @@ export function CropCard({ crop }: CropCardProps) {
       </CardHeader>
       <CardContent className="p-6 pt-0">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-            <SensorCard 
-                title="Umidade do Solo" 
+            <SensorCard
+                title="Umidade do Solo"
                 icon={Droplets}
                 metric={{ label: "Umidade Atual", value: crop.soilMoisture.toFixed(1), unit: "%" }}
                 data={crop.history}
                 dataKey="soilMoisture"
                 chartConfig={chartConfig}
             />
-             <SensorCard 
-                title="Temperatura do Solo" 
-                icon={Thermometer}
-                metric={{ label: "Temperatura Atual", value: crop.soilTemperature.toFixed(1), unit: "°C" }}
-                data={crop.history}
-                dataKey="soilTemperature"
-                chartConfig={chartConfig}
-            />
-            <SensorCard 
-                title="Clima" 
+             <SensorCard
+                title="Clima"
                 icon={Wind}
                 metric={{ label: "Temp. do Ar", value: crop.airTemperature.toFixed(1), unit: "°C" }}
+                metric2={{ label: "Umidade do Ar", value: crop.airHumidity.toFixed(1), unit: "%" }}
                 data={crop.history}
                 dataKey="airTemperature"
                 chartConfig={chartConfig}
             />
+            <SensorCard
+                title="Luz e Crescimento"
+                icon={Sun}
+                metric={{ label: "Radiação Solar", value: crop.solarRadiation.toFixed(0), unit: "W/m²" }}
+                metric2={{ label: "Índice Vegetativo", value: crop.vegetationIndex.toFixed(2), unit: "NDVI" }}
+                data={crop.history}
+                dataKey="vegetationIndex"
+                chartConfig={chartConfig}
+            />
         </div>
       </CardContent>
-
-      {crop.alertMessage && (
-        <CardFooter className="p-6 bg-destructive/10 border-t border-destructive/20">
-            <Alert variant="destructive" className="w-full border-0 p-0">
-              <Bot className="h-6 w-6 text-destructive" />
-              <AlertTitle className="font-bold text-lg">Recomendação da IA</AlertTitle>
-              <AlertDescription className="text-base text-destructive/90">{crop.alertMessage}</AlertDescription>
+        <CardFooter className={cn("p-6 border-t", config.className)}>
+            <Alert variant="default" className="w-full border-0 p-0 bg-transparent">
+              <AlertIcon className={cn("h-6 w-6", config.iconColor)} />
+              <AlertTitle className="font-bold text-lg">{config.title}</AlertTitle>
+              <AlertDescription className="text-base">{crop.alertMessage}</AlertDescription>
             </Alert>
         </CardFooter>
-      )}
     </Card>
   );
 }

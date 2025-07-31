@@ -49,7 +49,8 @@ const initialCrops: Crop[] = [
     plantDevelopmentStage: "Vegetativo",
     vegetationIndex: 0.78,
     history: generateInitialHistory({ soilTemp: 22.5, airTemp: 25.1, soilMoisture: 65.3, airHumidity: 75.2, solarRadiation: 850, vegetationIndex: 0.78 }),
-    alertMessage: "",
+    alertMessage: "Condições ideais para o desenvolvimento vegetativo. Nenhuma ação necessária.",
+    alertSeverity: "Normal",
   },
   {
     id: "corn-1",
@@ -63,7 +64,8 @@ const initialCrops: Crop[] = [
     plantDevelopmentStage: "Floração",
     vegetationIndex: 0.85,
     history: generateInitialHistory({ soilTemp: 24.1, airTemp: 26.8, soilMoisture: 58.9, airHumidity: 72.8, solarRadiation: 920, vegetationIndex: 0.85 }),
-    alertMessage: "",
+    alertMessage: "A umidade do solo está ligeiramente abaixo do ideal para a floração. Monitore a irrigação.",
+    alertSeverity: "Atenção",
   },
   {
     id: "wheat-1",
@@ -77,7 +79,8 @@ const initialCrops: Crop[] = [
     plantDevelopmentStage: "Muda",
     vegetationIndex: 0.65,
     history: generateInitialHistory({ soilTemp: 19.8, airTemp: 22.4, soilMoisture: 72.1, airHumidity: 80.5, solarRadiation: 780, vegetationIndex: 0.65 }),
-    alertMessage: "",
+    alertMessage: "Alta umidade do ar e temperatura moderada podem favorecer o surgimento de doenças fúngicas.",
+    alertSeverity: "Crítico",
   },
 ];
 
@@ -142,7 +145,7 @@ export default function Dashboard() {
         const newVegetationIndex = crop.vegetationIndex + (Math.random() - 0.48) * 0.005;
 
         let stageIndex = DEVELOPMENT_STAGES.indexOf(crop.plantDevelopmentStage);
-        if (Math.random() < 0.01) { 
+        if (Math.random() < 0.01) {
           stageIndex = (stageIndex + 1) % DEVELOPMENT_STAGES.length;
         }
 
@@ -177,10 +180,11 @@ export default function Dashboard() {
             solarRadiation: Math.round(updatedCropData.solarRadiation),
             vegetationIndex: parseFloat(updatedCropData.vegetationIndex.toFixed(2)),
         };
-        
+
         return {
           ...updatedCropData,
           alertMessage: alertResult.alertMessage,
+          alertSeverity: alertResult.alertSeverity,
           history: [...crop.history.slice(1), newHistoryEntry],
         };
       });
