@@ -31,7 +31,7 @@ function useInterval(callback: () => void, delay: number | null) {
 export function DashboardClient({ initialCrop }: { initialCrop: Crop }) {
   const [crop, setCrop] = useState<Crop>(initialCrop);
   const [fieldImage, setFieldImage] = useState<string | null>(null);
-  const [isImageLoading, setIsImageLoading] = useState<boolean>(true);
+  const [isImageLoading, setIsImageLoading] = useState(true);
 
   const updateCropData = useCallback(async () => {
     const newAirTemp = crop.airTemperature + (Math.random() - 0.5) * 0.3;
@@ -79,7 +79,7 @@ export function DashboardClient({ initialCrop }: { initialCrop: Crop }) {
     } catch (error) {
         console.error("Error updating crop data:", error);
     }
-  }, [crop.cropType, crop.fieldName, crop.airTemperature, crop.airHumidity, crop.windSpeed, crop.windDirection, crop.co2Concentration, crop.history]);
+  }, [crop]);
 
   useEffect(() => {
     setIsImageLoading(true);
@@ -109,11 +109,11 @@ export function DashboardClient({ initialCrop }: { initialCrop: Crop }) {
           </CardHeader>
           <CardContent>
             <div className="relative aspect-square w-full bg-muted/50 rounded-lg overflow-hidden border">
-              {isImageLoading || !fieldImage ? (
+              {isImageLoading ? (
                  <div className="w-full h-full flex items-center justify-center">
                     <Skeleton className="w-full h-full" />
                 </div>
-              ) : (
+              ) : fieldImage && (
                 <Image 
                   src={fieldImage}
                   alt={`Imagem gerada por IA de ${crop.fieldName}`}
