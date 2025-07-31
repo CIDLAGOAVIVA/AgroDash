@@ -1,6 +1,6 @@
 import { Sidebar, SidebarContent, SidebarHeader, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
 import { initialCrops } from "@/lib/data";
-import { Home, Leaf, Wheat } from "lucide-react";
+import { Home, Leaf, PanelLeft, Wheat } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
@@ -58,7 +58,9 @@ export default function DashboardLayout({
       </Sidebar>
       <main className="flex-1">
         <div className="p-4 sm:p-6 lg:p-8">
-            <SidebarTrigger className="md:hidden mb-4"/>
+            <div className="flex items-center justify-between mb-4">
+              <SidebarTrigger className="md:hidden"/>
+            </div>
             {children}
         </div>
       </main>

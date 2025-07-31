@@ -16,7 +16,7 @@ export default function DashboardPage({ params }: { params: { cropId: string } }
   }
 
   return (
-    <div className="container mx-auto p-4 sm:p-6 lg:p-8">
+    <>
       <header className="mb-8">
         <h1 className="text-3xl font-semibold tracking-tight text-primary sm:text-4xl">
           {crop.fieldName}
@@ -26,6 +26,6 @@ export default function DashboardPage({ params }: { params: { cropId: string } }
         </p>
       </header>
       <DashboardClient initialCrop={crop} />
-    </div>
+    </>
   );
 }
