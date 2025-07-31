@@ -36,6 +36,7 @@ const initialCrops: Crop[] = [
     fieldName: "Campo Norte 7",
     soilTemperature: 22.5,
     airTemperature: 25.1,
+    airHumidity: 75.2,
     soilMoisture: 65.3,
     solarRadiation: 850,
     plantDevelopmentStage: "Vegetativo",
@@ -49,6 +50,7 @@ const initialCrops: Crop[] = [
     fieldName: "Lote Cume Leste",
     soilTemperature: 24.1,
     airTemperature: 26.8,
+    airHumidity: 72.8,
     soilMoisture: 58.9,
     solarRadiation: 920,
     plantDevelopmentStage: "Floração",
@@ -62,6 +64,7 @@ const initialCrops: Crop[] = [
     fieldName: "Fundo do Vale",
     soilTemperature: 19.8,
     airTemperature: 22.4,
+    airHumidity: 80.5,
     soilMoisture: 72.1,
     solarRadiation: 780,
     plantDevelopmentStage: "Muda",
@@ -133,6 +136,7 @@ export default function Dashboard() {
         // Simulate data changes
         const newSoilTemp = crop.soilTemperature + (Math.random() - 0.5) * 0.2;
         const newAirTemp = crop.airTemperature + (Math.random() - 0.5) * 0.3;
+        const newAirHumidity = crop.airHumidity + (Math.random() - 0.5) * 0.5;
         const newSoilMoisture = crop.soilMoisture + (Math.random() - 0.55) * 1;
         const newSolarRadiation = crop.solarRadiation + (Math.random() - 0.5) * 20;
         const newVegetationIndex = crop.vegetationIndex + (Math.random() - 0.48) * 0.005;
@@ -146,6 +150,7 @@ export default function Dashboard() {
           ...crop,
           soilTemperature: Math.max(10, Math.min(40, newSoilTemp)),
           airTemperature: Math.max(10, Math.min(45, newAirTemp)),
+          airHumidity: Math.max(30, Math.min(95, newAirHumidity)),
           soilMoisture: Math.max(20, Math.min(90, newSoilMoisture)),
           solarRadiation: Math.max(100, Math.min(1200, newSolarRadiation)),
           plantDevelopmentStage: DEVELOPMENT_STAGES[stageIndex],

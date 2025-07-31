@@ -11,6 +11,7 @@ export interface Crop {
   fieldName: string;
   soilTemperature: number;
   airTemperature: number;
+  airHumidity: number;
   soilMoisture: number;
   solarRadiation: number;
   plantDevelopmentStage: string;

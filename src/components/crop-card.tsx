@@ -1,6 +1,6 @@
 "use client"
 
-import { Leaf, Sun, Thermometer, Droplets, GitCommitHorizontal, AreaChart, Wheat, Bot } from "lucide-react";
+import { Leaf, Sun, Thermometer, Droplets, GitCommitHorizontal, AreaChart, Wheat, Bot, Wind } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
@@ -45,26 +45,27 @@ export function CropCard({ crop }: CropCardProps) {
       <CardContent className="p-6 pt-0">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
             <SensorCard 
-                title="Temperatura" 
-                icon={Thermometer}
+                title="Umidade do Solo" 
+                icon={Droplets}
                 metrics={[
-                    { label: "Ar", value: crop.airTemperature.toFixed(1), unit: "°C" },
-                    { label: "Solo", value: crop.soilTemperature.toFixed(1), unit: "°C" },
+                    { label: "Umidade", value: crop.soilMoisture.toFixed(1), unit: "%" },
+                    { label: "Temperatura", value: crop.soilTemperature.toFixed(1), unit: "°C" },
                 ]}
             />
             <SensorCard 
-                title="Solo e Ambiente" 
+                title="Clima" 
+                icon={Wind}
+                metrics={[
+                    { label: "Temperatura do Ar", value: crop.airTemperature.toFixed(1), unit: "°C" },
+                    { label: "Umidade do Ar", value: crop.airHumidity.toFixed(1), unit: "%" },
+                ]}
+            />
+            <SensorCard 
+                title="Luz e Crescimento" 
                 icon={Sun}
                 metrics={[
-                    { label: "Umidade do Solo", value: crop.soilMoisture.toFixed(1), unit: "%" },
                     { label: "Radiação Solar", value: Math.round(crop.solarRadiation), unit: "W/m²" },
-                ]}
-            />
-            <SensorCard 
-                title="Saúde da Planta" 
-                icon={AreaChart}
-                metrics={[
-                    { label: "Índice de Vegetação", value: crop.vegetationIndex.toFixed(2), unit: "NDVI" },
+                    { label: "Índice Vegetativo", value: crop.vegetationIndex.toFixed(2), unit: "NDVI" },
                 ]}
             />
         </div>
