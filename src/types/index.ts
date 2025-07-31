@@ -5,6 +5,8 @@ export interface HistoryData {
   windSpeed: number;
   windDirection: string;
   co2Concentration: number;
+  soilMoisture: number;
+  nitrogen: number;
 }
 
 export interface Crop {
@@ -16,6 +18,8 @@ export interface Crop {
   windSpeed: number;
   windDirection: string;
   co2Concentration: number;
+  soilMoisture: number;
+  nitrogen: number;
   history: HistoryData[];
   alertMessage: string;
   alertSeverity: 'Normal' | 'Atenção' | 'Crítico';

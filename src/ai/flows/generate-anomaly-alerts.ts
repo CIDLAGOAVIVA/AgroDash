@@ -19,6 +19,8 @@ const AnomalyAlertsInputSchema = z.object({
   windSpeed: z.number().describe('A velocidade do vento em km/h.'),
   windDirection: z.string().describe('A direção do vento (por exemplo, Norte, Sul, NE).'),
   co2Concentration: z.number().describe('A concentração de CO2 em ppm.'),
+  soilMoisture: z.number().describe('A umidade do solo (percentual).'),
+  nitrogen: z.number().describe('O nível de nitrogênio no solo (ppm).'),
 });
 export type AnomalyAlertsInput = z.infer<typeof AnomalyAlertsInputSchema>;
 
@@ -55,9 +57,11 @@ const prompt = ai.definePrompt({
   - Velocidade do Vento: {{windSpeed}} km/h
   - Direção do Vento: {{windDirection}}
   - Concentração de CO2: {{co2Concentration}} ppm
+  - Umidade do Solo: {{soilMoisture}}%
+  - Nitrogênio (N): {{nitrogen}} ppm
 
   Com base nestes dados, determine se existem anomalias ou problemas potenciais que requerem atenção.
-  1.  **Avalie os dados:** Considere limiares razoáveis para cada ponto de dados com base no tipo de cultura. Por exemplo, ventos fortes podem causar danos físicos, e altas concentrações de CO2 podem afetar a fotossíntese.
+  1.  **Avalie os dados:** Considere limiares razoáveis para cada ponto de dados com base no tipo de cultura. Por exemplo, ventos fortes podem causar danos físicos, e altas concentrações de CO2 podem afetar a fotossíntese. Baixa umidade do solo ou níveis inadequados de nitrogênio são críticos.
   2.  **Determine a Severidade:**
       - Se tudo estiver dentro dos parâmetros ideais, defina 'alertSeverity' como "Normal" e escreva uma mensagem curta e tranquilizadora em 'alertMessage'.
       - Se houver um leve desvio que deve ser monitorado, defina 'alertSeverity' como "Atenção" e forneça uma recomendação clara.

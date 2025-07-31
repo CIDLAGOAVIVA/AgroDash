@@ -14,6 +14,8 @@ import { WeatherForecast } from "./weather-forecast";
 import { DataMetric } from "./data-metric";
 import { PeriodSelector } from "./period-selector";
 import type { Period } from "@/types";
+import { Waves } from "lucide-react";
+
 
 function useInterval(callback: () => void, delay: number | null) {
   const savedCallback = useRef<() => void>();
@@ -44,6 +46,9 @@ export function DashboardClient({ initialCrop }: { initialCrop: Crop }) {
     const newAirHumidity = crop.airHumidity + (Math.random() - 0.5) * 0.5;
     const newWindSpeed = crop.windSpeed + (Math.random() - 0.5) * 0.5;
     const newCo2Concentration = crop.co2Concentration + (Math.random() - 0.5) * 2;
+    const newSoilMoisture = crop.soilMoisture + (Math.random() - 0.5) * 0.5;
+    const newNitrogen = crop.nitrogen + (Math.random() - 0.5) * 1;
+
 
     let windDirectionIndex = WIND_DIRECTIONS.indexOf(crop.windDirection);
     if (Math.random() < 0.1) {
@@ -56,6 +61,8 @@ export function DashboardClient({ initialCrop }: { initialCrop: Crop }) {
       windSpeed: Math.max(0, Math.min(40, newWindSpeed)),
       windDirection: WIND_DIRECTIONS[windDirectionIndex],
       co2Concentration: Math.max(380, Math.min(450, newCo2Concentration)),
+      soilMoisture: Math.max(20, Math.min(80, newSoilMoisture)),
+      nitrogen: Math.max(50, Math.min(250, newNitrogen)),
     };
     
     try {
@@ -72,6 +79,8 @@ export function DashboardClient({ initialCrop }: { initialCrop: Crop }) {
             windSpeed: parseFloat(simulatedData.windSpeed.toFixed(1)),
             windDirection: simulatedData.windDirection,
             co2Concentration: Math.round(simulatedData.co2Concentration),
+            soilMoisture: parseFloat(simulatedData.soilMoisture.toFixed(1)),
+            nitrogen: Math.round(simulatedData.nitrogen),
         };
 
         setCrop(prevCrop => ({
@@ -110,7 +119,7 @@ export function DashboardClient({ initialCrop }: { initialCrop: Crop }) {
   return (
     <div className="flex flex-col gap-6">
       <CropCard crop={crop} />
-
+        
       <Card>
           <CardHeader className="flex flex-row justify-between items-start">
             <div>
@@ -119,9 +128,9 @@ export function DashboardClient({ initialCrop }: { initialCrop: Crop }) {
             </div>
             <PeriodSelector period={period} setPeriod={setPeriod} />
         </CardHeader>
-        <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-8">
+        <CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-8">
             <div>
-                <h3 className="text-base font-semibold mb-2 text-foreground">Temperatura do Ar (°C)</h3>
+                <CardTitle as="h3" className="text-base font-semibold mb-2 text-foreground">Temperatura do Ar (°C)</CardTitle>
                 <HistoryChart 
                     data={historyData} 
                     dataKey="airTemperature"
@@ -129,7 +138,7 @@ export function DashboardClient({ initialCrop }: { initialCrop: Crop }) {
                 />
             </div>
             <div>
-                <h3 className="text-base font-semibold mb-2 text-foreground">Umidade do Ar (%)</h3>
+                 <CardTitle as="h3" className="text-base font-semibold mb-2 text-foreground">Umidade do Ar (%)</CardTitle>
                 <HistoryChart 
                     data={historyData} 
                     dataKey="airHumidity"
@@ -137,23 +146,47 @@ export function DashboardClient({ initialCrop }: { initialCrop: Crop }) {
                 />
             </div>
             <div>
-                <h3 className="text-base font-semibold mb-2 text-foreground">Concentração de CO2 (ppm)</h3>
+                <CardTitle as="h3" className="text-base font-semibold mb-2 text-foreground">Velocidade do Vento (km/h)</CardTitle>
+                <HistoryChart 
+                    data={historyData} 
+                    dataKey="windSpeed"
+                    stroke="hsl(var(--chart-3))"
+                />
+            </div>
+            <div>
+                <CardTitle as="h3" className="text-base font-semibold mb-2 text-foreground">Concentração de CO2 (ppm)</CardTitle>
                 <HistoryChart 
                     data={historyData} 
                     dataKey="co2Concentration"
                     stroke="hsl(var(--foreground))"
                 />
             </div>
+             <div>
+                <CardTitle as="h3" className="text-base font-semibold mb-2 text-foreground">Umidade do Solo (%)</CardTitle>
+                <HistoryChart 
+                    data={historyData} 
+                    dataKey="soilMoisture"
+                    stroke="hsl(var(--chart-4))"
+                />
+            </div>
+             <div>
+                <CardTitle as="h3" className="text-base font-semibold mb-2 text-foreground">Nitrogênio (N) (ppm)</CardTitle>
+                <HistoryChart 
+                    data={historyData} 
+                    dataKey="nitrogen"
+                    stroke="hsl(var(--chart-5))"
+                />
+            </div>
         </CardContent>
       </Card>
       
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-        <Card className="xl:col-span-1">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <Card className="lg:col-span-1">
           <CardHeader>
             <CardTitle>Métricas Atuais</CardTitle>
             <CardDescription>Dados dos sensores em tempo real.</CardDescription>
           </CardHeader>
-          <CardContent className="grid grid-cols-2 md:grid-cols-2 gap-x-6 gap-y-8">
+          <CardContent className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 gap-x-6 gap-y-8">
             <DataMetric
               icon={Thermometer}
               label="Temp. do Ar"
@@ -178,22 +211,22 @@ export function DashboardClient({ initialCrop }: { initialCrop: Crop }) {
               value={crop.co2Concentration.toFixed(0)}
               unit="ppm"
             />
-              <DataMetric
+            <DataMetric
               icon={Leaf}
               label="Umidade do Solo"
-              value="62.5"
+              value={crop.soilMoisture.toFixed(1)}
               unit="%"
             />
-              <DataMetric
-              icon={Thermometer}
+            <DataMetric
+              icon={Waves}
               label="Nitrogênio (N)"
-              value="120"
+              value={crop.nitrogen.toFixed(0)}
               unit="ppm"
             />
           </CardContent>
         </Card>
         
-        <Card className="xl:col-span-2 flex flex-col">
+        <Card className="lg:col-span-2 flex flex-col">
             <CardHeader>
                 <CardTitle>Visualização e Previsão</CardTitle>
                 <CardDescription>Imagem da cultura gerada por IA e previsão do tempo.</CardDescription>
@@ -216,7 +249,6 @@ export function DashboardClient({ initialCrop }: { initialCrop: Crop }) {
             </CardContent>
         </Card>
       </div>
-
     </div>
   );
 }

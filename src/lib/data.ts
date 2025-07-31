@@ -7,9 +7,11 @@ export const generateInitialHistory = (baseValues: {
   airHumidity: number; 
   windSpeed: number;
   co2Concentration: number;
+  soilMoisture: number;
+  nitrogen: number;
 }): HistoryData[] => {
   const history: HistoryData[] = [];
-  let { airTemp, airHumidity, windSpeed, co2Concentration } = baseValues;
+  let { airTemp, airHumidity, windSpeed, co2Concentration, soilMoisture, nitrogen } = baseValues;
   for (let i = 29; i >= 0; i--) {
     const time = new Date(Date.now() - i * 24 * 60 * 60000).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
     
@@ -18,6 +20,8 @@ export const generateInitialHistory = (baseValues: {
     airHumidity += (Math.random() - 0.5) * 1.5;
     windSpeed += (Math.random() - 0.5) * 0.5;
     co2Concentration += (Math.random() - 0.5) * 2;
+    soilMoisture += (Math.random() - 0.5) * 1;
+    nitrogen += (Math.random() - 0.5) * 2;
     const windDirection = WIND_DIRECTIONS[Math.floor(Math.random() * WIND_DIRECTIONS.length)];
 
     history.push({
@@ -27,14 +31,16 @@ export const generateInitialHistory = (baseValues: {
       windSpeed: parseFloat(windSpeed.toFixed(1)),
       windDirection: windDirection,
       co2Concentration: Math.round(co2Concentration),
+      soilMoisture: parseFloat(soilMoisture.toFixed(1)),
+      nitrogen: Math.round(nitrogen),
     });
   }
   return history;
 };
 
-const baseHistorySoy = { airTemp: 25.1, airHumidity: 75.2, windSpeed: 10.5, co2Concentration: 400 };
-const baseHistoryCorn = { airTemp: 26.8, airHumidity: 72.8, windSpeed: 12.3, co2Concentration: 410 };
-const baseHistoryWheat = { airTemp: 22.4, airHumidity: 80.5, windSpeed: 8.1, co2Concentration: 390 };
+const baseHistorySoy = { airTemp: 25.1, airHumidity: 75.2, windSpeed: 10.5, co2Concentration: 400, soilMoisture: 65, nitrogen: 150 };
+const baseHistoryCorn = { airTemp: 26.8, airHumidity: 72.8, windSpeed: 12.3, co2Concentration: 410, soilMoisture: 60, nitrogen: 180 };
+const baseHistoryWheat = { airTemp: 22.4, airHumidity: 80.5, windSpeed: 8.1, co2Concentration: 390, soilMoisture: 70, nitrogen: 130 };
 
 export const initialCrops: Crop[] = [
   {
@@ -46,6 +52,8 @@ export const initialCrops: Crop[] = [
     windSpeed: baseHistorySoy.windSpeed,
     windDirection: "NE",
     co2Concentration: baseHistorySoy.co2Concentration,
+    soilMoisture: baseHistorySoy.soilMoisture,
+    nitrogen: baseHistorySoy.nitrogen,
     history: generateInitialHistory(baseHistorySoy),
     alertMessage: "Condições ideais para o desenvolvimento vegetativo. Nenhuma ação necessária.",
     alertSeverity: "Normal",
@@ -61,6 +69,8 @@ export const initialCrops: Crop[] = [
     windSpeed: baseHistoryCorn.windSpeed,
     windDirection: "L",
     co2Concentration: baseHistoryCorn.co2Concentration,
+    soilMoisture: baseHistoryCorn.soilMoisture,
+    nitrogen: baseHistoryCorn.nitrogen,
     history: generateInitialHistory(baseHistoryCorn),
     alertMessage: "A umidade do solo está ligeiramente abaixo do ideal para a floração. Monitore a irrigação.",
     alertSeverity: "Atenção",
@@ -76,6 +86,8 @@ export const initialCrops: Crop[] = [
     windSpeed: baseHistoryWheat.windSpeed,
     windDirection: "SO",
     co2Concentration: baseHistoryWheat.co2Concentration,
+    soilMoisture: baseHistoryWheat.soilMoisture,
+    nitrogen: baseHistoryWheat.nitrogen,
     history: generateInitialHistory(baseHistoryWheat),
     alertMessage: "Alta umidade do ar e temperatura moderada podem favorecer o surgimento de doenças fúngicas.",
     alertSeverity: "Crítico",
