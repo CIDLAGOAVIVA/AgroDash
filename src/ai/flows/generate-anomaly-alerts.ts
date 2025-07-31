@@ -22,6 +22,7 @@ const AnomalyAlertsInputSchema = z.object({
     .string()
     .describe('O estágio de desenvolvimento atual da planta (por exemplo, muda, floração).'),
   vegetationIndex: z.number().describe('O índice de vegetação (por exemplo, NDVI).'),
+  airHumidity: z.number().describe('A umidade do ar (percentual).')
 });
 export type AnomalyAlertsInput = z.infer<typeof AnomalyAlertsInputSchema>;
 
@@ -55,6 +56,7 @@ const prompt = ai.definePrompt({
 
   - Temperatura do Solo: {{soilTemperature}} °C
   - Temperatura do Ar: {{airTemperature}} °C
+  - Umidade do Ar: {{airHumidity}}%
   - Umidade do Solo: {{soilMoisture}}%
   - Radiação Solar: {{solarRadiation}} W/m^2
   - Estágio de Desenvolvimento da Planta: {{plantDevelopmentStage}}
@@ -81,3 +83,5 @@ const generateAnomalyAlertsFlow = ai.defineFlow(
     return output!;
   }
 );
+
+    

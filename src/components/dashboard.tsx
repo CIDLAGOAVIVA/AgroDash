@@ -190,6 +190,7 @@ export default function Dashboard() {
           solarRadiation: updatedCropData.solarRadiation,
           plantDevelopmentStage: updatedCropData.plantDevelopmentStage,
           vegetationIndex: updatedCropData.vegetationIndex,
+          airHumidity: updatedCropData.airHumidity,
         });
 
         const newHistoryEntry: HistoryData = {
@@ -255,3 +256,5 @@ export default function Dashboard() {
     </div>
   );
 }
+
+    
