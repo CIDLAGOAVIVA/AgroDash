@@ -3,10 +3,12 @@
 import { useState, useEffect } from "react";
 import { CropCard } from "./crop-card";
 import { generateAnomalyAlerts } from "@/app/actions";
-import type { Crop, HistoryData } from "@/types";
+import type { Crop, HistoryData, Period } from "@/types";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { PeriodSelector } from "./period-selector";
+import { FieldMap } from "./field-map";
 
 const DEVELOPMENT_STAGES = ["Muda", "Vegetativo", "Floração", "Maturidade"];
 
@@ -51,11 +53,12 @@ const initialCrops: Crop[] = [
     history: generateInitialHistory({ soilTemp: 22.5, airTemp: 25.1, soilMoisture: 65.3, airHumidity: 75.2, solarRadiation: 850, vegetationIndex: 0.78 }),
     alertMessage: "Condições ideais para o desenvolvimento vegetativo. Nenhuma ação necessária.",
     alertSeverity: "Normal",
+    location: { lat: -23.5505, lng: -46.6333 }
   },
   {
     id: "corn-1",
     cropType: "Milho",
-    fieldName: "Lote Cume Leste",
+    fieldName: "Lote Leste Cume",
     soilTemperature: 24.1,
     airTemperature: 26.8,
     airHumidity: 72.8,
@@ -66,6 +69,7 @@ const initialCrops: Crop[] = [
     history: generateInitialHistory({ soilTemp: 24.1, airTemp: 26.8, soilMoisture: 58.9, airHumidity: 72.8, solarRadiation: 920, vegetationIndex: 0.85 }),
     alertMessage: "A umidade do solo está ligeiramente abaixo do ideal para a floração. Monitore a irrigação.",
     alertSeverity: "Atenção",
+    location: { lat: -23.561, lng: -46.645 }
   },
   {
     id: "wheat-1",
@@ -81,47 +85,64 @@ const initialCrops: Crop[] = [
     history: generateInitialHistory({ soilTemp: 19.8, airTemp: 22.4, soilMoisture: 72.1, airHumidity: 80.5, solarRadiation: 780, vegetationIndex: 0.65 }),
     alertMessage: "Alta umidade do ar e temperatura moderada podem favorecer o surgimento de doenças fúngicas.",
     alertSeverity: "Crítico",
+    location: { lat: -23.545, lng: -46.62 }
   },
 ];
 
 const LoadingSkeleton = () => (
-    <Card className="w-full overflow-hidden shadow-lg">
-     <CardHeader className="p-6 bg-card">
-       <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-                <Skeleton className="h-16 w-16 rounded-lg" />
-                <div className="space-y-2">
-                    <Skeleton className="h-6 w-[200px]" />
-                    <Skeleton className="h-4 w-[150px]" />
-                </div>
-            </div>
-            <div className="flex items-center space-x-4">
-                <Skeleton className="h-6 w-6 rounded-full" />
-                <Skeleton className="h-4 w-[100px]" />
-            </div>
-       </div>
-     </CardHeader>
-     <CardContent className="p-6">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-            {[...Array(3)].map((_, i) => (
-                <Card key={i}><CardContent className="p-6 space-y-4">
-                     <div className="flex items-center space-x-4 mb-4">
-                        <Skeleton className="h-8 w-8 rounded-full" />
-                        <Skeleton className="h-5 w-1/3" />
-                     </div>
-                     <Skeleton className="h-6 w-1/2 mb-4" />
-                     <Skeleton className="h-4 w-3/4 mb-2" />
-                     <Skeleton className="h-[120px] w-full" />
-                </CardContent></Card>
-            ))}
+  <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <div className="lg:col-span-2">
+      <Card className="w-full overflow-hidden shadow-lg">
+      <CardHeader className="p-6 bg-card">
+        <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-4">
+                  <Skeleton className="h-16 w-16 rounded-lg" />
+                  <div className="space-y-2">
+                      <Skeleton className="h-6 w-[200px]" />
+                      <Skeleton className="h-4 w-[150px]" />
+                  </div>
+              </div>
+              <div className="flex items-center space-x-4">
+                  <Skeleton className="h-6 w-6 rounded-full" />
+                  <Skeleton className="h-4 w-[100px]" />
+              </div>
         </div>
-     </CardContent>
-    </Card>
+      </CardHeader>
+      <CardContent className="p-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+              {[...Array(3)].map((_, i) => (
+                  <Card key={i}><CardContent className="p-6 space-y-4">
+                      <div className="flex items-center space-x-4 mb-4">
+                          <Skeleton className="h-8 w-8 rounded-full" />
+                          <Skeleton className="h-5 w-1/3" />
+                      </div>
+                      <Skeleton className="h-6 w-1/2 mb-4" />
+                      <Skeleton className="h-4 w-3/4 mb-2" />
+                      <Skeleton className="h-[120px] w-full" />
+                  </CardContent></Card>
+              ))}
+          </div>
+      </CardContent>
+      </Card>
+    </div>
+    <div className="lg:col-span-1">
+        <Card>
+            <CardHeader>
+                <CardTitle>Mapa dos Talhões</CardTitle>
+            </CardHeader>
+            <CardContent>
+                <Skeleton className="h-96 w-full rounded-lg" />
+            </CardContent>
+        </Card>
+    </div>
+</div>
 )
 
 export default function Dashboard() {
   const [crops, setCrops] = useState<Crop[]>([]);
   const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState<string>(initialCrops[0].id);
+  const [period, setPeriod] = useState<Period>('30d');
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -201,19 +222,36 @@ export default function Dashboard() {
   if (loading) {
     return <LoadingSkeleton />;
   }
+  
+  const activeCrop = crops.find(c => c.id === activeTab);
 
   return (
-    <Tabs defaultValue={initialCrops[0].id} className="w-full">
-      <TabsList className="grid w-full grid-cols-3 mb-6 bg-primary/5 border border-primary/10">
-        {crops.map((crop) => (
-          <TabsTrigger key={crop.id} value={crop.id} className="py-2.5 text-base font-semibold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg">{crop.cropType}</TabsTrigger>
-        ))}
-      </TabsList>
-      {crops.map((crop) => (
-        <TabsContent key={crop.id} value={crop.id} className="mt-4">
-          <CropCard crop={crop} />
-        </TabsContent>
-      ))}
-    </Tabs>
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+        <div className="lg:col-span-2">
+            <Card className="mb-8">
+              <CardHeader className="flex flex-row items-center justify-between">
+                  <CardTitle>Visão Geral das Culturas</CardTitle>
+                   <PeriodSelector period={period} setPeriod={setPeriod} />
+              </CardHeader>
+              <CardContent>
+                  <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+                    <TabsList className="grid w-full grid-cols-3 mb-6 bg-primary/5 border border-primary/10">
+                      {crops.map((crop) => (
+                        <TabsTrigger key={crop.id} value={crop.id} className="py-2.5 text-base font-semibold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg">{crop.cropType}</TabsTrigger>
+                      ))}
+                    </TabsList>
+                    {crops.map((crop) => (
+                      <TabsContent key={crop.id} value={crop.id} className="m-0">
+                        <CropCard crop={crop} />
+                      </TabsContent>
+                    ))}
+                  </Tabs>
+              </CardContent>
+            </Card>
+        </div>
+        <div className="lg:col-span-1">
+            <FieldMap crops={crops} activeCropId={activeTab} onMarkerClick={setActiveTab} />
+        </div>
+    </div>
   );
 }

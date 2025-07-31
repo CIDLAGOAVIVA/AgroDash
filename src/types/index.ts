@@ -22,4 +22,10 @@ export interface Crop {
   history: HistoryData[];
   alertMessage: string;
   alertSeverity: 'Normal' | 'Atenção' | 'Crítico';
+  location: {
+    lat: number;
+    lng: number;
+  };
 }
+
+export type Period = '24h' | '7d' | '30d';
