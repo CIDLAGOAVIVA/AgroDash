@@ -1,3 +1,4 @@
+
 export interface HistoryData {
   time: string;
   airTemperature: number;
@@ -7,6 +8,14 @@ export interface HistoryData {
   co2Concentration: number;
   soilMoisture: number;
   nitrogen: number;
+}
+
+export type AlertSeverity = 'Normal' | 'Atenção' | 'Crítico';
+
+export interface AlertEntry {
+  time: string;
+  message: string;
+  severity: AlertSeverity;
 }
 
 export interface Crop {
@@ -21,8 +30,7 @@ export interface Crop {
   soilMoisture: number;
   nitrogen: number;
   history: HistoryData[];
-  alertMessage: string;
-  alertSeverity: 'Normal' | 'Atenção' | 'Crítico';
+  alertHistory: AlertEntry[];
   location: {
     lat: number;
     lng: number;
