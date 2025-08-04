@@ -6,11 +6,10 @@ import { generateAnomalyAlerts, generateFieldImage } from "@/app/actions";
 import type { Crop, HistoryData } from "@/types";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import Image from "next/image";
-import { WIND_DIRECTIONS } from "@/lib/data";
+import { WIND_DIRECTIONS, initialCrops } from "@/lib/data";
 import { HistoryChart } from "./history-chart";
 import { Cloud, Droplets, Leaf, Thermometer, Wind, Waves } from "lucide-react";
 import { WeatherForecast } from "./weather-forecast";
-import { PeriodSelector } from "./period-selector";
 import { AlertLog } from "./alert-log";
 import { DataMetric } from "./data-metric";
 import { DetailedChartModal } from "./detailed-chart-modal";
@@ -45,7 +44,6 @@ export function DashboardClient({ initialCrop }: { initialCrop: Crop }) {
   const [crop, setCrop] = useState<Crop>(initialCrop);
   const [fieldImage, setFieldImage] = useState<string | null>(null);
   const [isImageLoading, setIsImageLoading] = useState(true);
-  const [period, setPeriod] = useState<"24h" | "7d" | "30d">('30d');
   const [detailedChartData, setDetailedChartData] = useState<DetailedChartDataType | null>(null);
 
   const updateCropData = async () => {
@@ -124,10 +122,6 @@ export function DashboardClient({ initialCrop }: { initialCrop: Crop }) {
 
   useInterval(updateCropData, 5000);
 
-  const historyData = crop.history.slice(
-    period === '7d' ? -7 : period === '24h' ? -1 : -30
-  );
-
   const handleMetricClick = (chartData: DetailedChartDataType) => {
     setDetailedChartData(chartData);
   }
@@ -145,7 +139,7 @@ export function DashboardClient({ initialCrop }: { initialCrop: Crop }) {
     <div className="flex flex-col gap-6">
       <CropCard crop={crop} />
       
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:items-stretch">
         <Card className="lg:col-span-2">
             <CardHeader>
                 <CardTitle>Métricas Atuais, Status e Visualização</CardTitle>
@@ -189,7 +183,7 @@ export function DashboardClient({ initialCrop }: { initialCrop: Crop }) {
             </CardContent>
         </Card>
 
-        <Card className="flex flex-col">
+        <Card className="flex flex-col h-full">
             <CardHeader>
                 <CardTitle>Log de Alertas</CardTitle>
                 <CardDescription>Alertas recentes do sistema.</CardDescription>
@@ -200,38 +194,12 @@ export function DashboardClient({ initialCrop }: { initialCrop: Crop }) {
         </Card>
       </div>
 
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <Card className="lg:col-span-3">
-            <CardHeader className="flex flex-row justify-between items-start">
-                <div>
-                    <CardTitle>Histórico de Dados</CardTitle>
-                    <CardDescription>Variação das métricas ao longo do tempo.</CardDescription>
-                </div>
-                <PeriodSelector period={period} setPeriod={setPeriod} />
-            </CardHeader>
-            <CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-8">
-              {metrics.map((metric) => (
-                <div key={metric.dataKey}>
-                  <h3 className="text-base font-semibold mb-2 text-foreground">{metric.title} ({metric.unit})</h3>
-                  <HistoryChart 
-                      data={historyData} 
-                      dataKey={metric.dataKey}
-                      stroke={metric.stroke}
-                  />
-                </div>
-              ))}
-            </CardContent>
-        </Card>
-      </div>
-
-
       <DetailedChartModal 
         isOpen={!!detailedChartData}
         onClose={() => setDetailedChartData(null)}
         title={detailedChartData?.title || ""}
         dataKey={detailedChartData?.dataKey}
-        data={historyData}
+        data={crop.history}
         stroke={detailedChartData?.stroke || ""}
       />
 
