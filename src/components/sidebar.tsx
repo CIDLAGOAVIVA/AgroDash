@@ -3,6 +3,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import React from "react";
 import {
   Home,
   Leaf,
@@ -19,7 +20,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { useSidebar, useSidebarToggle } from "@/hooks/use-sidebar";
+import { useSidebar } from "@/hooks/use-sidebar";
 import { cn } from "@/lib/utils";
 import type { Crop } from "@/types";
 
@@ -156,9 +157,11 @@ function SidebarDesktop({ crops }: SidebarProps) {
 
 function SidebarMobile({ crops }: SidebarProps) {
     const pathname = usePathname();
+    const [open, setOpen] = React.useState(false);
+
     return (
       <header className="sticky top-0 z-40 flex h-16 items-center gap-4 border-b bg-background px-4 md:hidden">
-        <Sheet>
+        <Sheet open={open} onOpenChange={setOpen}>
           <SheetTrigger asChild>
             <Button size="icon" variant="outline">
               <Menu className="h-5 w-5" />
@@ -173,12 +176,14 @@ function SidebarMobile({ crops }: SidebarProps) {
               <Link
                 href="/"
                 className="flex items-center gap-2 text-lg font-semibold mb-4"
+                onClick={() => setOpen(false)}
               >
                 <Leaf className="h-6 w-6 text-primary" />
                 <span>AgriDash</span>
               </Link>
               <Link
                 href="/"
+                onClick={() => setOpen(false)}
                 className={cn("mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground", pathname === "/" && "bg-muted text-foreground")}
               >
                 <Home className="h-5 w-5" />
@@ -191,6 +196,7 @@ function SidebarMobile({ crops }: SidebarProps) {
                     <Link
                     key={crop.id}
                     href={href}
+                    onClick={() => setOpen(false)}
                     className={cn("mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground", pathname === href && "bg-muted text-foreground")}
                   >
                     <Icon className="h-5 w-5" />

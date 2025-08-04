@@ -34,14 +34,12 @@ function useInterval(callback: () => void, delay: number | null) {
   }, [delay]);
 }
 
-const SatelliteMap = ({ onFullscreen }: { onFullscreen: () => void }) => {
-  const lat = -22.319792;
-  const lng = -42.408717;
+const SatelliteMap = ({ lat, lng, onFullscreen }: { lat: number; lng: number; onFullscreen: () => void }) => {
   const zoom = 15;
   const mapUrl = `https://maps.google.com/maps?q=${lat},${lng}&t=k&z=${zoom}&ie=UTF8&iwloc=&output=embed`;
 
   return (
-      <Card className="h-1/2 relative group">
+      <Card className="h-full relative group">
           <iframe
               className="absolute top-0 left-0 w-full h-full border-0"
               src={mapUrl}
@@ -181,40 +179,48 @@ export function DashboardClient({ initialCrop }: { initialCrop: Crop }) {
     <div className="flex flex-col gap-3">
       <CropCard crop={crop} />
       
-      <Card>
-        <CardHeader>
-          <CardTitle>Métricas e Visualização do Campo</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 lg:grid-cols-5 gap-3">
-            
-            <div className="lg:col-span-1 flex flex-col gap-2">
-              {metrics.map((metric) => (
-                <DataMetric
-                  key={metric.title}
-                  icon={metric.icon}
-                  label={metric.title}
-                  value={metric.value}
-                  unit={metric.unit}
-                  value2={metric.value2}
-                  unit2={metric.unit2}
-                  onClick={() => handleMetricClick(metric)}
-                />
-              ))}
-              <WeatherForecast />
-            </div>
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-3">
 
-            <div className="lg:col-span-2 flex flex-col gap-3 h-[720px]">
-              <div className="relative w-full h-1/2 bg-muted/50 rounded-lg overflow-hidden border flex items-center justify-center group flex-grow">
+        <div className="lg:col-span-1 flex flex-col gap-2">
+            <Card>
+                <CardHeader>
+                    <CardTitle className="text-base">Métricas dos Sensores</CardTitle>
+                </CardHeader>
+                <CardContent className="flex flex-col gap-2">
+                    {metrics.map((metric) => (
+                        <DataMetric
+                        key={metric.title}
+                        icon={metric.icon}
+                        label={metric.title}
+                        value={metric.value}
+                        unit={metric.unit}
+                        value2={metric.value2}
+                        unit2={metric.unit2}
+                        onClick={() => handleMetricClick(metric)}
+                        />
+                    ))}
+                    <WeatherForecast />
+                </CardContent>
+            </Card>
+        </div>
+        
+        <div className="lg:col-span-2 flex flex-col gap-3 min-h-[500px] lg:min-h-0">
+            <Card className="flex-grow relative group">
+                <CardHeader className="absolute top-0 left-0 z-10 p-2">
+                    <CardTitle className="text-sm bg-black/40 text-white px-2 py-1 rounded">Imagem do Campo (IA)</CardTitle>
+                </CardHeader>
+                <CardContent className="p-0 h-full w-full">
                 {isImageLoading ? (
-                  <div className="spinner"></div>
+                  <div className="h-full w-full flex items-center justify-center bg-muted/50 rounded-lg border">
+                    <div className="spinner"></div>
+                  </div>
                 ) : fieldImage && (
                   <>
                     <Image 
                       src={fieldImage}
                       alt={`Imagem gerada por IA de ${crop.fieldName}`}
                       fill
-                      className="object-cover transition-all duration-500"
+                      className="object-cover transition-all duration-500 rounded-lg"
                       key={fieldImage}
                       data-ai-hint="agriculture field"
                     />
@@ -230,23 +236,36 @@ export function DashboardClient({ initialCrop }: { initialCrop: Crop }) {
                     </button>
                   </>
                 )}
-              </div>
-              <SatelliteMap onFullscreen={() => setFullscreenContent(
-                  <iframe
-                      className="absolute top-0 left-0 w-full h-full border-0"
-                      src={`https://maps.google.com/maps?q=${crop.location.lat},${crop.location.lng}&t=k&z=17&ie=UTF8&iwloc=&output=embed`}
-                      title="Mapa de Satélite em Tela Cheia"
-                  ></iframe>
-              )} />
-            </div>
-            
-            <div className="lg:col-span-2 h-full">
-                <AlertLog alerts={crop.alertHistory} />
-            </div>
+                </CardContent>
+            </Card>
+             <Card className="h-1/2 min-h-[250px] relative group">
+                <CardHeader className="absolute top-0 left-0 z-10 p-2">
+                    <CardTitle className="text-sm bg-black/40 text-white px-2 py-1 rounded">Mapa de Satélite</CardTitle>
+                </CardHeader>
+                 <CardContent className="p-0 h-full w-full">
+                    <SatelliteMap lat={crop.location.lat} lng={crop.location.lng} onFullscreen={() => setFullscreenContent(
+                        <iframe
+                            className="absolute top-0 left-0 w-full h-full border-0"
+                            src={`https://maps.google.com/maps?q=${crop.location.lat},${crop.location.lng}&t=k&z=17&ie=UTF8&iwloc=&output=embed`}
+                            title="Mapa de Satélite em Tela Cheia"
+                        ></iframe>
+                    )} />
+                </CardContent>
+            </Card>
+        </div>
+        
+        <div className="lg:col-span-2 flex flex-col">
+            <Card className="flex-grow">
+                <CardHeader>
+                    <CardTitle className="text-base">Log de Alertas</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <AlertLog alerts={crop.alertHistory} />
+                </CardContent>
+            </Card>
+        </div>
 
-          </div>
-        </CardContent>
-      </Card>
+      </div>
 
       <DetailedChartModal 
         isOpen={!!detailedChartData}
@@ -265,5 +284,3 @@ export function DashboardClient({ initialCrop }: { initialCrop: Crop }) {
     </div>
   );
 }
-
-    

@@ -1,3 +1,4 @@
+
 import { initialCrops } from "@/lib/data";
 import { Card, CardContent } from "@/components/ui/card";
 import Link from "next/link";
@@ -39,12 +40,12 @@ const cropPositions: { [key: string]: string } = {
 export default async function Home() {
 
   return (
-    <div className="min-h-full w-full bg-background text-foreground flex flex-col items-center justify-center">
+    <div className="min-h-full w-full bg-background text-foreground flex flex-col items-center justify-center p-4">
       <div className="text-center mb-8">
-        <h1 className="text-4xl font-bold tracking-tight text-primary sm:text-5xl">
+        <h1 className="text-3xl font-bold tracking-tight text-primary sm:text-5xl">
           Visão Geral da Fazenda
         </h1>
-        <p className="mt-4 text-lg text-muted-foreground">
+        <p className="mt-4 text-base text-muted-foreground sm:text-lg">
           Selecione uma cultura para ver os detalhes de monitoramento.
         </p>
       </div>
@@ -61,8 +62,8 @@ export default async function Home() {
               return (
                 <Link key={crop.id} href={`/dashboard/${crop.id}`} className={cn("absolute transform -translate-x-1/2 -translate-y-1/2", positionClass)}>
                     <div className="relative group">
-                        <div className="w-16 h-16 bg-primary/80 rounded-full flex items-center justify-center border-4 border-background/70 shadow-lg hover:scale-110 hover:bg-primary transition-all duration-300 cursor-pointer">
-                            <CropIcon className="w-8 h-8 text-primary-foreground" />
+                        <div className="w-12 h-12 md:w-16 md:h-16 bg-primary/80 rounded-full flex items-center justify-center border-2 md:border-4 border-background/70 shadow-lg hover:scale-110 hover:bg-primary transition-all duration-300 cursor-pointer">
+                            <CropIcon className="w-6 h-6 md:w-8 md:h-8 text-primary-foreground" />
                         </div>
                         <div className="absolute -bottom-12 left-1/2 -translate-x-1/2 w-max px-3 py-1.5 bg-background text-foreground rounded-md shadow-lg text-sm font-semibold opacity-0 group-hover:opacity-100 group-hover:-bottom-16 transition-all duration-300 pointer-events-none">
                             {crop.fieldName}
