@@ -143,16 +143,30 @@ export function DashboardClient({ initialCrop }: { initialCrop: Crop }) {
 
   return (
     <div className="flex flex-col gap-6">
-      <CropCard crop={crop} metrics={metrics.map(m => ({ ...m, onClick: () => handleMetricClick(m) }))} />
+      <CropCard crop={crop} />
       
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <Card className="lg:col-span-2">
             <CardHeader>
-                <CardTitle>Visualização e Log de Alertas</CardTitle>
+                <CardTitle>Métricas Atuais, Status e Visualização</CardTitle>
             </CardHeader>
             <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
-                    <div className="flex flex-col justify-between gap-4 h-full">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div className="flex flex-col gap-4">
+                        {metrics.map((metric) => (
+                           <DataMetric
+                                key={metric.title}
+                                icon={metric.icon}
+                                label={metric.title}
+                                value={metric.value}
+                                unit={metric.unit}
+                                value2={metric.value2}
+                                unit2={metric.unit2}
+                                onClick={() => handleMetricClick(metric)}
+                            />
+                        ))}
+                    </div>
+                    <div className="md:col-span-2 flex flex-col justify-between gap-4 h-full">
                         <div className="relative aspect-video w-full bg-muted/50 rounded-lg overflow-hidden border flex items-center justify-center flex-grow">
                             {isImageLoading ? (
                             <div className="spinner"></div>
@@ -171,13 +185,24 @@ export function DashboardClient({ initialCrop }: { initialCrop: Crop }) {
                             <WeatherForecast />
                         </div>
                     </div>
-                    
-                    <AlertLog alerts={crop.alertHistory} />
                 </div>
             </CardContent>
         </Card>
 
-        <Card>
+        <Card className="flex flex-col">
+            <CardHeader>
+                <CardTitle>Log de Alertas</CardTitle>
+                <CardDescription>Alertas recentes do sistema.</CardDescription>
+            </CardHeader>
+            <CardContent className="flex-grow">
+                 <AlertLog alerts={crop.alertHistory} />
+            </CardContent>
+        </Card>
+      </div>
+
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <Card className="lg:col-span-3">
             <CardHeader className="flex flex-row justify-between items-start">
                 <div>
                     <CardTitle>Histórico de Dados</CardTitle>
@@ -185,7 +210,7 @@ export function DashboardClient({ initialCrop }: { initialCrop: Crop }) {
                 </div>
                 <PeriodSelector period={period} setPeriod={setPeriod} />
             </CardHeader>
-            <CardContent className="grid grid-cols-1 gap-x-6 gap-y-8">
+            <CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-8">
               {metrics.map((metric) => (
                 <div key={metric.dataKey}>
                   <h3 className="text-base font-semibold mb-2 text-foreground">{metric.title} ({metric.unit})</h3>
