@@ -20,7 +20,7 @@ export default function RootLayout({
   return (
     <html lang="pt-BR" className={inter.variable} suppressHydrationWarning>
       <body className="font-sans antialiased">
-        <div className="flex min-h-screen">
+        <div className="flex flex-col md:flex-row min-h-screen">
           <Sidebar crops={initialCrops} />
           <main className="flex-1 md:p-4 p-2 overflow-y-auto bg-muted/40">
             {children}

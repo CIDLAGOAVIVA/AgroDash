@@ -207,10 +207,6 @@ function SidebarMobile({ crops }: SidebarProps) {
             </nav>
           </SheetContent>
         </Sheet>
-        <Link href="/" className="flex items-center gap-2 font-semibold md:hidden">
-            <Leaf className="h-6 w-6 text-primary" />
-            <span className="sr-only">AgriDash</span>
-        </Link>
       </header>
     );
   }
