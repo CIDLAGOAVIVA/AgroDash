@@ -22,7 +22,7 @@ export default function RootLayout({
       <body className="font-sans antialiased">
         <div className="flex min-h-screen">
           <Sidebar crops={initialCrops} />
-          <main className="flex-1 md:p-8 p-4 overflow-y-auto bg-muted/40">
+          <main className="flex-1 md:p-4 p-2 overflow-y-auto bg-muted/40">
             {children}
           </main>
         </div>

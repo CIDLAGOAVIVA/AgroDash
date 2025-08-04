@@ -50,7 +50,7 @@ export function DataMetric({ icon: Icon, label, value, unit, value2, unit2, onCl
   return (
     <div 
         className={cn(
-            "flex items-center space-x-4 rounded-lg bg-background p-3 transition-colors duration-200",
+            "flex items-center space-x-2 rounded-lg bg-background p-3 transition-colors duration-200",
             onClick && "cursor-pointer hover:bg-muted/50"
         )}
         onClick={onClick}

@@ -49,7 +49,7 @@ export function AlertLog({ alerts }: AlertLogProps) {
                 <TooltipTrigger asChild>
                     <div className="h-full flex flex-col">
                         <ScrollArea className="flex-grow h-0 pr-4 border rounded-lg bg-background p-2">
-                            <div className="flex flex-col gap-3">
+                            <div className="flex flex-col gap-2">
                                 {alerts.map((alert, index) => {
                                     const config = severityConfig[alert.severity];
                                     const Icon = config.icon;
