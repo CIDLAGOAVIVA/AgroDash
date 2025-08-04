@@ -1,5 +1,6 @@
 
-import type { Crop, HistoryData, AlertEntry } from "@/types";
+import type { Crop, HistoryData } from "@/types";
+import type { ChartConfig } from "@/components/ui/chart"
 
 export const WIND_DIRECTIONS = ["N", "NE", "L", "SE", "S", "SO", "O", "NO"];
 
@@ -107,3 +108,25 @@ export const initialCrops: Crop[] = [
     imageUrl: "https://placehold.co/500x500/228B22/FFFFFF?text=Trigo"
   },
 ];
+
+
+export const chartConfigs = {
+  airTemperature: {
+    airTemperature: { color: "hsl(var(--chart-1))" },
+  } satisfies ChartConfig,
+  airHumidity: {
+    airHumidity: { color: "hsl(var(--chart-2))" },
+  } satisfies ChartConfig,
+  windSpeed: {
+    windSpeed: { color: "hsl(var(--chart-3))" },
+  } satisfies ChartConfig,
+  co2Concentration: {
+    co2Concentration: { color: "hsl(var(--foreground))" },
+  } satisfies ChartConfig,
+  soilMoisture: {
+    soilMoisture: { color: "hsl(var(--chart-4))" },
+  } satisfies ChartConfig,
+  nitrogen: {
+    nitrogen: { color: "hsl(var(--chart-5))" },
+  } satisfies ChartConfig,
+};

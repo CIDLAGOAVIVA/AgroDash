@@ -7,13 +7,13 @@ import { generateAnomalyAlerts, generateFieldImage } from "@/app/actions";
 import type { Crop, HistoryData } from "@/types";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import Image from "next/image";
-import { WIND_DIRECTIONS } from "@/lib/data";
+import { WIND_DIRECTIONS, chartConfigs } from "@/lib/data";
 import { HistoryChart } from "./history-chart";
 import { Cloud, Droplets, Leaf, Thermometer, Wind, Waves } from "lucide-react";
 import { WeatherForecast } from "./weather-forecast";
-import { DataMetric } from "./data-metric";
 import { PeriodSelector } from "./period-selector";
 import { AlertLog } from "./alert-log";
+import { SensorCard } from "./sensor-card";
 
 
 function useInterval(callback: () => void, delay: number | null) {
@@ -130,39 +130,84 @@ export function DashboardClient({ initialCrop }: { initialCrop: Crop }) {
               <CardHeader>
                   <CardTitle>Métricas Atuais, Status e Visualização</CardTitle>
               </CardHeader>
-              <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6 h-[calc(100%-4rem)]">
-                  <div className="grid grid-cols-2 gap-x-4 gap-y-6 content-start">
-                      <DataMetric icon={Thermometer} label="Temp. Ar" value={crop.airTemperature.toFixed(1)} unit="°C" />
-                      <DataMetric icon={Droplets} label="Umidade Ar" value={crop.airHumidity.toFixed(1)} unit="%" />
-                      <DataMetric icon={Wind} label="Vento" value={`${crop.windSpeed.toFixed(1)} km/h`} unit={crop.windDirection}/>
-                      <DataMetric icon={Cloud} label="CO2" value={crop.co2Concentration.toFixed(0)} unit="ppm" />
-                      <DataMetric icon={Leaf} label="Umidade Solo" value={crop.soilMoisture.toFixed(1)} unit="%" />
-                      <DataMetric icon={Waves} label="Nitrogênio (N)" value={crop.nitrogen.toFixed(0)} unit="ppm" />
-                  </div>
-
-                  <div className="flex flex-col gap-4">
-                      <div className="relative aspect-video w-full bg-muted/50 rounded-lg overflow-hidden border flex items-center justify-center flex-grow">
-                        {isImageLoading ? (
-                        <div className="spinner"></div>
-                        ) : fieldImage && (
-                        <Image 
-                            src={fieldImage}
-                            alt={`Imagem gerada por IA de ${crop.fieldName}`}
-                            fill
-                            className="object-cover transition-all duration-500"
-                            key={fieldImage}
-                            data-ai-hint="agriculture field"
+              <CardContent className="h-[calc(100%-4rem)]">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 h-full">
+                    <div className="grid grid-cols-2 lg:grid-cols-2 gap-4 content-start">
+                        <SensorCard 
+                            icon={Thermometer}
+                            title="Temperatura do Ar"
+                            metric={{ label: "Atual", value: crop.airTemperature.toFixed(1), unit: "°C" }}
+                            data={crop.history}
+                            dataKey="airTemperature"
+                            chartConfig={chartConfigs.airTemperature}
                         />
-                        )}
-                      </div>
-                      <div className="flex-shrink-0">
-                        <WeatherForecast />
+                        <SensorCard 
+                            icon={Droplets}
+                            title="Umidade do Ar"
+                            metric={{ label: "Atual", value: crop.airHumidity.toFixed(1), unit: "%" }}
+                            data={crop.history}
+                            dataKey="airHumidity"
+                            chartConfig={chartConfigs.airHumidity}
+                        />
+                         <SensorCard 
+                            icon={Wind}
+                            title="Vento"
+                            metric={{ label: "Velocidade", value: crop.windSpeed.toFixed(1), unit: "km/h" }}
+                            metric2={{ label: "Direção", value: crop.windDirection }}
+                            data={crop.history}
+                            dataKey="windSpeed"
+                            chartConfig={chartConfigs.windSpeed}
+                        />
+                         <SensorCard 
+                            icon={Cloud}
+                            title="Concentração de CO2"
+                            metric={{ label: "Atual", value: crop.co2Concentration.toFixed(0), unit: "ppm" }}
+                            data={crop.history}
+                            dataKey="co2Concentration"
+                            chartConfig={chartConfigs.co2Concentration}
+                        />
+                        <SensorCard 
+                            icon={Leaf}
+                            title="Umidade do Solo"
+                            metric={{ label: "Atual", value: crop.soilMoisture.toFixed(1), unit: "%" }}
+                            data={crop.history}
+                            dataKey="soilMoisture"
+                            chartConfig={chartConfigs.soilMoisture}
+                        />
+                        <SensorCard 
+                            icon={Waves}
+                            title="Nitrogênio (N)"
+                            metric={{ label: "Atual", value: crop.nitrogen.toFixed(0), unit: "ppm" }}
+                            data={crop.history}
+                            dataKey="nitrogen"
+                            chartConfig={chartConfigs.nitrogen}
+                        />
+                    </div>
+
+                      <div className="flex flex-col gap-4">
+                        <div className="relative aspect-video w-full bg-muted/50 rounded-lg overflow-hidden border flex items-center justify-center flex-grow">
+                            {isImageLoading ? (
+                            <div className="spinner"></div>
+                            ) : fieldImage && (
+                            <Image 
+                                src={fieldImage}
+                                alt={`Imagem gerada por IA de ${crop.fieldName}`}
+                                fill
+                                className="object-cover transition-all duration-500"
+                                key={fieldImage}
+                                data-ai-hint="agriculture field"
+                            />
+                            )}
+                        </div>
+                        <div className="flex-shrink-0">
+                            <WeatherForecast />
+                        </div>
                       </div>
                   </div>
               </CardContent>
             </Card>
           </div>
-          <div className="lg:col-span-1">
+          <div className="lg:col-span-1 h-full">
             <AlertLog alerts={crop.alertHistory} />
           </div>
       </div>
