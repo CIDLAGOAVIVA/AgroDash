@@ -141,21 +141,21 @@ export function DashboardClient({ initialCrop }: { initialCrop: Crop }) {
                   </div>
 
                   <div className="flex flex-col gap-4">
-                        <WeatherForecast />
-                        <div className="relative aspect-video w-full bg-muted/50 rounded-lg overflow-hidden border flex items-center justify-center">
-                          {isImageLoading ? (
-                          <div className="spinner"></div>
-                          ) : fieldImage && (
-                          <Image 
-                              src={fieldImage}
-                              alt={`Imagem gerada por IA de ${crop.fieldName}`}
-                              fill
-                              className="object-cover transition-all duration-500"
-                              key={fieldImage}
-                              data-ai-hint="agriculture field"
-                          />
-                          )}
+                      <div className="relative aspect-video w-full bg-muted/50 rounded-lg overflow-hidden border flex items-center justify-center">
+                        {isImageLoading ? (
+                        <div className="spinner"></div>
+                        ) : fieldImage && (
+                        <Image 
+                            src={fieldImage}
+                            alt={`Imagem gerada por IA de ${crop.fieldName}`}
+                            fill
+                            className="object-cover transition-all duration-500"
+                            key={fieldImage}
+                            data-ai-hint="agriculture field"
+                        />
+                        )}
                       </div>
+                      <WeatherForecast />
                   </div>
               </CardContent>
             </Card>
