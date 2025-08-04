@@ -1,6 +1,5 @@
 import { initialCrops } from "@/lib/data";
 import { Card, CardContent } from "@/components/ui/card";
-import Image from "next/image";
 import Link from "next/link";
 import { Leaf, Wheat } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -8,6 +7,21 @@ import { cn } from "@/lib/utils";
 const Sprout = () => (
     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-sprout"><path d="M7 20h10"/><path d="M12 20V4"/><path d="M12 4c0-2.21-1.79-4-4-4S4 1.79 4 4c0 .62.14 1.2.38 1.72"/><path d="M12 4c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .62-.14 1.2-.38 1.72"/></svg>
 )
+
+const FarmMap = () => {
+    const lat = -22.319792;
+    const lng = -42.408717;
+    const zoom = 15;
+    const mapUrl = `https://maps.google.com/maps?q=${lat},${lng}&t=k&z=${zoom}&ie=UTF8&iwloc=&output=embed`;
+
+    return (
+        <iframe
+            className="absolute inset-0 w-full h-full border-0"
+            src={mapUrl}
+        ></iframe>
+    );
+};
+
 
 const cropIcons: { [key: string]: React.ComponentType<{ className?: string }> } = {
   "Soja": Leaf,
@@ -23,7 +37,6 @@ const cropPositions: { [key: string]: string } = {
 
 
 export default async function Home() {
-  const farmImage = { imageUrl: "https://placehold.co/1280x720/24485E/FFFFFF?text=Farm+Overview" };
 
   return (
     <div className="min-h-full w-full bg-background text-foreground flex flex-col items-center justify-center">
@@ -38,14 +51,8 @@ export default async function Home() {
       <Card className="w-full max-w-6xl shadow-2xl overflow-hidden">
         <CardContent className="p-0">
           <div className="relative aspect-video w-full">
-            <Image
-              src={farmImage.imageUrl}
-              alt="Mapa da fazenda gerado por IA"
-              fill
-              className="object-cover"
-              priority
-            />
-            <div className="absolute inset-0 bg-black/20" />
+            <FarmMap />
+            <div className="absolute inset-0 bg-black/20 pointer-events-none" />
             
             {initialCrops.map((crop) => {
                const CropIcon = cropIcons[crop.cropType] || Leaf;

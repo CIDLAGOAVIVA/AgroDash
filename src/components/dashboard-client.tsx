@@ -12,8 +12,6 @@ import { AlertLog } from "./alert-log";
 import { DataMetric } from "./data-metric";
 import { DetailedChartModal } from "./detailed-chart-modal";
 import { CropCard } from "./crop-card";
-import { WeatherForecast } from "./weather-forecast";
-
 
 function useInterval(callback: () => void, delay: number | null) {
   const savedCallback = useRef<() => void>();
@@ -32,6 +30,24 @@ function useInterval(callback: () => void, delay: number | null) {
     }
   }, [delay]);
 }
+
+const SatelliteMap = () => {
+  const lat = -22.319792;
+  const lng = -42.408717;
+  const zoom = 15;
+  const mapUrl = `https://maps.google.com/maps?q=${lat},${lng}&t=k&z=${zoom}&ie=UTF8&iwloc=&output=embed`;
+
+  return (
+      <Card className="h-48 relative overflow-hidden">
+          <iframe
+              className="absolute top-0 left-0 w-full h-full border-0"
+              src={mapUrl}
+              title="Mapa de Satélite"
+          ></iframe>
+      </Card>
+  );
+};
+
 
 type DetailedChartDataType = {
   title: string;
@@ -177,7 +193,7 @@ export function DashboardClient({ initialCrop }: { initialCrop: Crop }) {
                   />
                 )}
               </div>
-              <WeatherForecast />
+              <SatelliteMap />
             </div>
             
             <div className="h-full">
