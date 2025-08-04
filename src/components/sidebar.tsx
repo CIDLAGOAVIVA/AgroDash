@@ -3,7 +3,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Home,
   Leaf,
@@ -160,7 +160,14 @@ function SidebarMobile({ crops }: SidebarProps) {
     const [open, setOpen] = React.useState(false);
 
     return (
-      <header className="sticky top-0 z-40 flex h-16 items-center gap-4 border-b bg-background px-4 md:hidden">
+      <header className="sticky top-0 z-40 flex h-16 items-center justify-between border-b bg-background px-4 md:hidden">
+        <Link
+          href="/"
+          className="flex items-center gap-2 text-lg font-semibold"
+        >
+          <Leaf className="h-6 w-6 text-primary" />
+          <span className="sr-only">AgriDash</span>
+        </Link>
         <Sheet open={open} onOpenChange={setOpen}>
           <SheetTrigger asChild>
             <Button size="icon" variant="outline">
@@ -212,10 +219,16 @@ function SidebarMobile({ crops }: SidebarProps) {
   }
 
 export function Sidebar({ crops }: SidebarProps) {
+  const [isClient, setIsClient] = useState(false)
+
+  useEffect(() => {
+    setIsClient(true)
+  }, [])
+
   return (
     <>
       <SidebarDesktop crops={crops} />
-      <SidebarMobile crops={crops} />
+      {isClient && <SidebarMobile crops={crops} />}
     </>
   );
 }

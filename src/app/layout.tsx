@@ -1,3 +1,4 @@
+
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
@@ -20,9 +21,9 @@ export default function RootLayout({
   return (
     <html lang="pt-BR" className={inter.variable} suppressHydrationWarning>
       <body className="font-sans antialiased">
-        <div className="flex flex-col md:flex-row min-h-screen">
+        <div className="flex flex-col md:flex-row min-h-screen bg-background">
           <Sidebar crops={initialCrops} />
-          <main className="flex-1 md:p-4 p-2 overflow-y-auto bg-muted/40">
+          <main className="flex-1 md:p-4 p-2 overflow-y-auto">
             {children}
           </main>
         </div>
