@@ -12,6 +12,7 @@ import { AlertLog } from "./alert-log";
 import { DataMetric } from "./data-metric";
 import { DetailedChartModal } from "./detailed-chart-modal";
 import { CropCard } from "./crop-card";
+import { WeatherForecast } from "./weather-forecast";
 
 function useInterval(callback: () => void, delay: number | null) {
   const savedCallback = useRef<() => void>();
@@ -176,6 +177,7 @@ export function DashboardClient({ initialCrop }: { initialCrop: Crop }) {
                   onClick={() => handleMetricClick(metric)}
                 />
               ))}
+              <WeatherForecast />
             </div>
 
             <div className="flex flex-col gap-6">
