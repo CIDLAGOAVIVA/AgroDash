@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import {
   Tooltip,
   TooltipContent,
@@ -67,6 +67,7 @@ function SidebarDesktop({ crops }: SidebarProps) {
     >
       <div className="flex h-16 shrink-0 items-center justify-center border-b px-4">
         <Link href="/" className="flex items-center gap-2 font-semibold">
+          <Leaf className="h-6 w-6 text-primary" />
           <span className={cn("transition-opacity text-primary font-bold", !isOpen && "opacity-0 w-0")}>
             AgriDash
           </span>
@@ -168,8 +169,8 @@ function SidebarMobile({ crops }: SidebarProps) {
             </Button>
           </SheetTrigger>
           <SheetContent side="left" className="flex flex-col">
-          <SheetHeader>
-              <SheetTitle className="sr-only">Navegação Principal</SheetTitle>
+          <SheetHeader className="sr-only">
+              <SheetTitle>Navegação Principal</SheetTitle>
             </SheetHeader>
             <nav className="grid gap-2 text-lg font-medium">
               <Link
@@ -211,10 +212,16 @@ function SidebarMobile({ crops }: SidebarProps) {
   }
 
 export function Sidebar({ crops }: SidebarProps) {
+  const [isClient, setIsClient] = React.useState(false)
+
+  React.useEffect(() => {
+    setIsClient(true)
+  }, [])
+
   return (
     <>
       <SidebarDesktop crops={crops} />
-      <SidebarMobile crops={crops} />
+      {isClient && <SidebarMobile crops={crops} />}
     </>
   );
 }
