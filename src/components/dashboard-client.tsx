@@ -8,12 +8,10 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import Image from "next/image";
 import { WIND_DIRECTIONS, initialCrops } from "@/lib/data";
 import { Cloud, Droplets, Leaf, Thermometer, Wind, Waves } from "lucide-react";
-import { WeatherForecast } from "./weather-forecast";
 import { AlertLog } from "./alert-log";
 import { DataMetric } from "./data-metric";
 import { DetailedChartModal } from "./detailed-chart-modal";
 import { CropCard } from "./crop-card";
-import type { SensorStatusType } from "./sensor-status";
 
 
 function useInterval(callback: () => void, delay: number | null) {
@@ -135,27 +133,18 @@ export function DashboardClient({ initialCrop }: { initialCrop: Crop }) {
     { title: "Nitrogênio (N)", dataKey: "nitrogen", stroke: "hsl(var(--chart-5))", icon: Waves, value: crop.nitrogen.toFixed(0), unit: "ppm" },
   ];
 
-  const sensorStatus: SensorStatusType[] = [
-    { name: "Temp. Ar", status: "Operacional" },
-    { name: "Umid. Ar", status: "Operacional" },
-    { name: "Vento", status: "Operacional" },
-    { name: "CO2", status: "Operacional" },
-    { name: "Umid. Solo", status: "Operacional" },
-    { name: "Nitrogênio", status: "Operacional" },
-  ];
-
 
   return (
     <div className="flex flex-col gap-6">
-      <CropCard crop={crop} sensorStatus={sensorStatus} />
+      <CropCard crop={crop} />
       
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <Card className="lg:col-span-3">
+        <Card className="lg:col-span-2">
             <CardHeader>
                 <CardTitle>Métricas e Visualização do Campo</CardTitle>
             </CardHeader>
             <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="flex flex-col gap-4">
                         {metrics.map((metric) => (
                            <DataMetric
@@ -170,26 +159,24 @@ export function DashboardClient({ initialCrop }: { initialCrop: Crop }) {
                             />
                         ))}
                     </div>
-                    <div className="md:col-span-2 flex flex-col justify-between gap-4 h-full">
-                        <div className="relative aspect-video w-full bg-muted/50 rounded-lg overflow-hidden border flex items-center justify-center flex-grow">
-                            {isImageLoading ? (
-                            <div className="spinner"></div>
-                            ) : fieldImage && (
-                            <Image 
-                                src={fieldImage}
-                                alt={`Imagem gerada por IA de ${crop.fieldName}`}
-                                fill
-                                className="object-cover transition-all duration-500"
-                                key={fieldImage}
-                                data-ai-hint="agriculture field"
-                            />
-                            )}
-                        </div>
-                         <AlertLog alerts={crop.alertHistory} />
+                    <div className="relative aspect-video w-full bg-muted/50 rounded-lg overflow-hidden border flex items-center justify-center">
+                        {isImageLoading ? (
+                        <div className="spinner"></div>
+                        ) : fieldImage && (
+                        <Image 
+                            src={fieldImage}
+                            alt={`Imagem gerada por IA de ${crop.fieldName}`}
+                            fill
+                            className="object-cover transition-all duration-500"
+                            key={fieldImage}
+                            data-ai-hint="agriculture field"
+                        />
+                        )}
                     </div>
                 </div>
             </CardContent>
         </Card>
+        <AlertLog alerts={crop.alertHistory} />
       </div>
 
       <DetailedChartModal 
