@@ -218,14 +218,10 @@ export function Sidebar({ crops }: SidebarProps) {
     setIsClient(true)
   }, [])
 
-  if (!isClient) {
-    return null;
-  }
-  
   return (
-    <>
+    <div className={cn(!isClient && "hidden")}>
       <SidebarDesktop crops={crops} />
       <SidebarMobile crops={crops} />
-    </>
+    </div>
   );
 }
