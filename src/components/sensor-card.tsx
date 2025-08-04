@@ -27,12 +27,12 @@ export function SensorCard({ icon: Icon, title, metric, metric2, data, dataKey, 
         className="bg-background/50 shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden hover:ring-2 hover:ring-primary cursor-pointer"
         onClick={onClick}
     >
-      <div className="p-4">
+      <div className="p-4 pb-2">
         <div className="flex flex-row items-center justify-between mb-2">
             <h3 className="text-sm font-medium text-muted-foreground">{title}</h3>
             <Icon className="h-4 w-4 text-muted-foreground" />
         </div>
-        <div className="flex items-start justify-between gap-4">
+        <div className="flex items-start gap-4">
           <div>
             <p className="text-sm text-foreground/80">{metric.label}</p>
             <div className="flex items-baseline">
@@ -41,17 +41,17 @@ export function SensorCard({ icon: Icon, title, metric, metric2, data, dataKey, 
             </div>
           </div>
           {metric2 && (
-            <div className="text-right">
+            <div className="text-right flex-shrink-0">
               <p className="text-sm text-foreground/80">{metric2.label}</p>
               <div className="flex items-baseline justify-end">
-                  <p className="text-xl font-semibold text-foreground/90">{metric2.value}</p>
+                  <p className="text-lg font-semibold text-foreground/90">{metric2.value}</p>
                   {metric2.unit && <p className="text-xs text-muted-foreground ml-1">{metric2.unit}</p>}
               </div>
             </div>
           )}
         </div>
       </div>
-      <div className="h-8 w-full">
+      <div className="h-10 w-full">
            <ChartContainer config={chartConfig} className="w-full h-full">
               <AreaChart
                   accessibilityLayer
