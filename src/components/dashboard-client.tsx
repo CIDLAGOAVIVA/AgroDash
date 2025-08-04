@@ -7,13 +7,13 @@ import type { Crop, HistoryData } from "@/types";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import Image from "next/image";
 import { WIND_DIRECTIONS, initialCrops } from "@/lib/data";
-import { HistoryChart } from "./history-chart";
 import { Cloud, Droplets, Leaf, Thermometer, Wind, Waves } from "lucide-react";
 import { WeatherForecast } from "./weather-forecast";
 import { AlertLog } from "./alert-log";
 import { DataMetric } from "./data-metric";
 import { DetailedChartModal } from "./detailed-chart-modal";
 import { CropCard } from "./crop-card";
+import type { SensorStatusType } from "./sensor-status";
 
 
 function useInterval(callback: () => void, delay: number | null) {
@@ -135,14 +135,24 @@ export function DashboardClient({ initialCrop }: { initialCrop: Crop }) {
     { title: "Nitrogênio (N)", dataKey: "nitrogen", stroke: "hsl(var(--chart-5))", icon: Waves, value: crop.nitrogen.toFixed(0), unit: "ppm" },
   ];
 
+  const sensorStatus: SensorStatusType[] = [
+    { name: "Temp. Ar", status: "Operacional" },
+    { name: "Umid. Ar", status: "Operacional" },
+    { name: "Vento", status: "Operacional" },
+    { name: "CO2", status: "Operacional" },
+    { name: "Umid. Solo", status: "Operacional" },
+    { name: "Nitrogênio", status: "Operacional" },
+  ];
+
+
   return (
     <div className="flex flex-col gap-6">
-      <CropCard crop={crop} />
+      <CropCard crop={crop} sensorStatus={sensorStatus} />
       
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:items-stretch">
-        <Card className="lg:col-span-2">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <Card className="lg:col-span-3">
             <CardHeader>
-                <CardTitle>Métricas Atuais, Status e Visualização</CardTitle>
+                <CardTitle>Métricas e Visualização do Campo</CardTitle>
             </CardHeader>
             <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -175,21 +185,9 @@ export function DashboardClient({ initialCrop }: { initialCrop: Crop }) {
                             />
                             )}
                         </div>
-                        <div className="flex-shrink-0">
-                            <WeatherForecast />
-                        </div>
+                         <AlertLog alerts={crop.alertHistory} />
                     </div>
                 </div>
-            </CardContent>
-        </Card>
-
-        <Card className="flex flex-col h-full">
-            <CardHeader>
-                <CardTitle>Log de Alertas</CardTitle>
-                <CardDescription>Alertas recentes do sistema.</CardDescription>
-            </CardHeader>
-            <CardContent className="flex-grow">
-                 <AlertLog alerts={crop.alertHistory} />
             </CardContent>
         </Card>
       </div>
