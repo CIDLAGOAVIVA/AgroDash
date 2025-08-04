@@ -186,9 +186,9 @@ export function DashboardClient({ initialCrop }: { initialCrop: Crop }) {
           <CardTitle>Métricas e Visualização do Campo</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
             
-            <div className="flex flex-col gap-4">
+            <div className="lg:col-span-1 flex flex-col gap-4">
               {metrics.map((metric) => (
                 <DataMetric
                   key={metric.title}
@@ -204,7 +204,7 @@ export function DashboardClient({ initialCrop }: { initialCrop: Crop }) {
               <WeatherForecast />
             </div>
 
-            <div className="flex flex-col gap-6 h-[720px]">
+            <div className="lg:col-span-2 flex flex-col gap-6 h-[720px]">
               <div className="relative w-full h-1/2 bg-muted/50 rounded-lg overflow-hidden border flex items-center justify-center group">
                 {isImageLoading ? (
                   <div className="spinner"></div>
@@ -240,7 +240,7 @@ export function DashboardClient({ initialCrop }: { initialCrop: Crop }) {
               )} />
             </div>
             
-            <div className="h-full">
+            <div className="lg:col-span-2 h-full">
                 <AlertLog alerts={crop.alertHistory} />
             </div>
 
@@ -265,3 +265,5 @@ export function DashboardClient({ initialCrop }: { initialCrop: Crop }) {
     </div>
   );
 }
+
+    
