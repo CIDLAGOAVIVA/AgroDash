@@ -162,7 +162,7 @@ export function DashboardClient({ initialCrop }: { initialCrop: Crop }) {
             </div>
 
             <div className="flex flex-col gap-6">
-              <div className="relative aspect-video w-full bg-muted/50 rounded-lg overflow-hidden border flex items-center justify-center">
+              <div className="relative w-full bg-muted/50 rounded-lg overflow-hidden border flex items-center justify-center flex-grow">
                 {isImageLoading ? (
                   <div className="spinner"></div>
                 ) : fieldImage && (
