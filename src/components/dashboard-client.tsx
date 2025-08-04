@@ -12,6 +12,7 @@ import { AlertLog } from "./alert-log";
 import { DataMetric } from "./data-metric";
 import { DetailedChartModal } from "./detailed-chart-modal";
 import { CropCard } from "./crop-card";
+import { WeatherForecast } from "./weather-forecast";
 
 
 function useInterval(callback: () => void, delay: number | null) {
@@ -138,46 +139,53 @@ export function DashboardClient({ initialCrop }: { initialCrop: Crop }) {
     <div className="flex flex-col gap-6">
       <CropCard crop={crop} />
       
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <Card className="lg:col-span-2">
-            <CardHeader>
-                <CardTitle>Métricas e Visualização do Campo</CardTitle>
-            </CardHeader>
-            <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="flex flex-col gap-4">
-                        {metrics.map((metric) => (
-                           <DataMetric
-                                key={metric.title}
-                                icon={metric.icon}
-                                label={metric.title}
-                                value={metric.value}
-                                unit={metric.unit}
-                                value2={metric.value2}
-                                unit2={metric.unit2}
-                                onClick={() => handleMetricClick(metric)}
-                            />
-                        ))}
-                    </div>
-                    <div className="relative aspect-video w-full bg-muted/50 rounded-lg overflow-hidden border flex items-center justify-center">
-                        {isImageLoading ? (
-                        <div className="spinner"></div>
-                        ) : fieldImage && (
-                        <Image 
-                            src={fieldImage}
-                            alt={`Imagem gerada por IA de ${crop.fieldName}`}
-                            fill
-                            className="object-cover transition-all duration-500"
-                            key={fieldImage}
-                            data-ai-hint="agriculture field"
-                        />
-                        )}
-                    </div>
-                </div>
-            </CardContent>
-        </Card>
-        <AlertLog alerts={crop.alertHistory} />
-      </div>
+      <Card>
+        <CardHeader>
+          <CardTitle>Métricas e Visualização do Campo</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            
+            <div className="flex flex-col gap-4">
+              {metrics.map((metric) => (
+                <DataMetric
+                  key={metric.title}
+                  icon={metric.icon}
+                  label={metric.title}
+                  value={metric.value}
+                  unit={metric.unit}
+                  value2={metric.value2}
+                  unit2={metric.unit2}
+                  onClick={() => handleMetricClick(metric)}
+                />
+              ))}
+            </div>
+
+            <div className="flex flex-col gap-6">
+              <div className="relative aspect-video w-full bg-muted/50 rounded-lg overflow-hidden border flex items-center justify-center">
+                {isImageLoading ? (
+                  <div className="spinner"></div>
+                ) : fieldImage && (
+                  <Image 
+                    src={fieldImage}
+                    alt={`Imagem gerada por IA de ${crop.fieldName}`}
+                    fill
+                    className="object-cover transition-all duration-500"
+                    key={fieldImage}
+                    data-ai-hint="agriculture field"
+                  />
+                )}
+              </div>
+              <WeatherForecast />
+            </div>
+            
+            <div className="h-full">
+                <AlertLog alerts={crop.alertHistory} />
+            </div>
+
+          </div>
+        </CardContent>
+      </Card>
 
       <DetailedChartModal 
         isOpen={!!detailedChartData}
