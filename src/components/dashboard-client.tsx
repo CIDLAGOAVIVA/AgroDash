@@ -130,8 +130,8 @@ export function DashboardClient({ initialCrop }: { initialCrop: Crop }) {
               <CardHeader>
                   <CardTitle>Métricas Atuais, Status e Visualização</CardTitle>
               </CardHeader>
-              <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="grid grid-cols-2 gap-x-4 gap-y-6">
+              <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6 h-[calc(100%-4rem)]">
+                  <div className="grid grid-cols-2 gap-x-4 gap-y-6 content-start">
                       <DataMetric icon={Thermometer} label="Temp. Ar" value={crop.airTemperature.toFixed(1)} unit="°C" />
                       <DataMetric icon={Droplets} label="Umidade Ar" value={crop.airHumidity.toFixed(1)} unit="%" />
                       <DataMetric icon={Wind} label="Vento" value={`${crop.windSpeed.toFixed(1)} km/h`} unit={crop.windDirection}/>
@@ -162,7 +162,7 @@ export function DashboardClient({ initialCrop }: { initialCrop: Crop }) {
               </CardContent>
             </Card>
           </div>
-          <div className="lg:col-span-1 h-full">
+          <div className="lg:col-span-1">
             <AlertLog alerts={crop.alertHistory} />
           </div>
       </div>
