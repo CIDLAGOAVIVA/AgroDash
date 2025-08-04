@@ -7,12 +7,14 @@ import type { Crop, HistoryData } from "@/types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Image from "next/image";
 import { WIND_DIRECTIONS } from "@/lib/data";
-import { Cloud, Droplets, Leaf, Thermometer, Wind, Waves } from "lucide-react";
+import { Cloud, Droplets, Leaf, Thermometer, Wind, Waves, Expand, X } from "lucide-react";
 import { AlertLog } from "./alert-log";
 import { DataMetric } from "./data-metric";
 import { DetailedChartModal } from "./detailed-chart-modal";
 import { CropCard } from "./crop-card";
 import { WeatherForecast } from "./weather-forecast";
+import { cn } from "@/lib/utils";
+import { Dialog, DialogContent } from "./ui/dialog";
 
 function useInterval(callback: () => void, delay: number | null) {
   const savedCallback = useRef<() => void>();
@@ -32,23 +34,42 @@ function useInterval(callback: () => void, delay: number | null) {
   }, [delay]);
 }
 
-const SatelliteMap = () => {
+const SatelliteMap = ({ onFullscreen }: { onFullscreen: () => void }) => {
   const lat = -22.319792;
   const lng = -42.408717;
   const zoom = 15;
   const mapUrl = `https://maps.google.com/maps?q=${lat},${lng}&t=k&z=${zoom}&ie=UTF8&iwloc=&output=embed`;
 
   return (
-      <Card className="h-48 relative overflow-hidden">
+      <Card className="h-1/2 relative group">
           <iframe
               className="absolute top-0 left-0 w-full h-full border-0"
               src={mapUrl}
               title="Mapa de Satélite"
           ></iframe>
+          <button onClick={onFullscreen} className="absolute top-2 right-2 z-10 p-2 bg-black/50 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
+              <Expand className="h-5 w-5" />
+          </button>
       </Card>
   );
 };
 
+const FullscreenModal = ({ content, onClose }: { content: React.ReactNode, onClose: () => void }) => {
+  if (!content) return null;
+
+  return (
+    <Dialog open={!!content} onOpenChange={(isOpen) => !isOpen && onClose()}>
+        <DialogContent className="p-0 border-0 max-w-none w-screen h-screen">
+          <div className="relative w-full h-full">
+            {content}
+            <button onClick={onClose} className="absolute top-4 right-4 z-10 p-2 bg-black/50 text-white rounded-full">
+              <X className="h-6 w-6" />
+            </button>
+          </div>
+        </DialogContent>
+    </Dialog>
+  )
+}
 
 type DetailedChartDataType = {
   title: string;
@@ -61,6 +82,7 @@ export function DashboardClient({ initialCrop }: { initialCrop: Crop }) {
   const [fieldImage, setFieldImage] = useState<string | null>(null);
   const [isImageLoading, setIsImageLoading] = useState(true);
   const [detailedChartData, setDetailedChartData] = useState<DetailedChartDataType | null>(null);
+  const [fullscreenContent, setFullscreenContent] = useState<React.ReactNode | null>(null);
 
   const updateCropData = async () => {
     const newAirTemp = crop.airTemperature + (Math.random() - 0.5) * 0.3;
@@ -152,7 +174,6 @@ export function DashboardClient({ initialCrop }: { initialCrop: Crop }) {
     { title: "Nitrogênio (N)", dataKey: "nitrogen", stroke: "hsl(var(--chart-5))", icon: Waves, value: crop.nitrogen.toFixed(0), unit: "ppm" },
   ];
 
-
   return (
     <div className="flex flex-col gap-6">
       <CropCard crop={crop} />
@@ -180,22 +201,40 @@ export function DashboardClient({ initialCrop }: { initialCrop: Crop }) {
               <WeatherForecast />
             </div>
 
-            <div className="flex flex-col gap-6">
-              <div className="relative w-full bg-muted/50 rounded-lg overflow-hidden border flex items-center justify-center flex-grow">
+            <div className="flex flex-col gap-6 h-[720px]">
+              <div className="relative w-full h-1/2 bg-muted/50 rounded-lg overflow-hidden border flex items-center justify-center group">
                 {isImageLoading ? (
                   <div className="spinner"></div>
                 ) : fieldImage && (
-                  <Image 
-                    src={fieldImage}
-                    alt={`Imagem gerada por IA de ${crop.fieldName}`}
-                    fill
-                    className="object-cover transition-all duration-500"
-                    key={fieldImage}
-                    data-ai-hint="agriculture field"
-                  />
+                  <>
+                    <Image 
+                      src={fieldImage}
+                      alt={`Imagem gerada por IA de ${crop.fieldName}`}
+                      fill
+                      className="object-cover transition-all duration-500"
+                      key={fieldImage}
+                      data-ai-hint="agriculture field"
+                    />
+                    <button onClick={() => setFullscreenContent(
+                      <Image 
+                        src={fieldImage}
+                        alt={`Imagem gerada por IA de ${crop.fieldName}`}
+                        fill
+                        className="object-contain"
+                      />
+                    )} className="absolute top-2 right-2 z-10 p-2 bg-black/50 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
+                        <Expand className="h-5 w-5" />
+                    </button>
+                  </>
                 )}
               </div>
-              <SatelliteMap />
+              <SatelliteMap onFullscreen={() => setFullscreenContent(
+                  <iframe
+                      className="absolute top-0 left-0 w-full h-full border-0"
+                      src={`https://maps.google.com/maps?q=${crop.location.lat},${crop.location.lng}&t=k&z=17&ie=UTF8&iwloc=&output=embed`}
+                      title="Mapa de Satélite em Tela Cheia"
+                  ></iframe>
+              )} />
             </div>
             
             <div className="h-full">
@@ -213,6 +252,11 @@ export function DashboardClient({ initialCrop }: { initialCrop: Crop }) {
         dataKey={detailedChartData?.dataKey}
         data={crop.history}
         stroke={detailedChartData?.stroke || ""}
+      />
+
+      <FullscreenModal 
+        content={fullscreenContent}
+        onClose={() => setFullscreenContent(null)}
       />
 
     </div>
