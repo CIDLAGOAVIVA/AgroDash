@@ -5,7 +5,6 @@ import type { AlertEntry, AlertSeverity } from "@/types";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { ShieldCheck, ShieldAlert, ShieldX } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Card, CardHeader, CardTitle, CardContent } from "./ui/card";
 import {
     Tooltip,
     TooltipContent,
@@ -59,7 +58,7 @@ export function AlertLog({ alerts }: AlertLogProps) {
                                             <Icon className={cn("h-5 w-5 flex-shrink-0 mt-0.5", config.iconColor)} />
                                             <div className="flex-1 min-w-0">
                                                 <p className="text-sm text-foreground leading-tight break-words">{alert.message}</p>
-                                                <p className="text-xs text-muted-foreground mt-1">{alert.time}</p>
+                                                <p className="text-xs text-muted-foreground mt-1">{alert.dateTime}</p>
                                             </div>
                                         </div>
                                     );

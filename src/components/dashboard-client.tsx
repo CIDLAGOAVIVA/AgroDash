@@ -4,9 +4,9 @@
 import { useState, useEffect, useRef } from "react";
 import { generateAnomalyAlerts, generateFieldImage } from "@/app/actions";
 import type { Crop, HistoryData } from "@/types";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Image from "next/image";
-import { WIND_DIRECTIONS, initialCrops } from "@/lib/data";
+import { WIND_DIRECTIONS } from "@/lib/data";
 import { Cloud, Droplets, Leaf, Thermometer, Wind, Waves } from "lucide-react";
 import { AlertLog } from "./alert-log";
 import { DataMetric } from "./data-metric";
@@ -87,8 +87,9 @@ export function DashboardClient({ initialCrop }: { initialCrop: Crop }) {
             nitrogen: Math.round(simulatedData.nitrogen),
         };
 
+        const now = new Date();
         const newAlertEntry = {
-          time: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
+          dateTime: `${now.toLocaleDateString('pt-BR')} ${now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`,
           message: alertResult.alertMessage,
           severity: alertResult.alertSeverity,
         };

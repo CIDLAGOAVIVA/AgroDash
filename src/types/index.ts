@@ -13,7 +13,7 @@ export interface HistoryData {
 export type AlertSeverity = 'Normal' | 'Atenção' | 'Crítico';
 
 export interface AlertEntry {
-  time: string;
+  dateTime: string;
   message: string;
   severity: AlertSeverity;
 }
