@@ -7,13 +7,14 @@ import { generateAnomalyAlerts, generateFieldImage } from "@/app/actions";
 import type { Crop, HistoryData } from "@/types";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import Image from "next/image";
-import { WIND_DIRECTIONS, chartConfigs } from "@/lib/data";
+import { WIND_DIRECTIONS, chartConfigs, DetailedChartData } from "@/lib/data";
 import { HistoryChart } from "./history-chart";
 import { Cloud, Droplets, Leaf, Thermometer, Wind, Waves } from "lucide-react";
 import { WeatherForecast } from "./weather-forecast";
 import { PeriodSelector } from "./period-selector";
 import { AlertLog } from "./alert-log";
 import { SensorCard } from "./sensor-card";
+import { DetailedChartModal } from "./detailed-chart-modal";
 
 
 function useInterval(callback: () => void, delay: number | null) {
@@ -39,6 +40,7 @@ export function DashboardClient({ initialCrop }: { initialCrop: Crop }) {
   const [fieldImage, setFieldImage] = useState<string | null>(null);
   const [isImageLoading, setIsImageLoading] = useState(true);
   const [period, setPeriod] = useState<"24h" | "7d" | "30d">('30d');
+  const [detailedChartData, setDetailedChartData] = useState<DetailedChartData | null>(null);
 
   const updateCropData = async () => {
     const newAirTemp = crop.airTemperature + (Math.random() - 0.5) * 0.3;
@@ -120,6 +122,17 @@ export function DashboardClient({ initialCrop }: { initialCrop: Crop }) {
     period === '7d' ? -7 : period === '24h' ? -1 : -30
   );
 
+  const handleSensorCardClick = (title: string, dataKey: keyof HistoryData, chartConfig: any, stroke: string) => {
+    setDetailedChartData({
+      title,
+      dataKey,
+      data: crop.history,
+      period,
+      setPeriod,
+      stroke
+    });
+  };
+
   return (
     <div className="flex flex-col gap-6">
       <CropCard crop={crop} />
@@ -140,6 +153,7 @@ export function DashboardClient({ initialCrop }: { initialCrop: Crop }) {
                             data={crop.history}
                             dataKey="airTemperature"
                             chartConfig={chartConfigs.airTemperature}
+                            onClick={() => handleSensorCardClick("Temperatura do Ar (°C)", "airTemperature", chartConfigs.airTemperature, "hsl(var(--chart-1))")}
                         />
                         <SensorCard 
                             icon={Droplets}
@@ -148,6 +162,7 @@ export function DashboardClient({ initialCrop }: { initialCrop: Crop }) {
                             data={crop.history}
                             dataKey="airHumidity"
                             chartConfig={chartConfigs.airHumidity}
+                             onClick={() => handleSensorCardClick("Umidade do Ar (%)", "airHumidity", chartConfigs.airHumidity, "hsl(var(--chart-2))")}
                         />
                          <SensorCard 
                             icon={Wind}
@@ -157,6 +172,7 @@ export function DashboardClient({ initialCrop }: { initialCrop: Crop }) {
                             data={crop.history}
                             dataKey="windSpeed"
                             chartConfig={chartConfigs.windSpeed}
+                             onClick={() => handleSensorCardClick("Velocidade do Vento (km/h)", "windSpeed", chartConfigs.windSpeed, "hsl(var(--chart-3))")}
                         />
                          <SensorCard 
                             icon={Cloud}
@@ -165,6 +181,7 @@ export function DashboardClient({ initialCrop }: { initialCrop: Crop }) {
                             data={crop.history}
                             dataKey="co2Concentration"
                             chartConfig={chartConfigs.co2Concentration}
+                             onClick={() => handleSensorCardClick("Concentração de CO2 (ppm)", "co2Concentration", chartConfigs.co2Concentration, "hsl(var(--foreground))")}
                         />
                         <SensorCard 
                             icon={Leaf}
@@ -173,6 +190,7 @@ export function DashboardClient({ initialCrop }: { initialCrop: Crop }) {
                             data={crop.history}
                             dataKey="soilMoisture"
                             chartConfig={chartConfigs.soilMoisture}
+                             onClick={() => handleSensorCardClick("Umidade do Solo (%)", "soilMoisture", chartConfigs.soilMoisture, "hsl(var(--chart-4))")}
                         />
                         <SensorCard 
                             icon={Waves}
@@ -181,6 +199,7 @@ export function DashboardClient({ initialCrop }: { initialCrop: Crop }) {
                             data={crop.history}
                             dataKey="nitrogen"
                             chartConfig={chartConfigs.nitrogen}
+                             onClick={() => handleSensorCardClick("Nitrogênio (N) (ppm)", "nitrogen", chartConfigs.nitrogen, "hsl(var(--chart-5))")}
                         />
                     </div>
 
@@ -272,7 +291,11 @@ export function DashboardClient({ initialCrop }: { initialCrop: Crop }) {
             </div>
         </CardContent>
       </Card>
-
+        <DetailedChartModal 
+            isOpen={!!detailedChartData}
+            onClose={() => setDetailedChartData(null)}
+            chartData={detailedChartData}
+        />
     </div>
   );
 }

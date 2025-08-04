@@ -18,11 +18,15 @@ type SensorCardProps = {
   data: HistoryData[];
   dataKey: keyof HistoryData;
   chartConfig: ChartConfig;
+  onClick: () => void;
 };
 
-export function SensorCard({ icon: Icon, title, metric, metric2, data, dataKey, chartConfig }: SensorCardProps) {
+export function SensorCard({ icon: Icon, title, metric, metric2, data, dataKey, chartConfig, onClick }: SensorCardProps) {
   return (
-    <Card className="bg-background/50 shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden">
+    <Card 
+        className="bg-background/50 shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden hover:ring-2 hover:ring-primary cursor-pointer"
+        onClick={onClick}
+    >
       <div className="p-4">
         <div className="flex flex-row items-center justify-between mb-2">
             <h3 className="text-sm font-medium text-muted-foreground">{title}</h3>
@@ -60,7 +64,7 @@ export function SensorCard({ icon: Icon, title, metric, metric2, data, dataKey, 
                   }}
               >
                   <defs>
-                      <linearGradient id={`fill-${String(dataKey)}`} x1="0" y1="0" x2="0" y2="1">
+                      <linearGradient id={`fill-sensor-${String(dataKey)}`} x1="0" y1="0" x2="0" y2="1">
                           <stop offset="5%" stopColor={`var(--color-${String(dataKey)})`} stopOpacity={0.8} />
                           <stop offset="95%" stopColor={`var(--color-${String(dataKey)})`} stopOpacity={0.1} />
                       </linearGradient>
@@ -68,7 +72,7 @@ export function SensorCard({ icon: Icon, title, metric, metric2, data, dataKey, 
                   <Area
                       dataKey={dataKey}
                       type="natural"
-                      fill={`url(#fill-${String(dataKey)})`}
+                      fill={`url(#fill-sensor-${String(dataKey)})`}
                       stroke={`var(--color-${String(dataKey)})`}
                       strokeWidth={2}
                       dot={false}

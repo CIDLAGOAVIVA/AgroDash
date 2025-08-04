@@ -21,7 +21,7 @@ export function HistoryChart({ data, dataKey, stroke }: HistoryChartProps) {
   } satisfies ChartConfig
 
   return (
-    <ChartContainer config={chartConfig} className="h-52 w-full">
+    <ChartContainer config={chartConfig} className="h-full w-full">
       <AreaChart 
         accessibilityLayer 
         data={data} 
@@ -51,7 +51,7 @@ export function HistoryChart({ data, dataKey, stroke }: HistoryChartProps) {
           content={<ChartTooltipContent 
             indicator="dot" 
             labelClassName="font-semibold" 
-            formatter={(value) => [`${value}`, '']}
+            formatter={(value, name) => [`${value}`, '']}
           />}
         />
         <defs>

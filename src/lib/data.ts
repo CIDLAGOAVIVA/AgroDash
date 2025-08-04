@@ -1,8 +1,17 @@
 
-import type { Crop, HistoryData } from "@/types";
+import type { Crop, HistoryData, Period } from "@/types";
 import type { ChartConfig } from "@/components/ui/chart"
 
 export const WIND_DIRECTIONS = ["N", "NE", "L", "SE", "S", "SO", "O", "NO"];
+
+export interface DetailedChartData {
+  title: string;
+  dataKey: keyof Omit<HistoryData, 'time' | 'windDirection'>;
+  data: HistoryData[];
+  period: Period;
+  setPeriod: (period: Period) => void;
+  stroke: string;
+}
 
 export const generateInitialHistory = (baseValues: { 
   airTemp: number; 
@@ -110,23 +119,23 @@ export const initialCrops: Crop[] = [
 ];
 
 
-export const chartConfigs = {
+export const chartConfigs: { [key: string]: ChartConfig } = {
   airTemperature: {
     airTemperature: { color: "hsl(var(--chart-1))" },
-  } satisfies ChartConfig,
+  },
   airHumidity: {
     airHumidity: { color: "hsl(var(--chart-2))" },
-  } satisfies ChartConfig,
+  },
   windSpeed: {
     windSpeed: { color: "hsl(var(--chart-3))" },
-  } satisfies ChartConfig,
+  },
   co2Concentration: {
     co2Concentration: { color: "hsl(var(--foreground))" },
-  } satisfies ChartConfig,
+  },
   soilMoisture: {
     soilMoisture: { color: "hsl(var(--chart-4))" },
-  } satisfies ChartConfig,
+  },
   nitrogen: {
     nitrogen: { color: "hsl(var(--chart-5))" },
-  } satisfies ChartConfig,
+  },
 };
