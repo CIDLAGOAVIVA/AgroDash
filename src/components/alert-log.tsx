@@ -39,11 +39,11 @@ interface AlertLogProps {
 
 export function AlertLog({ alerts }: AlertLogProps) {
     return (
-        <Card>
+        <Card className="h-full flex flex-col">
             <CardHeader>
                 <CardTitle>Log de Alertas</CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="flex-grow pt-0">
                 <ScrollArea className="h-96 pr-4">
                     <div className="flex flex-col gap-3">
                         {alerts.map((alert, index) => {
