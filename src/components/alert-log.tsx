@@ -52,8 +52,8 @@ export function AlertLog({ alerts }: AlertLogProps) {
                             return (
                                 <div key={index} className={cn("flex items-start gap-3 rounded-lg border p-3", config.className)}>
                                     <Icon className={cn("h-5 w-5 flex-shrink-0 mt-0.5", config.iconColor)} />
-                                    <div className="flex-grow">
-                                        <p className="text-sm text-foreground leading-tight">{alert.message}</p>
+                                    <div className="flex-1 min-w-0">
+                                        <p className="text-sm text-foreground leading-tight break-words">{alert.message}</p>
                                         <p className="text-xs text-muted-foreground mt-1">{alert.time}</p>
                                     </div>
                                 </div>
