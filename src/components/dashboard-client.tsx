@@ -145,49 +145,45 @@ export function DashboardClient({ initialCrop }: { initialCrop: Crop }) {
       <CropCard crop={crop} />
       
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <Card className="lg:col-span-2">
+        <Card className="lg:col-span-3">
             <CardHeader>
-                <CardTitle>Métricas Atuais e Status</CardTitle>
+                <CardTitle>Métricas Atuais, Status e Visualização</CardTitle>
             </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-6 mb-6">
-                <DataMetric icon={Thermometer} label="Temp. Ar" value={crop.airTemperature.toFixed(1)} unit="°C" />
-                <DataMetric icon={Droplets} label="Umidade Ar" value={crop.airHumidity.toFixed(1)} unit="%" />
-                <DataMetric icon={Wind} label="Vento" value={`${crop.windSpeed.toFixed(1)} km/h`} unit={crop.windDirection}/>
-                <DataMetric icon={Cloud} label="CO2" value={crop.co2Concentration.toFixed(0)} unit="ppm" />
-                <DataMetric icon={Leaf} label="Umidade Solo" value={crop.soilMoisture.toFixed(1)} unit="%" />
-                <DataMetric icon={Waves} label="Nitrogênio (N)" value={crop.nitrogen.toFixed(0)} unit="ppm" />
-              </div>
-              <Alert variant="default" className={cn("w-full border-2 p-3 rounded-lg", alertConfig.className)}>
-                  <div className="flex items-center">
-                      <AlertIcon className={cn("h-6 w-6 flex-shrink-0", alertConfig.iconColor)} />
-                      <div className="ml-3 flex-grow">
-                          <AlertTitle className="font-bold text-base">{alertConfig.title}</AlertTitle>
-                          <AlertDescription className="text-sm">{crop.alertMessage}</AlertDescription>
-                      </div>
-                  </div>
-              </Alert>
-            </CardContent>
-        </Card>
-        
-        <Card className="flex flex-col">
-            <CardHeader>
-                <CardTitle>Visualização e Previsão</CardTitle>
-            </CardHeader>
-            <CardContent className="grid grid-cols-1 gap-4 flex-grow">
-                 <div className="relative aspect-square w-full bg-muted/50 rounded-lg overflow-hidden border flex items-center justify-center">
-                    {isImageLoading ? (
-                    <div className="spinner"></div>
-                    ) : fieldImage && (
-                    <Image 
-                        src={fieldImage}
-                        alt={`Imagem gerada por IA de ${crop.fieldName}`}
-                        fill
-                        className="object-cover transition-all duration-500"
-                        key={fieldImage}
-                    />
-                    )}
+            <CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="grid grid-cols-2 gap-x-4 gap-y-6">
+                    <DataMetric icon={Thermometer} label="Temp. Ar" value={crop.airTemperature.toFixed(1)} unit="°C" />
+                    <DataMetric icon={Droplets} label="Umidade Ar" value={crop.airHumidity.toFixed(1)} unit="%" />
+                    <DataMetric icon={Wind} label="Vento" value={`${crop.windSpeed.toFixed(1)} km/h`} unit={crop.windDirection}/>
+                    <DataMetric icon={Cloud} label="CO2" value={crop.co2Concentration.toFixed(0)} unit="ppm" />
+                    <DataMetric icon={Leaf} label="Umidade Solo" value={crop.soilMoisture.toFixed(1)} unit="%" />
+                    <DataMetric icon={Waves} label="Nitrogênio (N)" value={crop.nitrogen.toFixed(0)} unit="ppm" />
                 </div>
+
+                <div className="flex flex-col gap-4">
+                  <Alert variant="default" className={cn("w-full border-2 p-3 rounded-lg flex-grow", alertConfig.className)}>
+                      <div className="flex items-center">
+                          <AlertIcon className={cn("h-6 w-6 flex-shrink-0", alertConfig.iconColor)} />
+                          <div className="ml-3 flex-grow">
+                              <AlertTitle className="font-bold text-base">{alertConfig.title}</AlertTitle>
+                              <AlertDescription className="text-sm">{crop.alertMessage}</AlertDescription>
+                          </div>
+                      </div>
+                  </Alert>
+                   <div className="relative aspect-video w-full bg-muted/50 rounded-lg overflow-hidden border flex items-center justify-center">
+                      {isImageLoading ? (
+                      <div className="spinner"></div>
+                      ) : fieldImage && (
+                      <Image 
+                          src={fieldImage}
+                          alt={`Imagem gerada por IA de ${crop.fieldName}`}
+                          fill
+                          className="object-cover transition-all duration-500"
+                          key={fieldImage}
+                      />
+                      )}
+                  </div>
+                </div>
+                
                 <WeatherForecast />
             </CardContent>
         </Card>
@@ -256,5 +252,3 @@ export function DashboardClient({ initialCrop }: { initialCrop: Crop }) {
     </div>
   );
 }
-
-    
