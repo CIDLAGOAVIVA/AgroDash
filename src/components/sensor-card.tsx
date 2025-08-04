@@ -32,7 +32,7 @@ export function SensorCard({ icon: Icon, title, metric, metric2, data, dataKey, 
             <h3 className="text-sm font-medium text-muted-foreground">{title}</h3>
             <Icon className="h-4 w-4 text-muted-foreground" />
         </div>
-        <div className="flex items-start gap-4">
+        <div className="flex items-start justify-between">
           <div>
             <p className="text-sm text-foreground/80">{metric.label}</p>
             <div className="flex items-baseline">
@@ -44,7 +44,7 @@ export function SensorCard({ icon: Icon, title, metric, metric2, data, dataKey, 
             <div className="text-right flex-shrink-0">
               <p className="text-sm text-foreground/80">{metric2.label}</p>
               <div className="flex items-baseline justify-end">
-                  <p className="text-lg font-semibold text-foreground/90">{metric2.value}</p>
+                  <p className="text-2xl font-bold text-primary">{metric2.value}</p>
                   {metric2.unit && <p className="text-xs text-muted-foreground ml-1">{metric2.unit}</p>}
               </div>
             </div>

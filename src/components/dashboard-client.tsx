@@ -167,8 +167,8 @@ export function DashboardClient({ initialCrop }: { initialCrop: Crop }) {
                          <SensorCard 
                             icon={Wind}
                             title="Vento"
-                            metric={{ label: "Velocidade", value: crop.windSpeed.toFixed(1), unit: "km/h" }}
-                            metric2={{ label: "Direção", value: crop.windDirection }}
+                            metric={{ label: "Vel.", value: crop.windSpeed.toFixed(1), unit: "km/h" }}
+                            metric2={{ label: "Dir.", value: crop.windDirection }}
                             data={crop.history}
                             dataKey="windSpeed"
                             chartConfig={chartConfigs.windSpeed}
