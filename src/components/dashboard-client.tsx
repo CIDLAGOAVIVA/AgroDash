@@ -126,7 +126,7 @@ export function DashboardClient({ initialCrop }: { initialCrop: Crop }) {
       
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:items-stretch">
           <div className="lg:col-span-2">
-            <Card>
+            <Card className="h-full">
               <CardHeader>
                   <CardTitle>Métricas Atuais, Status e Visualização</CardTitle>
               </CardHeader>
@@ -160,7 +160,7 @@ export function DashboardClient({ initialCrop }: { initialCrop: Crop }) {
               </CardContent>
             </Card>
           </div>
-          <div className="lg:col-span-1">
+          <div className="lg:col-span-1 h-full">
             <AlertLog alerts={crop.alertHistory} />
           </div>
       </div>

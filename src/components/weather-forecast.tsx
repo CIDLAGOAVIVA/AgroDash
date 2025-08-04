@@ -26,15 +26,15 @@ export function WeatherForecast() {
                 <div 
                     key={weather.day} 
                     className={cn(
-                    "flex flex-col items-center gap-2 p-1 rounded-md transition-colors duration-200 h-full justify-center",
+                    "flex flex-col items-center gap-1 p-1 rounded-md transition-colors duration-200 h-full justify-center",
                     weather.isToday ? "bg-accent/80" : ""
                     )}
                 >
-                    <span className="font-bold text-sm text-foreground">
+                    <span className="font-semibold text-xs text-foreground">
                     {weather.day}
                     </span>
-                    <Icon className="h-6 w-6 text-primary" />
-                    <span className="text-base font-semibold text-foreground">{weather.high}°</span>
+                    <Icon className="h-5 w-5 text-primary" />
+                    <span className="text-sm font-bold text-foreground">{weather.high}°</span>
                 </div>
                 );
             })}
