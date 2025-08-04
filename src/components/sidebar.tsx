@@ -3,7 +3,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import {
   Home,
   Leaf,
@@ -184,6 +184,7 @@ function SidebarMobile({ crops }: SidebarProps) {
                 onClick={() => setOpen(false)}
                 className={cn("mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground", pathname === "/" && "bg-muted text-foreground")}
               >
+
                 <Home className="h-5 w-5" />
                 Visão Geral
               </Link>
@@ -210,16 +211,10 @@ function SidebarMobile({ crops }: SidebarProps) {
   }
 
 export function Sidebar({ crops }: SidebarProps) {
-  const [isClient, setIsClient] = useState(false)
-
-  useEffect(() => {
-    setIsClient(true)
-  }, [])
-
   return (
     <>
       <SidebarDesktop crops={crops} />
-      {isClient && <SidebarMobile crops={crops} />}
+      <SidebarMobile crops={crops} />
     </>
   );
 }
