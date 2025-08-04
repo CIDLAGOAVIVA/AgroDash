@@ -144,8 +144,8 @@ export function DashboardClient({ initialCrop }: { initialCrop: Crop }) {
     <div className="flex flex-col gap-6">
       <CropCard crop={crop} />
       
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <Card className="lg:col-span-3">
+      <div className="grid grid-cols-1 lg:grid-cols-1 gap-6">
+        <Card>
             <CardHeader>
                 <CardTitle>Métricas Atuais, Status e Visualização</CardTitle>
             </CardHeader>
@@ -160,16 +160,7 @@ export function DashboardClient({ initialCrop }: { initialCrop: Crop }) {
                 </div>
 
                 <div className="flex flex-col gap-4">
-                  <Alert variant="default" className={cn("w-full border-2 p-3 rounded-lg flex-grow", alertConfig.className)}>
-                      <div className="flex items-center">
-                          <AlertIcon className={cn("h-6 w-6 flex-shrink-0", alertConfig.iconColor)} />
-                          <div className="ml-3 flex-grow">
-                              <AlertTitle className="font-bold text-base">{alertConfig.title}</AlertTitle>
-                              <AlertDescription className="text-sm">{crop.alertMessage}</AlertDescription>
-                          </div>
-                      </div>
-                  </Alert>
-                   <div className="relative aspect-video w-full bg-muted/50 rounded-lg overflow-hidden border flex items-center justify-center">
+                  <div className="relative aspect-video w-full bg-muted/50 rounded-lg overflow-hidden border flex items-center justify-center">
                       {isImageLoading ? (
                       <div className="spinner"></div>
                       ) : fieldImage && (
@@ -182,9 +173,18 @@ export function DashboardClient({ initialCrop }: { initialCrop: Crop }) {
                       />
                       )}
                   </div>
+                   <WeatherForecast />
                 </div>
                 
-                <WeatherForecast />
+                <Alert variant="default" className={cn("w-full border-2 p-3 rounded-lg flex-grow", alertConfig.className)}>
+                    <div className="flex items-center">
+                        <AlertIcon className={cn("h-6 w-6 flex-shrink-0", alertConfig.iconColor)} />
+                        <div className="ml-3 flex-grow">
+                            <AlertTitle className="font-bold text-base">{alertConfig.title}</AlertTitle>
+                            <AlertDescription className="text-sm">{crop.alertMessage}</AlertDescription>
+                        </div>
+                    </div>
+                </Alert>
             </CardContent>
         </Card>
       </div>
