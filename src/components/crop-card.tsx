@@ -24,14 +24,14 @@ export function CropCard({ crop }: CropCardProps) {
 
   return (
     <Card className="w-full">
-      <CardHeader>
-        <div className="flex items-center space-x-4">
-            <div className="bg-primary/10 p-3 rounded-lg border border-primary/20">
-                <CropIcon className="h-8 w-8 text-primary"/>
+      <CardHeader className="p-3">
+        <div className="flex items-center space-x-3">
+            <div className="bg-primary/10 p-2 rounded-md border border-primary/20">
+                <CropIcon className="h-6 w-6 text-primary"/>
             </div>
             <div>
-                <CardTitle className="text-2xl font-bold">{crop.cropType}</CardTitle>
-                <CardDescription className="text-base">{crop.fieldName}</CardDescription>
+                <CardTitle className="text-xl font-bold">{crop.cropType}</CardTitle>
+                <CardDescription className="text-sm">{crop.fieldName}</CardDescription>
             </div>
         </div>
       </CardHeader>
