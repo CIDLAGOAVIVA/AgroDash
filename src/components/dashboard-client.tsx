@@ -141,7 +141,8 @@ export function DashboardClient({ initialCrop }: { initialCrop: Crop }) {
                   </div>
 
                   <div className="flex flex-col gap-4">
-                      <div className="relative aspect-video w-full bg-muted/50 rounded-lg overflow-hidden border flex items-center justify-center">
+                        <WeatherForecast />
+                        <div className="relative aspect-video w-full bg-muted/50 rounded-lg overflow-hidden border flex items-center justify-center">
                           {isImageLoading ? (
                           <div className="spinner"></div>
                           ) : fieldImage && (
@@ -155,12 +156,11 @@ export function DashboardClient({ initialCrop }: { initialCrop: Crop }) {
                           />
                           )}
                       </div>
-                      <WeatherForecast />
                   </div>
               </CardContent>
             </Card>
           </div>
-          <div className="lg:col-span-1 h-full">
+          <div className="lg:col-span-1">
             <AlertLog alerts={crop.alertHistory} />
           </div>
       </div>
