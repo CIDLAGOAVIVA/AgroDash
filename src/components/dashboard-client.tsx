@@ -205,7 +205,7 @@ export function DashboardClient({ initialCrop }: { initialCrop: Crop }) {
         </div>
         
         <div className="lg:col-span-2 flex flex-col gap-3 min-h-[500px] lg:min-h-0">
-            <Card className="flex-grow relative group">
+            <Card className="flex-grow relative group h-1/2">
                 <CardHeader className="absolute top-0 left-0 z-10 p-2">
                     <CardTitle className="text-sm bg-black/40 text-white px-2 py-1 rounded">Imagem do Campo (IA)</CardTitle>
                 </CardHeader>
@@ -259,7 +259,7 @@ export function DashboardClient({ initialCrop }: { initialCrop: Crop }) {
                 <CardHeader>
                     <CardTitle className="text-base">Log de Alertas</CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="p-6 h-[500px]">
                     <AlertLog alerts={crop.alertHistory} />
                 </CardContent>
             </Card>

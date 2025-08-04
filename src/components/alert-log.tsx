@@ -5,12 +5,6 @@ import type { AlertEntry, AlertSeverity } from "@/types";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { ShieldCheck, ShieldAlert, ShieldX } from "lucide-react";
 import { cn } from "@/lib/utils";
-import {
-    Tooltip,
-    TooltipContent,
-    TooltipProvider,
-    TooltipTrigger,
-  } from "@/components/ui/tooltip";
 
 type SeverityConfig = {
     [key in AlertSeverity]: {
@@ -44,33 +38,22 @@ interface AlertLogProps {
 
 export function AlertLog({ alerts }: AlertLogProps) {
     return (
-        <TooltipProvider>
-            <Tooltip>
-                <TooltipTrigger asChild>
-                    <div className="h-full flex flex-col">
-                        <ScrollArea className="flex-grow h-[400px] lg:h-full pr-4 border rounded-lg bg-background p-2">
-                            <div className="flex flex-col gap-2">
-                                {alerts.map((alert, index) => {
-                                    const config = severityConfig[alert.severity];
-                                    const Icon = config.icon;
-                                    return (
-                                        <div key={index} className={cn("flex items-start gap-3 rounded-lg border p-3", config.className)}>
-                                            <Icon className={cn("h-5 w-5 flex-shrink-0 mt-0.5", config.iconColor)} />
-                                            <div className="flex-1 min-w-0">
-                                                <p className="text-sm text-foreground leading-tight break-words">{alert.message}</p>
-                                                <p className="text-xs text-muted-foreground mt-1">{alert.dateTime}</p>
-                                            </div>
-                                        </div>
-                                    );
-                                })}
+        <ScrollArea className="h-full w-full pr-4 border rounded-lg bg-background p-2">
+            <div className="flex flex-col gap-2">
+                {alerts.map((alert, index) => {
+                    const config = severityConfig[alert.severity];
+                    const Icon = config.icon;
+                    return (
+                        <div key={index} className={cn("flex items-start gap-3 rounded-lg border p-3", config.className)}>
+                            <Icon className={cn("h-5 w-5 flex-shrink-0 mt-0.5", config.iconColor)} />
+                            <div className="flex-1 min-w-0">
+                                <p className="text-sm text-foreground leading-tight break-words">{alert.message}</p>
+                                <p className="text-xs text-muted-foreground mt-1">{alert.dateTime}</p>
                             </div>
-                        </ScrollArea>
-                    </div>
-                </TooltipTrigger>
-                <TooltipContent>
-                    <p>Log de Alerta</p>
-                </TooltipContent>
-            </Tooltip>
-        </TooltipProvider>
+                        </div>
+                    );
+                })}
+            </div>
+        </ScrollArea>
     );
 }
