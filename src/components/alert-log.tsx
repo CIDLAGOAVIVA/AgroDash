@@ -39,29 +39,25 @@ interface AlertLogProps {
 
 export function AlertLog({ alerts }: AlertLogProps) {
     return (
-        <Card>
-            <CardHeader>
-                <CardTitle>Log de Alertas</CardTitle>
-            </CardHeader>
-            <CardContent>
-                <ScrollArea className="h-96 pr-4">
-                    <div className="flex flex-col gap-3">
-                        {alerts.map((alert, index) => {
-                            const config = severityConfig[alert.severity];
-                            const Icon = config.icon;
-                            return (
-                                <div key={index} className={cn("flex items-start gap-3 rounded-lg border p-3", config.className)}>
-                                    <Icon className={cn("h-5 w-5 flex-shrink-0 mt-0.5", config.iconColor)} />
-                                    <div className="flex-1 min-w-0">
-                                        <p className="text-sm text-foreground leading-tight break-words">{alert.message}</p>
-                                        <p className="text-xs text-muted-foreground mt-1">{alert.time}</p>
-                                    </div>
+        <div className="h-full flex flex-col">
+            <h3 className="text-lg font-semibold mb-2 text-foreground">Log de Alertas</h3>
+            <ScrollArea className="h-96 pr-4 border rounded-lg bg-background p-2">
+                <div className="flex flex-col gap-3">
+                    {alerts.map((alert, index) => {
+                        const config = severityConfig[alert.severity];
+                        const Icon = config.icon;
+                        return (
+                            <div key={index} className={cn("flex items-start gap-3 rounded-lg border p-3", config.className)}>
+                                <Icon className={cn("h-5 w-5 flex-shrink-0 mt-0.5", config.iconColor)} />
+                                <div className="flex-1 min-w-0">
+                                    <p className="text-sm text-foreground leading-tight break-words">{alert.message}</p>
+                                    <p className="text-xs text-muted-foreground mt-1">{alert.time}</p>
                                 </div>
-                            );
-                        })}
-                    </div>
-                </ScrollArea>
-            </CardContent>
-        </Card>
+                            </div>
+                        );
+                    })}
+                </div>
+            </ScrollArea>
+        </div>
     );
 }

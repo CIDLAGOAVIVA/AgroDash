@@ -145,55 +145,51 @@ export function DashboardClient({ initialCrop }: { initialCrop: Crop }) {
     <div className="flex flex-col gap-6">
       <CropCard crop={crop} />
       
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2">
-            <Card>
-              <CardHeader>
-                  <CardTitle>Métricas Atuais e Visualização</CardTitle>
-              </CardHeader>
-              <CardContent>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="flex flex-col gap-2">
-                        {metrics.map((metric) => (
-                           <DataMetric 
-                                key={metric.dataKey}
-                                icon={metric.icon}
-                                label={metric.title}
-                                value={metric.value}
-                                unit={metric.unit}
-                                value2={metric.value2}
-                                onClick={() => handleMetricClick(metric)}
-                            />
-                        ))}
-                    </div>
+      <Card>
+        <CardHeader>
+            <CardTitle>Métricas Atuais, Status e Visualização</CardTitle>
+        </CardHeader>
+        <CardContent>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+              <div className="flex flex-col gap-2">
+                  {metrics.map((metric) => (
+                      <DataMetric 
+                          key={metric.dataKey}
+                          icon={metric.icon}
+                          label={metric.title}
+                          value={metric.value}
+                          unit={metric.unit}
+                          value2={metric.value2}
+                          onClick={() => handleMetricClick(metric)}
+                      />
+                  ))}
+              </div>
 
-                      <div className="flex flex-col gap-4">
-                        <div className="relative aspect-video w-full bg-muted/50 rounded-lg overflow-hidden border flex items-center justify-center flex-grow">
-                            {isImageLoading ? (
-                            <div className="spinner"></div>
-                            ) : fieldImage && (
-                            <Image 
-                                src={fieldImage}
-                                alt={`Imagem gerada por IA de ${crop.fieldName}`}
-                                fill
-                                className="object-cover transition-all duration-500"
-                                key={fieldImage}
-                                data-ai-hint="agriculture field"
-                            />
-                            )}
-                        </div>
-                        <div className="flex-shrink-0">
-                            <WeatherForecast />
-                        </div>
-                      </div>
+              <div className="flex flex-col justify-between gap-4 h-full">
+                  <div className="relative aspect-video w-full bg-muted/50 rounded-lg overflow-hidden border flex items-center justify-center flex-grow">
+                      {isImageLoading ? (
+                      <div className="spinner"></div>
+                      ) : fieldImage && (
+                      <Image 
+                          src={fieldImage}
+                          alt={`Imagem gerada por IA de ${crop.fieldName}`}
+                          fill
+                          className="object-cover transition-all duration-500"
+                          key={fieldImage}
+                          data-ai-hint="agriculture field"
+                      />
+                      )}
                   </div>
-              </CardContent>
-            </Card>
-          </div>
-          <div className="lg:col-span-1">
-            <AlertLog alerts={crop.alertHistory} />
-          </div>
-      </div>
+                  <div className="flex-shrink-0">
+                      <WeatherForecast />
+                  </div>
+              </div>
+              
+              <AlertLog alerts={crop.alertHistory} />
+
+            </div>
+        </CardContent>
+      </Card>
 
 
       <Card>
