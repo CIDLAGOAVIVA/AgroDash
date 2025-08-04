@@ -14,7 +14,7 @@ import { DetailedChartModal } from "./detailed-chart-modal";
 import { CropCard } from "./crop-card";
 import { WeatherForecast } from "./weather-forecast";
 import { cn } from "@/lib/utils";
-import { Dialog, DialogContent } from "./ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
 
 function useInterval(callback: () => void, delay: number | null) {
   const savedCallback = useRef<() => void>();
@@ -60,6 +60,9 @@ const FullscreenModal = ({ content, onClose }: { content: React.ReactNode, onClo
   return (
     <Dialog open={!!content} onOpenChange={(isOpen) => !isOpen && onClose()}>
         <DialogContent className="p-0 border-0 max-w-none w-screen h-screen">
+          <DialogHeader className="sr-only">
+            <DialogTitle>Visualização em Tela Cheia</DialogTitle>
+          </DialogHeader>
           <div className="relative w-full h-full">
             {content}
             <button onClick={onClose} className="absolute top-4 right-4 z-10 p-2 bg-black/50 text-white rounded-full">
