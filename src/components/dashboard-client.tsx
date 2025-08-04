@@ -160,7 +160,7 @@ export function DashboardClient({ initialCrop }: { initialCrop: Crop }) {
               </CardContent>
             </Card>
           </div>
-          <div className="lg:col-span-1">
+          <div className="lg:col-span-1 h-full">
             <AlertLog alerts={crop.alertHistory} />
           </div>
       </div>
