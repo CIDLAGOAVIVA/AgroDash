@@ -67,8 +67,7 @@ function SidebarDesktop({ crops }: SidebarProps) {
     >
       <div className="flex h-16 shrink-0 items-center justify-center border-b px-4">
         <Link href="/" className="flex items-center gap-2 font-semibold">
-          <Leaf className="h-6 w-6 text-primary" />
-          <span className={cn("transition-opacity", !isOpen && "opacity-0 w-0")}>
+          <span className={cn("transition-opacity text-primary font-bold", !isOpen && "opacity-0 w-0")}>
             AgriDash
           </span>
         </Link>
@@ -161,13 +160,6 @@ function SidebarMobile({ crops }: SidebarProps) {
 
     return (
       <header className="sticky top-0 z-40 flex h-16 items-center justify-between border-b bg-background px-4 md:hidden">
-        <Link
-          href="/"
-          className="flex items-center gap-2 text-lg font-semibold"
-        >
-          <Leaf className="h-6 w-6 text-primary" />
-          <span className="sr-only">AgriDash</span>
-        </Link>
         <Sheet open={open} onOpenChange={setOpen}>
           <SheetTrigger asChild>
             <Button size="icon" variant="outline">
@@ -185,7 +177,6 @@ function SidebarMobile({ crops }: SidebarProps) {
                 className="flex items-center gap-2 text-lg font-semibold mb-4"
                 onClick={() => setOpen(false)}
               >
-                <Leaf className="h-6 w-6 text-primary" />
                 <span>AgriDash</span>
               </Link>
               <Link
