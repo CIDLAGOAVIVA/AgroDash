@@ -1,4 +1,5 @@
 import type { ComponentType } from "react";
+import { cn } from "@/lib/utils";
 
 type DataMetricProps = {
   icon: ComponentType<{ className?: string }>;
@@ -7,11 +8,18 @@ type DataMetricProps = {
   unit?: string;
   value2?: string | number;
   unit2?: string;
+  onClick?: () => void;
 };
 
-export function DataMetric({ icon: Icon, label, value, unit, value2, unit2 }: DataMetricProps) {
+export function DataMetric({ icon: Icon, label, value, unit, value2, unit2, onClick }: DataMetricProps) {
   return (
-    <div className="flex items-center space-x-4 rounded-lg bg-background p-3 hover:bg-muted/50 transition-colors duration-200">
+    <div 
+        className={cn(
+            "flex items-center space-x-4 rounded-lg bg-background p-3 transition-colors duration-200",
+            onClick && "cursor-pointer hover:bg-muted/50"
+        )}
+        onClick={onClick}
+    >
         <Icon className="h-7 w-7 text-primary/80 flex-shrink-0" />
       <div className="flex-1">
         <p className="text-sm text-muted-foreground">{label}</p>

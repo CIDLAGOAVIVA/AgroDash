@@ -7,13 +7,14 @@ import { generateAnomalyAlerts, generateFieldImage } from "@/app/actions";
 import type { Crop, HistoryData } from "@/types";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import Image from "next/image";
-import { WIND_DIRECTIONS, chartConfigs } from "@/lib/data";
+import { WIND_DIRECTIONS } from "@/lib/data";
 import { HistoryChart } from "./history-chart";
 import { Cloud, Droplets, Leaf, Thermometer, Wind, Waves } from "lucide-react";
 import { WeatherForecast } from "./weather-forecast";
 import { PeriodSelector } from "./period-selector";
 import { AlertLog } from "./alert-log";
 import { DataMetric } from "./data-metric";
+import { DetailedChartModal } from "./detailed-chart-modal";
 
 
 function useInterval(callback: () => void, delay: number | null) {
@@ -34,11 +35,18 @@ function useInterval(callback: () => void, delay: number | null) {
   }, [delay]);
 }
 
+type DetailedChartDataType = {
+  title: string;
+  dataKey: keyof Omit<HistoryData, 'time' | 'windDirection'>;
+  stroke: string;
+}
+
 export function DashboardClient({ initialCrop }: { initialCrop: Crop }) {
   const [crop, setCrop] = useState<Crop>(initialCrop);
   const [fieldImage, setFieldImage] = useState<string | null>(null);
   const [isImageLoading, setIsImageLoading] = useState(true);
   const [period, setPeriod] = useState<"24h" | "7d" | "30d">('30d');
+  const [detailedChartData, setDetailedChartData] = useState<DetailedChartDataType | null>(null);
 
   const updateCropData = async () => {
     const newAirTemp = crop.airTemperature + (Math.random() - 0.5) * 0.3;
@@ -120,6 +128,19 @@ export function DashboardClient({ initialCrop }: { initialCrop: Crop }) {
     period === '7d' ? -7 : period === '24h' ? -1 : -30
   );
 
+  const handleMetricClick = (chartData: DetailedChartDataType) => {
+    setDetailedChartData(chartData);
+  }
+
+  const metrics: (DetailedChartDataType & { icon: React.ComponentType<{ className?: string }>, value: string, unit: string, value2?: string, unit2?: string})[] = [
+    { title: "Temperatura do Ar", dataKey: "airTemperature", stroke: "hsl(var(--chart-1))", icon: Thermometer, value: crop.airTemperature.toFixed(1), unit: "°C" },
+    { title: "Umidade do Ar", dataKey: "airHumidity", stroke: "hsl(var(--chart-2))", icon: Droplets, value: crop.airHumidity.toFixed(1), unit: "%" },
+    { title: "Vento", dataKey: "windSpeed", stroke: "hsl(var(--chart-3))", icon: Wind, value: crop.windSpeed.toFixed(1), unit: "km/h", value2: crop.windDirection },
+    { title: "Concentração de CO2", dataKey: "co2Concentration", stroke: "hsl(var(--foreground))", icon: Cloud, value: crop.co2Concentration.toFixed(0), unit: "ppm" },
+    { title: "Umidade do Solo", dataKey: "soilMoisture", stroke: "hsl(var(--chart-4))", icon: Leaf, value: crop.soilMoisture.toFixed(1), unit: "%" },
+    { title: "Nitrogênio (N)", dataKey: "nitrogen", stroke: "hsl(var(--chart-5))", icon: Waves, value: crop.nitrogen.toFixed(0), unit: "ppm" },
+  ];
+
   return (
     <div className="flex flex-col gap-6">
       <CropCard crop={crop} />
@@ -128,48 +149,22 @@ export function DashboardClient({ initialCrop }: { initialCrop: Crop }) {
           <div className="lg:col-span-2">
             <Card className="h-full">
               <CardHeader>
-                  <CardTitle>Métricas Atuais, Status e Visualização</CardTitle>
+                  <CardTitle>Métricas Atuais e Visualização</CardTitle>
               </CardHeader>
               <CardContent className="h-[calc(100%-4rem)]">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6 h-full">
                     <div className="flex flex-col gap-2">
-                        <DataMetric 
-                            icon={Thermometer}
-                            label="Temperatura do Ar"
-                            value={crop.airTemperature.toFixed(1)}
-                            unit="°C"
-                        />
-                        <DataMetric 
-                            icon={Droplets}
-                            label="Umidade do Ar"
-                            value={crop.airHumidity.toFixed(1)}
-                            unit="%"
-                        />
-                         <DataMetric 
-                            icon={Wind}
-                            label="Vento"
-                            value={crop.windSpeed.toFixed(1)}
-                            unit="km/h"
-                            value2={crop.windDirection}
-                        />
-                         <DataMetric 
-                            icon={Cloud}
-                            label="Concentração de CO2"
-                            value={crop.co2Concentration.toFixed(0)}
-                            unit="ppm"
-                        />
-                        <DataMetric 
-                            icon={Leaf}
-                            label="Umidade do Solo"
-                            value={crop.soilMoisture.toFixed(1)}
-                            unit="%"
-                        />
-                        <DataMetric 
-                            icon={Waves}
-                            label="Nitrogênio (N)"
-                            value={crop.nitrogen.toFixed(0)}
-                            unit="ppm"
-                        />
+                        {metrics.map((metric) => (
+                           <DataMetric 
+                                key={metric.dataKey}
+                                icon={metric.icon}
+                                label={metric.title}
+                                value={metric.value}
+                                unit={metric.unit}
+                                value2={metric.value2}
+                                onClick={() => handleMetricClick(metric)}
+                            />
+                        ))}
                     </div>
 
                       <div className="flex flex-col gap-4">
@@ -210,56 +205,28 @@ export function DashboardClient({ initialCrop }: { initialCrop: Crop }) {
             <PeriodSelector period={period} setPeriod={setPeriod} />
         </CardHeader>
         <CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-8">
-            <div>
-                <h3 className="text-base font-semibold mb-2 text-foreground">Temperatura do Ar (°C)</h3>
-                <HistoryChart 
-                    data={historyData} 
-                    dataKey="airTemperature"
-                    stroke="hsl(var(--chart-1))"
-                />
+          {metrics.map((metric) => (
+            <div key={metric.dataKey}>
+              <h3 className="text-base font-semibold mb-2 text-foreground">{metric.title} ({metric.unit})</h3>
+              <HistoryChart 
+                  data={historyData} 
+                  dataKey={metric.dataKey}
+                  stroke={metric.stroke}
+              />
             </div>
-            <div>
-                 <h3 className="text-base font-semibold mb-2 text-foreground">Umidade do Ar (%)</h3>
-                <HistoryChart 
-                    data={historyData} 
-                    dataKey="airHumidity"
-                    stroke="hsl(var(--chart-2))"
-                />
-            </div>
-            <div>
-                <h3 className="text-base font-semibold mb-2 text-foreground">Velocidade do Vento (km/h)</h3>
-                <HistoryChart 
-                    data={historyData} 
-                    dataKey="windSpeed"
-                    stroke="hsl(var(--chart-3))"
-                />
-            </div>
-            <div>
-                <h3 className="text-base font-semibold mb-2 text-foreground">Concentração de CO2 (ppm)</h3>
-                <HistoryChart 
-                    data={historyData} 
-                    dataKey="co2Concentration"
-                    stroke="hsl(var(--foreground))"
-                />
-            </div>
-             <div>
-                <h3 className="text-base font-semibold mb-2 text-foreground">Umidade do Solo (%)</h3>
-                <HistoryChart 
-                    data={historyData} 
-                    dataKey="soilMoisture"
-                    stroke="hsl(var(--chart-4))"
-                />
-            </div>
-             <div>
-                <h3 className="text-base font-semibold mb-2 text-foreground">Nitrogênio (N) (ppm)</h3>
-                <HistoryChart 
-                    data={historyData} 
-                    dataKey="nitrogen"
-                    stroke="hsl(var(--chart-5))"
-                />
-            </div>
+          ))}
         </CardContent>
       </Card>
+
+      <DetailedChartModal 
+        isOpen={!!detailedChartData}
+        onClose={() => setDetailedChartData(null)}
+        title={detailedChartData?.title || ""}
+        dataKey={detailedChartData?.dataKey}
+        data={historyData}
+        stroke={detailedChartData?.stroke || ""}
+      />
+
     </div>
   );
 }
