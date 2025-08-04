@@ -1,3 +1,4 @@
+
 "use client";
 
 import Link from "next/link";
@@ -11,7 +12,7 @@ import {
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import {
   Tooltip,
   TooltipContent,
@@ -165,6 +166,9 @@ function SidebarMobile({ crops }: SidebarProps) {
             </Button>
           </SheetTrigger>
           <SheetContent side="left" className="flex flex-col">
+          <SheetHeader>
+              <SheetTitle className="sr-only">Navegação Principal</SheetTitle>
+            </SheetHeader>
             <nav className="grid gap-2 text-lg font-medium">
               <Link
                 href="/"
