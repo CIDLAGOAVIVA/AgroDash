@@ -1,17 +1,8 @@
 
-import type { Crop, HistoryData, Period } from "@/types";
+import type { Crop, HistoryData } from "@/types";
 import type { ChartConfig } from "@/components/ui/chart"
 
 export const WIND_DIRECTIONS = ["N", "NE", "L", "SE", "S", "SO", "O", "NO"];
-
-export interface DetailedChartData {
-  title: string;
-  dataKey: keyof Omit<HistoryData, 'time' | 'windDirection'>;
-  data: HistoryData[];
-  period: Period;
-  setPeriod: (period: Period) => void;
-  stroke: string;
-}
 
 export const generateInitialHistory = (baseValues: { 
   airTemp: number; 
