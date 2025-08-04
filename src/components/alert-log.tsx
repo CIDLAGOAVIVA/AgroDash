@@ -44,7 +44,7 @@ export function AlertLog({ alerts }: AlertLogProps) {
                 <CardTitle>Log de Alertas</CardTitle>
             </CardHeader>
             <CardContent className="flex-grow pt-0">
-                <ScrollArea className="h-96 pr-4">
+                <ScrollArea className="h-full pr-4">
                     <div className="flex flex-col gap-3">
                         {alerts.map((alert, index) => {
                             const config = severityConfig[alert.severity];
