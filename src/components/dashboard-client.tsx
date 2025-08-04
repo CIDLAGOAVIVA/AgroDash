@@ -2,7 +2,6 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { CropCard } from "./crop-card";
 import { generateAnomalyAlerts, generateFieldImage } from "@/app/actions";
 import type { Crop, HistoryData } from "@/types";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -15,6 +14,7 @@ import { PeriodSelector } from "./period-selector";
 import { AlertLog } from "./alert-log";
 import { DataMetric } from "./data-metric";
 import { DetailedChartModal } from "./detailed-chart-modal";
+import { CropCard } from "./crop-card";
 
 
 function useInterval(callback: () => void, delay: number | null) {
@@ -145,14 +145,14 @@ export function DashboardClient({ initialCrop }: { initialCrop: Crop }) {
     <div className="flex flex-col gap-6">
       <CropCard crop={crop} />
       
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:items-stretch">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2">
-            <Card className="h-full">
+            <Card>
               <CardHeader>
                   <CardTitle>Métricas Atuais e Visualização</CardTitle>
               </CardHeader>
-              <CardContent className="h-[calc(100%-4rem)]">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 h-full">
+              <CardContent>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="flex flex-col gap-2">
                         {metrics.map((metric) => (
                            <DataMetric 
@@ -190,7 +190,7 @@ export function DashboardClient({ initialCrop }: { initialCrop: Crop }) {
               </CardContent>
             </Card>
           </div>
-          <div className="lg:col-span-1 h-full">
+          <div className="lg:col-span-1">
             <AlertLog alerts={crop.alertHistory} />
           </div>
       </div>
