@@ -132,7 +132,7 @@ export function DashboardClient({ initialCrop }: { initialCrop: Crop }) {
     setDetailedChartData(chartData);
   }
 
-  const metrics: (DetailedChartDataType & { icon: React.ComponentType<{ className?: string }>, value: string, unit: string, value2?: string, unit2?: string})[] = [
+  const metrics: (Omit<DetailedChartDataType, 'dataKey'> & { dataKey: keyof HistoryData, icon: React.ComponentType<{ className?: string }>, value: string, unit: string, value2?: string, unit2?: string})[] = [
     { title: "Temperatura do Ar", dataKey: "airTemperature", stroke: "hsl(var(--chart-1))", icon: Thermometer, value: crop.airTemperature.toFixed(1), unit: "°C" },
     { title: "Umidade do Ar", dataKey: "airHumidity", stroke: "hsl(var(--chart-2))", icon: Droplets, value: crop.airHumidity.toFixed(1), unit: "%" },
     { title: "Vento", dataKey: "windSpeed", stroke: "hsl(var(--chart-3))", icon: Wind, value: crop.windSpeed.toFixed(1), unit: "km/h", value2: crop.windDirection },
@@ -143,76 +143,63 @@ export function DashboardClient({ initialCrop }: { initialCrop: Crop }) {
 
   return (
     <div className="flex flex-col gap-6">
-      <CropCard crop={crop} />
+      <CropCard crop={crop} metrics={metrics.map(m => ({ ...m, onClick: () => handleMetricClick(m) }))} />
       
-      <Card>
-        <CardHeader>
-            <CardTitle>Métricas Atuais, Status e Visualização</CardTitle>
-        </CardHeader>
-        <CardContent>
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
-              <div className="flex flex-col gap-2">
-                  {metrics.map((metric) => (
-                      <DataMetric 
-                          key={metric.dataKey}
-                          icon={metric.icon}
-                          label={metric.title}
-                          value={metric.value}
-                          unit={metric.unit}
-                          value2={metric.value2}
-                          onClick={() => handleMetricClick(metric)}
-                      />
-                  ))}
-              </div>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <Card className="lg:col-span-2">
+            <CardHeader>
+                <CardTitle>Visualização e Log de Alertas</CardTitle>
+            </CardHeader>
+            <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+                    <div className="flex flex-col justify-between gap-4 h-full">
+                        <div className="relative aspect-video w-full bg-muted/50 rounded-lg overflow-hidden border flex items-center justify-center flex-grow">
+                            {isImageLoading ? (
+                            <div className="spinner"></div>
+                            ) : fieldImage && (
+                            <Image 
+                                src={fieldImage}
+                                alt={`Imagem gerada por IA de ${crop.fieldName}`}
+                                fill
+                                className="object-cover transition-all duration-500"
+                                key={fieldImage}
+                                data-ai-hint="agriculture field"
+                            />
+                            )}
+                        </div>
+                        <div className="flex-shrink-0">
+                            <WeatherForecast />
+                        </div>
+                    </div>
+                    
+                    <AlertLog alerts={crop.alertHistory} />
+                </div>
+            </CardContent>
+        </Card>
 
-              <div className="flex flex-col justify-between gap-4 h-full">
-                  <div className="relative aspect-video w-full bg-muted/50 rounded-lg overflow-hidden border flex items-center justify-center flex-grow">
-                      {isImageLoading ? (
-                      <div className="spinner"></div>
-                      ) : fieldImage && (
-                      <Image 
-                          src={fieldImage}
-                          alt={`Imagem gerada por IA de ${crop.fieldName}`}
-                          fill
-                          className="object-cover transition-all duration-500"
-                          key={fieldImage}
-                          data-ai-hint="agriculture field"
-                      />
-                      )}
-                  </div>
-                  <div className="flex-shrink-0">
-                      <WeatherForecast />
-                  </div>
-              </div>
-              
-              <AlertLog alerts={crop.alertHistory} />
+        <Card>
+            <CardHeader className="flex flex-row justify-between items-start">
+                <div>
+                    <CardTitle>Histórico de Dados</CardTitle>
+                    <CardDescription>Variação das métricas ao longo do tempo.</CardDescription>
+                </div>
+                <PeriodSelector period={period} setPeriod={setPeriod} />
+            </CardHeader>
+            <CardContent className="grid grid-cols-1 gap-x-6 gap-y-8">
+              {metrics.map((metric) => (
+                <div key={metric.dataKey}>
+                  <h3 className="text-base font-semibold mb-2 text-foreground">{metric.title} ({metric.unit})</h3>
+                  <HistoryChart 
+                      data={historyData} 
+                      dataKey={metric.dataKey}
+                      stroke={metric.stroke}
+                  />
+                </div>
+              ))}
+            </CardContent>
+        </Card>
+      </div>
 
-            </div>
-        </CardContent>
-      </Card>
-
-
-      <Card>
-        <CardHeader className="flex flex-row justify-between items-start">
-            <div>
-                <CardTitle>Histórico de Dados</CardTitle>
-                <CardDescription>Variação das métricas ao longo do tempo.</CardDescription>
-            </div>
-            <PeriodSelector period={period} setPeriod={setPeriod} />
-        </CardHeader>
-        <CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-8">
-          {metrics.map((metric) => (
-            <div key={metric.dataKey}>
-              <h3 className="text-base font-semibold mb-2 text-foreground">{metric.title} ({metric.unit})</h3>
-              <HistoryChart 
-                  data={historyData} 
-                  dataKey={metric.dataKey}
-                  stroke={metric.stroke}
-              />
-            </div>
-          ))}
-        </CardContent>
-      </Card>
 
       <DetailedChartModal 
         isOpen={!!detailedChartData}
