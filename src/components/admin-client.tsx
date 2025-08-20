@@ -134,6 +134,15 @@ export function AdminClient({ initialData }: AdminClientProps) {
       { header: "ID", accessor: 'id' as const },
       { header: "Grandeza", accessor: 'nome_grandeza' as const },
       { header: "Unidade", accessor: 'unidade_medida' as const },
+      { 
+        header: "Descrição", 
+        accessor: 'descricao_grandeza' as const,
+        render: (item: any) => (
+          <span className="text-sm text-muted-foreground">
+            {item.descricao_grandeza || '-'}
+          </span>
+        )
+      },
   ];
 
   const alertCriteriaColumns = [

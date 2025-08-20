@@ -16,14 +16,14 @@ const formSchema = z.object({
   id: z.string().optional(), // id sintético para o cliente: `id_sensor-id_grandeza`
   id_sensor: z.string().min(1, "Sensor é obrigatório"),
   id_grandeza: z.string().min(1, "Grandeza é obrigatória"),
-  comparacao: z.enum(['>', '<', '>=', '<=', '==', '!=', 'entre']),
+  comparacao: z.enum(['>', '<', '>=', '<=', '=', '<>', 'BETWEEN', 'NOT BETWEEN']),
   valor_critico_1: z.coerce.number(),
   valor_critico_2: z.coerce.number().optional().nullable(),
   alerta: z.string().min(1, "Mensagem de alerta é obrigatória"),
   repeticao_seg: z.coerce.number().int().positive(),
   ativo: z.boolean(),
 }).refine(data => {
-    if (data.comparacao === 'entre') {
+    if (data.comparacao === 'BETWEEN' || data.comparacao === 'NOT BETWEEN') {
         return data.valor_critico_2 !== undefined && data.valor_critico_2 !== null && data.valor_critico_2 > data.valor_critico_1;
     }
     return true;
@@ -62,7 +62,7 @@ export const AlertCriteriaForm: React.FC<AlertCriteriaFormProps> = ({ initialDat
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
     const dataToSave = { ...values };
-    if (dataToSave.comparacao !== 'entre') {
+    if (dataToSave.comparacao !== 'BETWEEN' && dataToSave.comparacao !== 'NOT BETWEEN') {
       dataToSave.valor_critico_2 = null;
     }
     onSave(dataToSave);
@@ -105,7 +105,16 @@ export const AlertCriteriaForm: React.FC<AlertCriteriaFormProps> = ({ initialDat
                   <SelectTrigger><SelectValue placeholder="Selecione uma grandeza" /></SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  {quantities.map(q => <SelectItem key={q.id} value={String(q.id)}>{q.nome_grandeza} (ID: {q.id})</SelectItem>)}
+                  {quantities.map(q => (
+                    <SelectItem key={q.id} value={String(q.id)}>
+                      <div className="flex flex-col">
+                        <span>{q.nome_grandeza} (ID: {q.id})</span>
+                        {q.descricao_grandeza && (
+                          <span className="text-xs text-muted-foreground">{q.descricao_grandeza}</span>
+                        )}
+                      </div>
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
               <FormMessage />
@@ -127,9 +136,10 @@ export const AlertCriteriaForm: React.FC<AlertCriteriaFormProps> = ({ initialDat
                   <SelectItem value="<">Menor que</SelectItem>
                   <SelectItem value=">=">Maior ou igual a</SelectItem>
                   <SelectItem value="<=">Menor ou igual a</SelectItem>
-                  <SelectItem value="==">Igual a</SelectItem>
-                  <SelectItem value="!=">Diferente de</SelectItem>
-                  <SelectItem value="entre">Entre</SelectItem>
+                  <SelectItem value="=">Igual a</SelectItem>
+                  <SelectItem value="<>">Diferente de</SelectItem>
+                  <SelectItem value="BETWEEN">Entre</SelectItem>
+                  <SelectItem value="NOT BETWEEN">Não está entre</SelectItem>
                 </SelectContent>
               </Select>
               <FormMessage />
@@ -142,7 +152,7 @@ export const AlertCriteriaForm: React.FC<AlertCriteriaFormProps> = ({ initialDat
             name="valor_critico_1"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>{comparacao === 'entre' ? 'Valor Mínimo' : 'Valor Crítico'}</FormLabel>
+                <FormLabel>{(comparacao === 'BETWEEN' || comparacao === 'NOT BETWEEN') ? 'Valor Mínimo' : 'Valor Crítico'}</FormLabel>
                 <FormControl>
                   <Input type="number" step="any" {...field} />
                 </FormControl>
@@ -150,7 +160,7 @@ export const AlertCriteriaForm: React.FC<AlertCriteriaFormProps> = ({ initialDat
               </FormItem>
             )}
           />
-          {comparacao === 'entre' && (
+          {(comparacao === 'BETWEEN' || comparacao === 'NOT BETWEEN') && (
              <FormField
                 control={form.control}
                 name="valor_critico_2"

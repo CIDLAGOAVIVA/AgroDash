@@ -90,7 +90,7 @@ export interface AlertCriterion {
     id: string; // Chave primária SINTÉTICA no cliente: `id_sensor-id_grandeza`
     id_sensor: string; // BIGINT
     id_grandeza: string; // BIGINT
-    comparacao: '>' | '<' | '>=' | '<=' | '==' | '!=' | 'entre'; // VARCHAR
+    comparacao: '>' | '<' | '>=' | '<=' | '=' | '<>' | 'BETWEEN' | 'NOT BETWEEN'; // VARCHAR
     valor_critico_1: number; // DOUBLE PRECISION
     valor_critico_2?: number | null; // DOUBLE PRECISION
     alerta: string; // TEXT
