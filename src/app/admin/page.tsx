@@ -1,36 +1,22 @@
 
 import { AdminClient } from "@/components/admin-client";
-import { getProperties, getCrops, getStations, getSensors, getQuantities, getAlertCriteria } from "./actions";
-
-export const dynamic = 'force-dynamic';
-export const revalidate = 0;
+import { initialProperties, initialCrops, initialStations, initialSensors, initialQuantities, initialAlertCriteria } from "@/lib/data";
 
 export default async function AdminPage() {
-  const [properties, crops, stations, sensors, quantities, alertCriteria] = await Promise.all([
-    getProperties(),
-    getCrops(),
-    getStations(),
-    getSensors(),
-    getQuantities(),
-    getAlertCriteria(),
-  ]);
-
-  // Se alguma das chamadas falhou e retornou [], a página ainda renderizará com tabelas vazias.
+  // Usando dados simulados para evitar erros de conexão com o banco de dados
   const data = {
-    properties,
-    crops,
-    stations,
-    sensors,
-    quantities,
-    alertCriteria,
+    properties: initialProperties,
+    crops: initialCrops.map(c => ({ id: c.id, propertyId: 'prop-1', cropType: c.cropType, fieldName: c.fieldName })), // Adaptando para o tipo AdminCrop
+    stations: initialStations,
+    sensors: initialSensors,
+    quantities: initialQuantities,
+    alertCriteria: initialAlertCriteria,
   };
 
   return (
     <div className="container mx-auto py-4">
-      <h1 className="text-2xl font-bold mb-4">Painel de Administração</h1>
+      <h1 className="text-2xl font-bold mb-4">Painel de Administração (Dados Simulados)</h1>
       <AdminClient initialData={data} />
     </div>
   );
 }
-
-    

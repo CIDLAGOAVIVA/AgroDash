@@ -1,205 +1,70 @@
 
 'use server';
 
-import { db } from '@/lib/db';
+// As funções de banco de dados foram temporariamente removidas para evitar erros de conexão.
+// Elas serão reimplementadas quando a conexão com o banco de dados estiver estável.
+
 import type { Property, AdminCrop, Station, Sensor, Quantity, AlertCriterion } from '@/types';
 import { revalidatePath } from 'next/cache';
 
-// --- Funções de Leitura (Getters) ---
+// --- Funções de Simulação (para manter a UI funcional) ---
 
-export async function getProperties(): Promise<Property[]> {
-  try {
-    const { rows } = await db.query('SELECT id, uf, municipio, nome_propriedade FROM tab_propriedade ORDER BY nome_propriedade');
-    return rows;
-  } catch (error) {
-    console.error("Database Error (getProperties):", error);
-    return [];
-  }
-}
-
-export async function getCrops(): Promise<AdminCrop[]> {
-  try {
-    const { rows } = await db.query(`
-      SELECT id, id_propriedade as "propertyId", produto as "cropType", nome_cultura as "fieldName" 
-      FROM tab_cultura ORDER BY nome_cultura
-    `);
-    return rows;
-  } catch (error) {
-    console.error("Database Error (getCrops):", error);
-    return [];
-  }
-}
-
-export async function getStations(): Promise<Station[]> {
-  try {
-    const { rows } = await db.query('SELECT id, id_propriedade, nome_estacao, descricao_estacao FROM tab_estacao ORDER BY nome_estacao');
-    return rows;
-  } catch (error) {
-    console.error("Database Error (getStations):", error);
-    return [];
-  }
-}
-
-export async function getSensors(): Promise<Sensor[]> {
-  try {
-    const { rows } = await db.query('SELECT id, id_estacao, nome_sensor, descricao_sensor FROM tab_sensor ORDER BY nome_sensor');
-    return rows;
-  } catch (error) {
-    console.error("Database Error (getSensors):", error);
-    return [];
-  }
-}
-
-export async function getQuantities(): Promise<Quantity[]> {
-  try {
-    const { rows } = await db.query('SELECT id, nome_grandeza, unidade_medida, descricao_grandeza FROM tab_grandeza ORDER BY nome_grandeza');
-    return rows;
-  } catch (error) {
-    console.error("Database Error (getQuantities):", error);
-    return [];
-  }
-}
-
-export async function getAlertCriteria(): Promise<AlertCriterion[]> {
-  try {
-    const { rows } = await db.query('SELECT id, id_sensor, id_grandeza, comparacao, valor_critico_1, valor_critico_2, alerta, repeticao_seg, ativo FROM tab_criterio_alerta ORDER BY id_sensor');
-    return rows;
-  } catch (error) {
-    console.error("Database Error (getAlertCriteria):", error);
-    return [];
-  }
-}
-
-
-// --- Funções de Escrita (Create/Update/Delete) ---
-
-// Propriedades
 export async function saveProperty(data: Omit<Property, 'id'> & { id?: string }) {
-  if (data.id) {
-    await db.query(
-      'UPDATE tab_propriedade SET nome_propriedade = $1, municipio = $2, uf = $3 WHERE id = $4',
-      [data.nome_propriedade, data.municipio, data.uf, data.id]
-    );
-  } else {
-    await db.query(
-      'INSERT INTO tab_propriedade (nome_propriedade, municipio, uf, operacao_inicio) VALUES ($1, $2, $3, NOW())',
-      [data.nome_propriedade, data.municipio, data.uf]
-    );
-  }
+  console.log("Simulando salvar propriedade:", data);
   revalidatePath('/admin');
 }
 
 export async function deleteProperty(id: string) {
-  await db.query('DELETE FROM tab_propriedade WHERE id = $1', [id]);
+  console.log("Simulando deletar propriedade:", id);
   revalidatePath('/admin');
 }
 
-// Culturas
 export async function saveCrop(data: Omit<AdminCrop, 'id'> & { id?: string }) {
-  if (data.id) {
-    await db.query(
-      'UPDATE tab_cultura SET id_propriedade = $1, produto = $2, nome_cultura = $3 WHERE id = $4',
-      [data.propertyId, data.cropType, data.fieldName, data.id]
-    );
-  } else {
-    await db.query(
-      'INSERT INTO tab_cultura (id_propriedade, produto, nome_cultura) VALUES ($1, $2, $3)',
-      [data.propertyId, data.cropType, data.fieldName]
-    );
-  }
+  console.log("Simulando salvar cultura:", data);
   revalidatePath('/admin');
 }
 
 export async function deleteCrop(id: string) {
-  await db.query('DELETE FROM tab_cultura WHERE id = $1', [id]);
+  console.log("Simulando deletar cultura:", id);
   revalidatePath('/admin');
 }
 
-// Estações
 export async function saveStation(data: Omit<Station, 'id'> & { id?: string }) {
-  if (data.id) {
-    await db.query(
-      'UPDATE tab_estacao SET id_propriedade = $1, nome_estacao = $2, descricao_estacao = $3 WHERE id = $4',
-      [data.id_propriedade, data.nome_estacao, data.descricao_estacao, data.id]
-    );
-  } else {
-    await db.query(
-      'INSERT INTO tab_estacao (id_propriedade, nome_estacao, descricao_estacao, operacao_inicio) VALUES ($1, $2, $3, NOW())',
-      [data.id_propriedade, data.nome_estacao, data.descricao_estacao]
-    );
-  }
-  revalidatePath('/admin');
-}
-
-export async function deleteStation(id: string) {
-    await db.query('DELETE FROM tab_estacao WHERE id = $1', [id]);
+    console.log("Simulando salvar estação:", data);
     revalidatePath('/admin');
 }
 
-// Sensores
+export async function deleteStation(id: string) {
+    console.log("Simulando deletar estação:", id);
+    revalidatePath('/admin');
+}
+
 export async function saveSensor(data: Omit<Sensor, 'id'> & { id?: string }) {
-    if (data.id) {
-        await db.query(
-            'UPDATE tab_sensor SET id_estacao = $1, nome_sensor = $2, descricao_sensor = $3 WHERE id = $4',
-            [data.id_estacao, data.nome_sensor, data.descricao_sensor, data.id]
-        );
-    } else {
-        await db.query(
-            'INSERT INTO tab_sensor (id_estacao, nome_sensor, descricao_sensor, operacao_inicio) VALUES ($1, $2, $3, NOW())',
-            [data.id_estacao, data.nome_sensor, data.descricao_sensor]
-        );
-    }
+    console.log("Simulando salvar sensor:", data);
     revalidatePath('/admin');
 }
 
 export async function deleteSensor(id: string) {
-    await db.query('DELETE FROM tab_sensor WHERE id = $1', [id]);
+    console.log("Simulando deletar sensor:", id);
     revalidatePath('/admin');
 }
 
-// Grandezas
 export async function saveQuantity(data: Omit<Quantity, 'id'> & { id?: string }) {
-    if (data.id) {
-        await db.query(
-            'UPDATE tab_grandeza SET nome_grandeza = $1, unidade_medida = $2, descricao_grandeza = $3 WHERE id = $4',
-            [data.nome_grandeza, data.unidade_medida, data.descricao_grandeza, data.id]
-        );
-    } else {
-        await db.query(
-            'INSERT INTO tab_grandeza (nome_grandeza, unidade_medida, descricao_grandeza) VALUES ($1, $2, $3)',
-            [data.nome_grandeza, data.unidade_medida, data.descricao_grandeza]
-        );
-    }
+    console.log("Simulando salvar grandeza:", data);
     revalidatePath('/admin');
 }
 
 export async function deleteQuantity(id: string) {
-    await db.query('DELETE FROM tab_grandeza WHERE id = $1', [id]);
+    console.log("Simulando deletar grandeza:", id);
     revalidatePath('/admin');
 }
 
-// Critérios de Alerta
 export async function saveAlertCriterion(data: Omit<AlertCriterion, 'id'> & { id?: string }) {
-    // A 'id' em AlertCriterion é uma composição, então a lógica é sempre de INSERT ou DELETE/INSERT
-    // Para simplificar, estamos tratando como se tivesse um ID autoincrementável aqui, mas o ideal seria outra lógica
-     if (data.id) {
-        await db.query(
-            'UPDATE tab_criterio_alerta SET id_sensor = $1, id_grandeza = $2, comparacao = $3, valor_critico_1 = $4, valor_critico_2 = $5, alerta = $6, repeticao_seg = $7, ativo = $8 WHERE id_sensor = $9 AND id_grandeza = $10', // Exemplo, necessita de chave primária real
-            [data.id_sensor, data.id_grandeza, data.comparacao, data.valor_critico_1, data.valor_critico_2, data.alerta, data.repeticao_seg, data.ativo, data.id_sensor, data.id_grandeza]
-        );
-    } else {
-        await db.query(
-            'INSERT INTO tab_criterio_alerta (id_sensor, id_grandeza, comparacao, valor_critico_1, valor_critico_2, alerta, repeticao_seg, ativo) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)',
-            [data.id_sensor, data.id_grandeza, data.comparacao, data.valor_critico_1, data.valor_critico_2, data.alerta, data.repeticao_seg, data.ativo]
-        );
-    }
+    console.log("Simulando salvar critério de alerta:", data);
     revalidatePath('/admin');
 }
 
 export async function deleteAlertCriterion(ids: {sensorId: string, quantityId: string}) {
-    // Assumindo chave primária composta
-    await db.query('DELETE FROM tab_criterio_alerta WHERE id_sensor = $1 AND id_grandeza = $2', [ids.sensorId, ids.quantityId]);
+    console.log("Simulando deletar critério de alerta:", ids);
     revalidatePath('/admin');
 }
-
-    
