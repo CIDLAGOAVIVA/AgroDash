@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState } from 'react';
+import { useState, useTransition } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CrudTable } from './admin/crud-table';
 import { PropertyForm } from './admin/property-form';
@@ -36,82 +36,109 @@ type DataKeys = keyof AdminClientProps['initialData'];
 
 export function AdminClient({ initialData }: AdminClientProps) {
   const { toast } = useToast();
+  const [isPending, startTransition] = useTransition();
 
-  const handleSave = async (itemType: DataKeys, data: any) => {
-    try {
-      const type = itemType.slice(0, -1); // 'properties' -> 'propertie'
-      const op = data.id ? 'atualizado' : 'criado';
-
-      switch (itemType) {
-        case 'properties': await saveProperty(data); break;
-        case 'crops': await saveCrop(data); break;
-        case 'stations': await saveStation(data); break;
-        case 'sensors': await saveSensor(data); break;
-        case 'quantities': await saveQuantity(data); break;
-        case 'alertCriteria': await saveAlertCriterion(data); break;
+  const handleAction = (action: () => Promise<any>, messages: {loading: string, success: string, error: string}) => {
+    startTransition(async () => {
+      try {
+        await action();
+        toast({ title: "Sucesso!", description: messages.success });
+      } catch (error) {
+        console.error(messages.error, error);
+        toast({ title: "Erro!", description: `Não foi possível completar a ação. Verifique o console para mais detalhes.`, variant: 'destructive' });
       }
-      toast({ title: "Sucesso!", description: `Item ${op} com sucesso.` });
-    } catch (error) {
-      console.error(`Error saving ${itemType}:`, error);
-      toast({ title: "Erro!", description: `Não foi possível salvar o item.`, variant: 'destructive' });
-    }
+    });
   };
 
-  const handleDelete = async (itemType: DataKeys, item: {id: string}) => {
-     if (!confirm('Tem certeza que deseja excluir este item? A ação não pode ser desfeita.')) {
-      return;
+  const onSave = (itemType: DataKeys, data: any) => {
+    let action;
+    const op = data.id ? 'atualizar' : 'criar';
+    switch (itemType) {
+      case 'properties': action = () => saveProperty(data); break;
+      case 'crops': action = () => saveCrop(data); break;
+      case 'stations': action = () => saveStation(data); break;
+      case 'sensors': action = () => saveSensor(data); break;
+      case 'quantities': action = () => saveQuantity(data); break;
+      case 'alertCriteria': action = () => saveAlertCriterion(data); break;
+      default: return;
     }
-    try {
-      switch (itemType) {
-        case 'properties': await deleteProperty(item.id); break;
-        case 'crops': await deleteCrop(item.id); break;
-        case 'stations': await deleteStation(item.id); break;
-        case 'sensors': await deleteSensor(item.id); break;
-        case 'quantities': await deleteQuantity(item.id); break;
-        case 'alertCriteria': await deleteAlertCriterion(item.id); break;
-      }
-       toast({ title: "Sucesso!", description: "Item excluído com sucesso." });
-    } catch (error) {
-       console.error(`Error deleting ${itemType}:`, error);
-       toast({ title: "Erro!", description: "Não foi possível excluir o item. Verifique se ele não está sendo usado por outro registro.", variant: 'destructive' });
+    handleAction(action, {
+      loading: `Salvando...`,
+      success: `Item ${op} com sucesso.`,
+      error: `Erro ao salvar item.`
+    });
+  };
+
+  const onDelete = (itemType: DataKeys, item: {id: any}) => {
+    if (!confirm('Tem certeza que deseja excluir este item? A ação não pode ser desfeita.')) return;
+    
+    let action;
+     // Para critério de alerta, a chave pode ser composta
+    const idToDelete = itemType === 'alertCriteria' 
+        ? { sensorId: (item as any).id_sensor, quantityId: (item as any).id_grandeza } 
+        : item.id;
+
+    switch (itemType) {
+        case 'properties': action = () => deleteProperty(idToDelete); break;
+        case 'crops': action = () => deleteCrop(idToDelete); break;
+        case 'stations': action = () => deleteStation(idToDelete); break;
+        case 'sensors': action = () => deleteSensor(idToDelete); break;
+        case 'quantities': action = () => deleteQuantity(idToDelete); break;
+        case 'alertCriteria': action = () => deleteAlertCriterion(idToDelete); break;
+        default: return;
     }
+    handleAction(action, {
+        loading: 'Excluindo...',
+        success: 'Item excluído com sucesso.',
+        error: 'Erro ao excluir item.'
+    });
   };
   
   const propertyColumns = [
+    { header: "ID", accessor: 'id' as const },
     { header: "Nome", accessor: 'nome_propriedade' as const },
     { header: "Município", accessor: 'municipio' as const },
     { header: "UF", accessor: 'uf' as const },
   ];
 
   const cropColumns = [
+    { header: "ID", accessor: 'id' as const },
     { header: "Cultura", accessor: 'cropType' as const },
     { header: "Campo", accessor: 'fieldName' as const },
+    { header: "ID Propriedade", accessor: 'propertyId' as const },
   ];
 
   const stationColumns = [
+      { header: "ID", accessor: 'id' as const },
       { header: "Nome", accessor: 'nome_estacao' as const },
       { header: "Descrição", accessor: 'descricao_estacao' as const },
+      { header: "ID Propriedade", accessor: 'id_propriedade' as const },
   ];
 
   const sensorColumns = [
+      { header: "ID", accessor: 'id' as const },
       { header: "Nome", accessor: 'nome_sensor' as const },
-      { header: "Descrição", accessor: 'descricao_sensor' as const },
+      { header: "ID Estação", accessor: 'id_estacao' as const },
   ];
 
   const quantityColumns = [
+      { header: "ID", accessor: 'id' as const },
       { header: "Grandeza", accessor: 'nome_grandeza' as const },
       { header: "Unidade", accessor: 'unidade_medida' as const },
   ];
 
   const alertCriteriaColumns = [
+      { header: "ID Sensor", accessor: 'id_sensor' as const },
+      { header: "ID Grandeza", accessor: 'id_grandeza' as const },
       { header: "Alerta", accessor: 'alerta' as const },
       { header: "Condição", accessor: 'comparacao' as const },
+      { header: "Valor 1", accessor: 'valor_critico_1' as const },
       { header: "Ativo", accessor: 'ativo' as const },
   ];
 
   return (
     <Tabs defaultValue="properties" className="w-full">
-      <TabsList>
+      <TabsList className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 w-full h-auto mb-4">
         <TabsTrigger value="properties">Propriedades</TabsTrigger>
         <TabsTrigger value="crops">Culturas</TabsTrigger>
         <TabsTrigger value="stations">Estações</TabsTrigger>
@@ -122,64 +149,82 @@ export function AdminClient({ initialData }: AdminClientProps) {
 
       <TabsContent value="properties">
         <CrudTable<Property>
+          title="Propriedades"
           data={initialData.properties}
           columns={propertyColumns}
-          onDelete={(item) => handleDelete('properties', item)}
-          onSave={(data) => handleSave('properties', data)}
-          FormComponent={(props) => <PropertyForm {...props} />}
+          onDelete={(item) => onDelete('properties', item)}
+          onSave={(data) => onSave('properties', data)}
+          isUpdating={isPending}
+          FormComponent={PropertyForm}
         />
       </TabsContent>
 
       <TabsContent value="crops">
         <CrudTable<AdminCrop>
+          title="Culturas"
           data={initialData.crops}
           columns={cropColumns}
-          onDelete={(item) => handleDelete('crops', item)}
-           onSave={(data) => handleSave('crops', data)}
-          FormComponent={(props) => <CropForm {...props} properties={initialData.properties} />}
+          onDelete={(item) => onDelete('crops', item)}
+          onSave={(data) => onSave('crops', data)}
+          isUpdating={isPending}
+          FormComponent={CropForm}
+          formProps={{ properties: initialData.properties }}
         />
       </TabsContent>
       
       <TabsContent value="stations">
         <CrudTable<Station>
+          title="Estações"
           data={initialData.stations}
           columns={stationColumns}
-          onDelete={(item) => handleDelete('stations', item)}
-          onSave={(data) => handleSave('stations', data)}
-          FormComponent={(props) => <StationForm {...props} properties={initialData.properties} />}
+          onDelete={(item) => onDelete('stations', item)}
+          onSave={(data) => onSave('stations', data)}
+          isUpdating={isPending}
+          FormComponent={StationForm}
+          formProps={{ properties: initialData.properties }}
         />
       </TabsContent>
 
        <TabsContent value="sensors">
         <CrudTable<Sensor>
+          title="Sensores"
           data={initialData.sensors}
           columns={sensorColumns}
-          onDelete={(item) => handleDelete('sensors', item)}
-          onSave={(data) => handleSave('sensors', data)}
-          FormComponent={(props) => <SensorForm {...props} stations={initialData.stations} />}
+          onDelete={(item) => onDelete('sensors', item)}
+          onSave={(data) => onSave('sensors', data)}
+          isUpdating={isPending}
+          FormComponent={SensorForm}
+          formProps={{ stations: initialData.stations }}
         />
       </TabsContent>
 
       <TabsContent value="quantities">
         <CrudTable<Quantity>
+          title="Grandezas"
           data={initialData.quantities}
           columns={quantityColumns}
-          onDelete={(item) => handleDelete('quantities', item)}
-          onSave={(data) => handleSave('quantities', data)}
-          FormComponent={(props) => <QuantityForm {...props} />}
+          onDelete={(item) => onDelete('quantities', item)}
+          onSave={(data) => onSave('quantities', data)}
+          isUpdating={isPending}
+          FormComponent={QuantityForm}
         />
       </TabsContent>
 
       <TabsContent value="alert-criteria">
         <CrudTable<AlertCriterion>
+            title="Critérios de Alerta"
             data={initialData.alertCriteria}
             columns={alertCriteriaColumns}
-            onDelete={(item) => handleDelete('alertCriteria', item)}
-            onSave={(data) => handleSave('alertCriteria', data)}
-            FormComponent={(props) => <AlertCriteriaForm {...props} sensors={initialData.sensors} quantities={initialData.quantities} />}
+            onDelete={(item) => onDelete('alertCriteria', item)}
+            onSave={(data) => onSave('alertCriteria', data)}
+            isUpdating={isPending}
+            FormComponent={AlertCriteriaForm}
+            formProps={{ sensors: initialData.sensors, quantities: initialData.quantities }}
         />
       </TabsContent>
 
     </Tabs>
   );
 }
+
+    

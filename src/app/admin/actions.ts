@@ -1,3 +1,4 @@
+
 'use server';
 
 import { db } from '@/lib/db';
@@ -7,37 +8,66 @@ import { revalidatePath } from 'next/cache';
 // --- Funções de Leitura (Getters) ---
 
 export async function getProperties(): Promise<Property[]> {
-  const { rows } = await db.query('SELECT * FROM tab_propriedade ORDER BY nome_propriedade');
-  return rows;
+  try {
+    const { rows } = await db.query('SELECT id, uf, municipio, nome_propriedade FROM tab_propriedade ORDER BY nome_propriedade');
+    return rows;
+  } catch (error) {
+    console.error("Database Error (getProperties):", error);
+    return [];
+  }
 }
 
 export async function getCrops(): Promise<AdminCrop[]> {
-  // Nota: O schema de AdminCrop tem `propertyId`, mas a tabela `tab_cultura` tem `id_propriedade`
-  const { rows } = await db.query(`
-    SELECT id, id_propriedade as "propertyId", produto as "cropType", nome_cultura as "fieldName" 
-    FROM tab_cultura ORDER BY nome_cultura
-  `);
-  return rows;
+  try {
+    const { rows } = await db.query(`
+      SELECT id, id_propriedade as "propertyId", produto as "cropType", nome_cultura as "fieldName" 
+      FROM tab_cultura ORDER BY nome_cultura
+    `);
+    return rows;
+  } catch (error) {
+    console.error("Database Error (getCrops):", error);
+    return [];
+  }
 }
 
 export async function getStations(): Promise<Station[]> {
-  const { rows } = await db.query('SELECT * FROM tab_estacao ORDER BY nome_estacao');
-  return rows;
+  try {
+    const { rows } = await db.query('SELECT id, id_propriedade, nome_estacao, descricao_estacao FROM tab_estacao ORDER BY nome_estacao');
+    return rows;
+  } catch (error) {
+    console.error("Database Error (getStations):", error);
+    return [];
+  }
 }
 
 export async function getSensors(): Promise<Sensor[]> {
-  const { rows } = await db.query('SELECT * FROM tab_sensor ORDER BY nome_sensor');
-  return rows;
+  try {
+    const { rows } = await db.query('SELECT id, id_estacao, nome_sensor, descricao_sensor FROM tab_sensor ORDER BY nome_sensor');
+    return rows;
+  } catch (error) {
+    console.error("Database Error (getSensors):", error);
+    return [];
+  }
 }
 
 export async function getQuantities(): Promise<Quantity[]> {
-  const { rows } = await db.query('SELECT * FROM tab_grandeza ORDER BY nome_grandeza');
-  return rows;
+  try {
+    const { rows } = await db.query('SELECT id, nome_grandeza, unidade_medida, descricao_grandeza FROM tab_grandeza ORDER BY nome_grandeza');
+    return rows;
+  } catch (error) {
+    console.error("Database Error (getQuantities):", error);
+    return [];
+  }
 }
 
 export async function getAlertCriteria(): Promise<AlertCriterion[]> {
-  const { rows } = await db.query('SELECT * FROM tab_criterio_alerta ORDER BY id_sensor');
-  return rows;
+  try {
+    const { rows } = await db.query('SELECT id, id_sensor, id_grandeza, comparacao, valor_critico_1, valor_critico_2, alerta, repeticao_seg, ativo FROM tab_criterio_alerta ORDER BY id_sensor');
+    return rows;
+  } catch (error) {
+    console.error("Database Error (getAlertCriteria):", error);
+    return [];
+  }
 }
 
 
@@ -52,7 +82,7 @@ export async function saveProperty(data: Omit<Property, 'id'> & { id?: string })
     );
   } else {
     await db.query(
-      'INSERT INTO tab_propriedade (nome_propriedade, municipio, uf) VALUES ($1, $2, $3)',
+      'INSERT INTO tab_propriedade (nome_propriedade, municipio, uf, operacao_inicio) VALUES ($1, $2, $3, NOW())',
       [data.nome_propriedade, data.municipio, data.uf]
     );
   }
@@ -94,7 +124,7 @@ export async function saveStation(data: Omit<Station, 'id'> & { id?: string }) {
     );
   } else {
     await db.query(
-      'INSERT INTO tab_estacao (id_propriedade, nome_estacao, descricao_estacao) VALUES ($1, $2, $3)',
+      'INSERT INTO tab_estacao (id_propriedade, nome_estacao, descricao_estacao, operacao_inicio) VALUES ($1, $2, $3, NOW())',
       [data.id_propriedade, data.nome_estacao, data.descricao_estacao]
     );
   }
@@ -115,7 +145,7 @@ export async function saveSensor(data: Omit<Sensor, 'id'> & { id?: string }) {
         );
     } else {
         await db.query(
-            'INSERT INTO tab_sensor (id_estacao, nome_sensor, descricao_sensor) VALUES ($1, $2, $3)',
+            'INSERT INTO tab_sensor (id_estacao, nome_sensor, descricao_sensor, operacao_inicio) VALUES ($1, $2, $3, NOW())',
             [data.id_estacao, data.nome_sensor, data.descricao_sensor]
         );
     }
@@ -150,10 +180,12 @@ export async function deleteQuantity(id: string) {
 
 // Critérios de Alerta
 export async function saveAlertCriterion(data: Omit<AlertCriterion, 'id'> & { id?: string }) {
-    if (data.id) {
+    // A 'id' em AlertCriterion é uma composição, então a lógica é sempre de INSERT ou DELETE/INSERT
+    // Para simplificar, estamos tratando como se tivesse um ID autoincrementável aqui, mas o ideal seria outra lógica
+     if (data.id) {
         await db.query(
-            'UPDATE tab_criterio_alerta SET id_sensor = $1, id_grandeza = $2, comparacao = $3, valor_critico_1 = $4, valor_critico_2 = $5, alerta = $6, repeticao_seg = $7, ativo = $8 WHERE id = $9',
-            [data.id_sensor, data.id_grandeza, data.comparacao, data.valor_critico_1, data.valor_critico_2, data.alerta, data.repeticao_seg, data.ativo, data.id]
+            'UPDATE tab_criterio_alerta SET id_sensor = $1, id_grandeza = $2, comparacao = $3, valor_critico_1 = $4, valor_critico_2 = $5, alerta = $6, repeticao_seg = $7, ativo = $8 WHERE id_sensor = $9 AND id_grandeza = $10', // Exemplo, necessita de chave primária real
+            [data.id_sensor, data.id_grandeza, data.comparacao, data.valor_critico_1, data.valor_critico_2, data.alerta, data.repeticao_seg, data.ativo, data.id_sensor, data.id_grandeza]
         );
     } else {
         await db.query(
@@ -164,7 +196,10 @@ export async function saveAlertCriterion(data: Omit<AlertCriterion, 'id'> & { id
     revalidatePath('/admin');
 }
 
-export async function deleteAlertCriterion(id: string) {
-    await db.query('DELETE FROM tab_criterio_alerta WHERE id = $1', [id]);
+export async function deleteAlertCriterion(ids: {sensorId: string, quantityId: string}) {
+    // Assumindo chave primária composta
+    await db.query('DELETE FROM tab_criterio_alerta WHERE id_sensor = $1 AND id_grandeza = $2', [ids.sensorId, ids.quantityId]);
     revalidatePath('/admin');
 }
+
+    

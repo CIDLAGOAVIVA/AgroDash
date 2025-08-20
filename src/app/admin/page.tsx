@@ -1,8 +1,11 @@
+
 import { AdminClient } from "@/components/admin-client";
 import { getProperties, getCrops, getStations, getSensors, getQuantities, getAlertCriteria } from "./actions";
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export default async function AdminPage() {
-  // Agora, esses dados vêm do banco de dados real.
   const [properties, crops, stations, sensors, quantities, alertCriteria] = await Promise.all([
     getProperties(),
     getCrops(),
@@ -12,6 +15,7 @@ export default async function AdminPage() {
     getAlertCriteria(),
   ]);
 
+  // Se alguma das chamadas falhou e retornou [], a página ainda renderizará com tabelas vazias.
   const data = {
     properties,
     crops,
@@ -28,3 +32,5 @@ export default async function AdminPage() {
     </div>
   );
 }
+
+    
