@@ -53,6 +53,15 @@ export function AdminClient({ initialData }: AdminClientProps) {
   const onSave = (itemType: DataKeys, data: any) => {
     let action;
     const op = data.id ? 'atualizar' : 'criar';
+
+    // Para critério de alerta, a chave pode ser composta e precisamos dos valores originais para o UPDATE
+    if (itemType === 'alertCriteria' && data.id) {
+        const [id_sensor_original, id_grandeza_original] = data.id.split('-');
+        data.id_sensor_original = id_sensor_original;
+        data.id_grandeza_original = id_grandeza_original;
+    }
+
+
     switch (itemType) {
       case 'properties': action = () => saveProperty(data); break;
       case 'crops': action = () => saveCrop(data); break;
@@ -73,7 +82,7 @@ export function AdminClient({ initialData }: AdminClientProps) {
     if (!confirm('Tem certeza que deseja excluir este item? A ação não pode ser desfeita.')) return;
     
     let action;
-     // Para critério de alerta, a chave pode ser composta
+     // Para critério de alerta, a chave é composta
     const idToDelete = itemType === 'alertCriteria' 
         ? { sensorId: (item as any).id_sensor, quantityId: (item as any).id_grandeza } 
         : item.id;
@@ -226,5 +235,3 @@ export function AdminClient({ initialData }: AdminClientProps) {
     </Tabs>
   );
 }
-
-    

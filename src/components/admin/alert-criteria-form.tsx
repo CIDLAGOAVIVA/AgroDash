@@ -13,18 +13,18 @@ import type { AlertCriterion, Sensor, Quantity } from '@/types';
 import { Textarea } from '../ui/textarea';
 
 const formSchema = z.object({
-  id: z.string().optional(),
+  id: z.string().optional(), // id sintético para o cliente: `id_sensor-id_grandeza`
   id_sensor: z.string().min(1, "Sensor é obrigatório"),
   id_grandeza: z.string().min(1, "Grandeza é obrigatória"),
   comparacao: z.enum(['>', '<', '>=', '<=', '==', '!=', 'entre']),
   valor_critico_1: z.coerce.number(),
-  valor_critico_2: z.coerce.number().optional(),
+  valor_critico_2: z.coerce.number().optional().nullable(),
   alerta: z.string().min(1, "Mensagem de alerta é obrigatória"),
   repeticao_seg: z.coerce.number().int().positive(),
   ativo: z.boolean(),
 }).refine(data => {
     if (data.comparacao === 'entre') {
-        return data.valor_critico_2 !== undefined && data.valor_critico_2 > data.valor_critico_1;
+        return data.valor_critico_2 !== undefined && data.valor_critico_2 !== null && data.valor_critico_2 > data.valor_critico_1;
     }
     return true;
 }, {
@@ -37,7 +37,7 @@ interface AlertCriteriaFormProps {
   initialData?: AlertCriterion;
   sensors: Sensor[];
   quantities: Quantity[];
-  onSave: (data: Omit<AlertCriterion, 'id'> & { id?: string }) => void;
+  onSave: (data: z.infer<typeof formSchema>) => void;
   onClose: () => void;
 }
 
@@ -61,10 +61,17 @@ export const AlertCriteriaForm: React.FC<AlertCriteriaFormProps> = ({ initialDat
   });
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
-    onSave(values);
+    const dataToSave = { ...values };
+    if (dataToSave.comparacao !== 'entre') {
+      dataToSave.valor_critico_2 = null;
+    }
+    onSave(dataToSave);
   };
   
   const comparacao = form.watch('comparacao');
+
+  // Não permitir editar as chaves primárias
+  const isEditing = !!initialData;
 
   return (
     <Form {...form}>
@@ -75,12 +82,12 @@ export const AlertCriteriaForm: React.FC<AlertCriteriaFormProps> = ({ initialDat
           render={({ field }) => (
             <FormItem>
               <FormLabel>Sensor</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
+              <Select onValueChange={field.onChange} defaultValue={field.value} disabled={isEditing}>
                 <FormControl>
                   <SelectTrigger><SelectValue placeholder="Selecione um sensor" /></SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  {sensors.map(s => <SelectItem key={s.id} value={String(s.id)}>{s.nome_sensor} ({s.id})</SelectItem>)}
+                  {sensors.map(s => <SelectItem key={s.id} value={String(s.id)}>{s.nome_sensor} (ID: {s.id})</SelectItem>)}
                 </SelectContent>
               </Select>
               <FormMessage />
@@ -93,12 +100,12 @@ export const AlertCriteriaForm: React.FC<AlertCriteriaFormProps> = ({ initialDat
           render={({ field }) => (
             <FormItem>
               <FormLabel>Grandeza</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
+              <Select onValueChange={field.onChange} defaultValue={field.value} disabled={isEditing}>
                 <FormControl>
                   <SelectTrigger><SelectValue placeholder="Selecione uma grandeza" /></SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  {quantities.map(q => <SelectItem key={q.id} value={String(q.id)}>{q.nome_grandeza} ({q.id})</SelectItem>)}
+                  {quantities.map(q => <SelectItem key={q.id} value={String(q.id)}>{q.nome_grandeza} (ID: {q.id})</SelectItem>)}
                 </SelectContent>
               </Select>
               <FormMessage />
@@ -151,7 +158,7 @@ export const AlertCriteriaForm: React.FC<AlertCriteriaFormProps> = ({ initialDat
                 <FormItem>
                     <FormLabel>Valor Máximo</FormLabel>
                     <FormControl>
-                    <Input type="number" step="any" {...field} />
+                    <Input type="number" step="any" {...field} value={field.value ?? ''} />
                     </FormControl>
                     <FormMessage />
                 </FormItem>

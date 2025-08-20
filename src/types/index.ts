@@ -62,7 +62,7 @@ export interface Station {
     id: string; // BIGINT
     id_propriedade: string; // BIGINT
     nome_estacao: string; // VARCHAR
-    descricao_estacao?: string; // VARCHAR
+    descricao_estacao?: string | null; // VARCHAR
     operacao_inicio?: string | Date; // TIMESTAMP
     operacao_fim?: string | Date | null; // TIMESTAMP
 }
@@ -72,7 +72,7 @@ export interface Sensor {
     id: string; // BIGINT
     id_estacao: string; // BIGINT
     nome_sensor: string; // VARCHAR
-    descricao_sensor?: string; // VARCHAR
+    descricao_sensor?: string | null; // VARCHAR
     operacao_inicio?: string | Date; // TIMESTAMP
     operacao_fim?: string | Date | null; // TIMESTAMP
 }
@@ -81,21 +81,19 @@ export interface Sensor {
 export interface Quantity {
     id: string; // BIGINT
     nome_grandeza: string; // VARCHAR
-    unidade_medida?: string; // VARCHAR
-    descricao_grandeza?: string; // VARCHAR
+    unidade_medida?: string | null; // VARCHAR
+    descricao_grandeza?: string | null; // VARCHAR
 }
 
 // Representa a tabela tab_criterio_alerta
 export interface AlertCriterion {
-    id: string; // Chave primária não definida no schema, usando id temporário
+    id: string; // Chave primária SINTÉTICA no cliente: `id_sensor-id_grandeza`
     id_sensor: string; // BIGINT
     id_grandeza: string; // BIGINT
-    comparacao: ' > ' | ' < ' | ' >= ' | ' <= ' | '==' | '!=' | 'entre'; // VARCHAR
+    comparacao: '>' | '<' | '>=' | '<=' | '==' | '!=' | 'entre'; // VARCHAR
     valor_critico_1: number; // DOUBLE PRECISION
     valor_critico_2?: number | null; // DOUBLE PRECISION
     alerta: string; // TEXT
     repeticao_seg: number; // INTEGER
     ativo: boolean; // BOOLEAN
 }
-
-    

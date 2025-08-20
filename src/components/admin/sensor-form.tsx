@@ -55,7 +55,7 @@ export const SensorForm: React.FC<SensorFormProps> = ({ initialData, stations, o
                 </FormControl>
                 <SelectContent>
                   {stations.map(st => (
-                    <SelectItem key={st.id} value={String(st.id)}>{st.nome_estacao} ({st.id})</SelectItem>
+                    <SelectItem key={st.id} value={String(st.id)}>{st.nome_estacao} (ID: {st.id})</SelectItem>
                   ))}
                 </SelectContent>
               </Select>

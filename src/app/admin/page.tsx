@@ -1,21 +1,28 @@
 
 import { AdminClient } from "@/components/admin-client";
-import { initialProperties, initialCrops, initialStations, initialSensors, initialQuantities, initialAlertCriteria } from "@/lib/data";
+import { getProperties, getCrops, getStations, getSensors, getQuantities, getAlertCriteria } from "@/app/admin/actions";
 
 export default async function AdminPage() {
-  // Usando dados simulados para evitar erros de conexão com o banco de dados
+  // Buscando dados diretamente do banco de dados através das Server Actions
+  const properties = await getProperties();
+  const crops = await getCrops();
+  const stations = await getStations();
+  const sensors = await getSensors();
+  const quantities = await getQuantities();
+  const alertCriteria = await getAlertCriteria();
+
   const data = {
-    properties: initialProperties,
-    crops: initialCrops.map(c => ({ id: c.id, propertyId: 'prop-1', cropType: c.cropType, fieldName: c.fieldName })), // Adaptando para o tipo AdminCrop
-    stations: initialStations,
-    sensors: initialSensors,
-    quantities: initialQuantities,
-    alertCriteria: initialAlertCriteria,
+    properties,
+    crops,
+    stations,
+    sensors,
+    quantities,
+    alertCriteria,
   };
 
   return (
     <div className="container mx-auto py-4">
-      <h1 className="text-2xl font-bold mb-4">Painel de Administração (Dados Simulados)</h1>
+      <h1 className="text-2xl font-bold mb-4">Painel de Administração</h1>
       <AdminClient initialData={data} />
     </div>
   );

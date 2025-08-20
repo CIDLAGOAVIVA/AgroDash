@@ -54,7 +54,7 @@ export const CropForm: React.FC<CropFormProps> = ({ initialData, properties, onS
                 </FormControl>
                 <SelectContent>
                   {properties.map(prop => (
-                    <SelectItem key={prop.id} value={String(prop.id)}>{prop.nome_propriedade}</SelectItem>
+                    <SelectItem key={prop.id} value={String(prop.id)}>{prop.nome_propriedade} (ID: {prop.id})</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
