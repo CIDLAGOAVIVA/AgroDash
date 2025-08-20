@@ -13,12 +13,12 @@ const formSchema = z.object({
   id: z.string().optional(),
   nome_propriedade: z.string().min(1, "Nome é obrigatório"),
   municipio: z.string().min(1, "Município é obrigatório"),
-  uf: z.string().length(2, "UF deve ter 2 caracteres"),
+  uf: z.string().length(2, "UF deve ter 2 caracteres").toUpperCase(),
 });
 
 interface PropertyFormProps {
   initialData?: Property;
-  onSave: (data: Property) => void;
+  onSave: (data: Omit<Property, 'id'> & { id?: string }) => void;
   onClose: () => void;
 }
 
@@ -29,7 +29,7 @@ export const PropertyForm: React.FC<PropertyFormProps> = ({ initialData, onSave,
   });
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
-    onSave(values as Property);
+    onSave(values);
   };
 
   return (
@@ -68,7 +68,7 @@ export const PropertyForm: React.FC<PropertyFormProps> = ({ initialData, onSave,
             <FormItem>
               <FormLabel>UF</FormLabel>
               <FormControl>
-                <Input placeholder="SP" {...field} />
+                <Input placeholder="SP" maxLength={2} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>

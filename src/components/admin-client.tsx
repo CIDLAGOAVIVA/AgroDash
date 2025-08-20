@@ -11,6 +11,15 @@ import { SensorForm } from './admin/sensor-form';
 import { QuantityForm } from './admin/quantity-form';
 import { AlertCriteriaForm } from './admin/alert-criteria-form';
 import type { Property, AdminCrop, Station, Sensor, Quantity, AlertCriterion } from '@/types';
+import { 
+    saveProperty, deleteProperty, 
+    saveCrop, deleteCrop,
+    saveStation, deleteStation,
+    saveSensor, deleteSensor,
+    saveQuantity, deleteQuantity,
+    saveAlertCriterion, deleteAlertCriterion
+} from '@/app/admin/actions';
+import { useToast } from '@/hooks/use-toast';
 
 interface AdminClientProps {
   initialData: {
@@ -23,16 +32,49 @@ interface AdminClientProps {
   };
 }
 
-export function AdminClient({ initialData }: AdminClientProps) {
-  const [data, setData] = useState(initialData);
+type DataKeys = keyof AdminClientProps['initialData'];
 
-  // Mock functions for CRUD operations. Replace with server actions.
-  const handleDelete = (itemType: keyof typeof data, item: {id: string}) => {
-    console.log(`Deleting ${itemType} with id ${item.id}`);
-    setData(prev => ({
-        ...prev,
-        [itemType]: prev[itemType].filter((i: {id: string}) => i.id !== item.id)
-    }));
+export function AdminClient({ initialData }: AdminClientProps) {
+  const { toast } = useToast();
+
+  const handleSave = async (itemType: DataKeys, data: any) => {
+    try {
+      const type = itemType.slice(0, -1); // 'properties' -> 'propertie'
+      const op = data.id ? 'atualizado' : 'criado';
+
+      switch (itemType) {
+        case 'properties': await saveProperty(data); break;
+        case 'crops': await saveCrop(data); break;
+        case 'stations': await saveStation(data); break;
+        case 'sensors': await saveSensor(data); break;
+        case 'quantities': await saveQuantity(data); break;
+        case 'alertCriteria': await saveAlertCriterion(data); break;
+      }
+      toast({ title: "Sucesso!", description: `Item ${op} com sucesso.` });
+    } catch (error) {
+      console.error(`Error saving ${itemType}:`, error);
+      toast({ title: "Erro!", description: `Não foi possível salvar o item.`, variant: 'destructive' });
+    }
+  };
+
+  const handleDelete = async (itemType: DataKeys, item: {id: string}) => {
+     if (!confirm('Tem certeza que deseja excluir este item? A ação não pode ser desfeita.')) {
+      return;
+    }
+    try {
+      switch (itemType) {
+        case 'properties': await deleteProperty(item.id); break;
+        case 'crops': await deleteCrop(item.id); break;
+        case 'stations': await deleteStation(item.id); break;
+        case 'sensors': await deleteSensor(item.id); break;
+        case 'quantities': await deleteQuantity(item.id); break;
+        case 'alertCriteria': await deleteAlertCriterion(item.id); break;
+      }
+       toast({ title: "Sucesso!", description: "Item excluído com sucesso." });
+    } catch (error) {
+       console.error(`Error deleting ${itemType}:`, error);
+       toast({ title: "Erro!", description: "Não foi possível excluir o item. Verifique se ele não está sendo usado por outro registro.", variant: 'destructive' });
+    }
   };
   
   const propertyColumns = [
@@ -59,18 +101,16 @@ export function AdminClient({ initialData }: AdminClientProps) {
   const quantityColumns = [
       { header: "Grandeza", accessor: 'nome_grandeza' as const },
       { header: "Unidade", accessor: 'unidade_medida' as const },
-      { header: "Descrição", accessor: 'descricao_grandeza' as const },
   ];
 
   const alertCriteriaColumns = [
       { header: "Alerta", accessor: 'alerta' as const },
       { header: "Condição", accessor: 'comparacao' as const },
-      { header: "Valor Crítico", accessor: 'valor_critico_1' as const },
       { header: "Ativo", accessor: 'ativo' as const },
   ];
 
   return (
-    <Tabs defaultValue="properties">
+    <Tabs defaultValue="properties" className="w-full">
       <TabsList>
         <TabsTrigger value="properties">Propriedades</TabsTrigger>
         <TabsTrigger value="crops">Culturas</TabsTrigger>
@@ -82,55 +122,61 @@ export function AdminClient({ initialData }: AdminClientProps) {
 
       <TabsContent value="properties">
         <CrudTable<Property>
-          data={data.properties}
+          data={initialData.properties}
           columns={propertyColumns}
           onDelete={(item) => handleDelete('properties', item)}
+          onSave={(data) => handleSave('properties', data)}
           FormComponent={(props) => <PropertyForm {...props} />}
         />
       </TabsContent>
 
       <TabsContent value="crops">
         <CrudTable<AdminCrop>
-          data={data.crops}
+          data={initialData.crops}
           columns={cropColumns}
           onDelete={(item) => handleDelete('crops', item)}
-          FormComponent={(props) => <CropForm {...props} properties={data.properties} />}
+           onSave={(data) => handleSave('crops', data)}
+          FormComponent={(props) => <CropForm {...props} properties={initialData.properties} />}
         />
       </TabsContent>
       
       <TabsContent value="stations">
         <CrudTable<Station>
-          data={data.stations}
+          data={initialData.stations}
           columns={stationColumns}
           onDelete={(item) => handleDelete('stations', item)}
-          FormComponent={(props) => <StationForm {...props} properties={data.properties} />}
+          onSave={(data) => handleSave('stations', data)}
+          FormComponent={(props) => <StationForm {...props} properties={initialData.properties} />}
         />
       </TabsContent>
 
        <TabsContent value="sensors">
         <CrudTable<Sensor>
-          data={data.sensors}
+          data={initialData.sensors}
           columns={sensorColumns}
           onDelete={(item) => handleDelete('sensors', item)}
-          FormComponent={(props) => <SensorForm {...props} stations={data.stations} />}
+          onSave={(data) => handleSave('sensors', data)}
+          FormComponent={(props) => <SensorForm {...props} stations={initialData.stations} />}
         />
       </TabsContent>
 
       <TabsContent value="quantities">
         <CrudTable<Quantity>
-          data={data.quantities}
+          data={initialData.quantities}
           columns={quantityColumns}
           onDelete={(item) => handleDelete('quantities', item)}
+          onSave={(data) => handleSave('quantities', data)}
           FormComponent={(props) => <QuantityForm {...props} />}
         />
       </TabsContent>
 
       <TabsContent value="alert-criteria">
         <CrudTable<AlertCriterion>
-            data={data.alertCriteria}
+            data={initialData.alertCriteria}
             columns={alertCriteriaColumns}
             onDelete={(item) => handleDelete('alertCriteria', item)}
-            FormComponent={(props) => <AlertCriteriaForm {...props} sensors={data.sensors} quantities={data.quantities} />}
+            onSave={(data) => handleSave('alertCriteria', data)}
+            FormComponent={(props) => <AlertCriteriaForm {...props} sensors={initialData.sensors} quantities={initialData.quantities} />}
         />
       </TabsContent>
 

@@ -22,20 +22,33 @@ const formSchema = z.object({
   alerta: z.string().min(1, "Mensagem de alerta é obrigatória"),
   repeticao_seg: z.coerce.number().int().positive(),
   ativo: z.boolean(),
+}).refine(data => {
+    if (data.comparacao === 'entre') {
+        return data.valor_critico_2 !== undefined && data.valor_critico_2 > data.valor_critico_1;
+    }
+    return true;
+}, {
+    message: "Valor Máximo deve ser maior que o Valor Mínimo",
+    path: ["valor_critico_2"],
 });
+
 
 interface AlertCriteriaFormProps {
   initialData?: AlertCriterion;
   sensors: Sensor[];
   quantities: Quantity[];
-  onSave: (data: AlertCriterion) => void;
+  onSave: (data: Omit<AlertCriterion, 'id'> & { id?: string }) => void;
   onClose: () => void;
 }
 
 export const AlertCriteriaForm: React.FC<AlertCriteriaFormProps> = ({ initialData, sensors, quantities, onSave, onClose }) => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: initialData || {
+    defaultValues: initialData ? {
+        ...initialData,
+        id_sensor: String(initialData.id_sensor),
+        id_grandeza: String(initialData.id_grandeza),
+    } : {
       id_sensor: '',
       id_grandeza: '',
       comparacao: '>',
@@ -48,7 +61,7 @@ export const AlertCriteriaForm: React.FC<AlertCriteriaFormProps> = ({ initialDat
   });
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
-    onSave(values as AlertCriterion);
+    onSave(values);
   };
   
   const comparacao = form.watch('comparacao');
@@ -67,7 +80,7 @@ export const AlertCriteriaForm: React.FC<AlertCriteriaFormProps> = ({ initialDat
                   <SelectTrigger><SelectValue placeholder="Selecione um sensor" /></SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  {sensors.map(s => <SelectItem key={s.id} value={s.id}>{s.nome_sensor}</SelectItem>)}
+                  {sensors.map(s => <SelectItem key={s.id} value={String(s.id)}>{s.nome_sensor} ({s.id})</SelectItem>)}
                 </SelectContent>
               </Select>
               <FormMessage />
@@ -85,7 +98,7 @@ export const AlertCriteriaForm: React.FC<AlertCriteriaFormProps> = ({ initialDat
                   <SelectTrigger><SelectValue placeholder="Selecione uma grandeza" /></SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  {quantities.map(q => <SelectItem key={q.id} value={q.id}>{q.nome_grandeza}</SelectItem>)}
+                  {quantities.map(q => <SelectItem key={q.id} value={String(q.id)}>{q.nome_grandeza} ({q.id})</SelectItem>)}
                 </SelectContent>
               </Select>
               <FormMessage />
@@ -124,7 +137,7 @@ export const AlertCriteriaForm: React.FC<AlertCriteriaFormProps> = ({ initialDat
               <FormItem>
                 <FormLabel>{comparacao === 'entre' ? 'Valor Mínimo' : 'Valor Crítico'}</FormLabel>
                 <FormControl>
-                  <Input type="number" {...field} />
+                  <Input type="number" step="any" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -138,7 +151,7 @@ export const AlertCriteriaForm: React.FC<AlertCriteriaFormProps> = ({ initialDat
                 <FormItem>
                     <FormLabel>Valor Máximo</FormLabel>
                     <FormControl>
-                    <Input type="number" {...field} />
+                    <Input type="number" step="any" {...field} />
                     </FormControl>
                     <FormMessage />
                 </FormItem>

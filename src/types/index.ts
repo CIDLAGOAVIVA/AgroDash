@@ -46,11 +46,13 @@ export interface Property {
   nome_propriedade: string;
 }
 
+// Representa o que a UI do admin precisa.
+// Mapeia os campos do formulário para os da tabela.
 export interface AdminCrop {
   id: string;
-  propertyId: string;
-  cropType: string;
-  fieldName: string;
+  propertyId: string; // no form, id_propriedade na tabela
+  cropType: string; // no form, produto na tabela
+  fieldName: string; // no form, nome_cultura na tabela
 }
 
 export interface Station {
@@ -80,7 +82,7 @@ export interface AlertCriterion {
     id_grandeza: string;
     comparacao: ' > ' | ' < ' | ' >= ' | ' <= ' | '==' | '!=' | 'entre';
     valor_critico_1: number;
-    valor_critico_2?: number;
+    valor_critico_2?: number | null; // pode ser nulo no banco
     alerta: string;
     repeticao_seg: number;
     ativo: boolean;

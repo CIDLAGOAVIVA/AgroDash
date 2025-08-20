@@ -20,18 +20,21 @@ const formSchema = z.object({
 interface CropFormProps {
   initialData?: AdminCrop;
   properties: Property[];
-  onSave: (data: AdminCrop) => void;
+  onSave: (data: Omit<AdminCrop, 'id'> & { id?: string }) => void;
   onClose: () => void;
 }
 
 export const CropForm: React.FC<CropFormProps> = ({ initialData, properties, onSave, onClose }) => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: initialData || { propertyId: '', cropType: '', fieldName: '' },
+    defaultValues: initialData ? {
+        ...initialData,
+        propertyId: String(initialData.propertyId),
+    } : { propertyId: '', cropType: '', fieldName: '' },
   });
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
-    onSave(values as AdminCrop);
+    onSave(values);
   };
 
   return (
@@ -51,7 +54,7 @@ export const CropForm: React.FC<CropFormProps> = ({ initialData, properties, onS
                 </FormControl>
                 <SelectContent>
                   {properties.map(prop => (
-                    <SelectItem key={prop.id} value={prop.id}>{prop.nome_propriedade}</SelectItem>
+                    <SelectItem key={prop.id} value={String(prop.id)}>{prop.nome_propriedade}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -64,7 +67,7 @@ export const CropForm: React.FC<CropFormProps> = ({ initialData, properties, onS
           name="cropType"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Tipo de Cultura</FormLabel>
+              <FormLabel>Tipo de Cultura (Produto)</FormLabel>
               <FormControl>
                 <Input placeholder="Soja" {...field} />
               </FormControl>
@@ -77,7 +80,7 @@ export const CropForm: React.FC<CropFormProps> = ({ initialData, properties, onS
           name="fieldName"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Nome do Campo</FormLabel>
+              <FormLabel>Nome do Campo (Cultura)</FormLabel>
               <FormControl>
                 <Input placeholder="Campo Norte" {...field} />
               </FormControl>

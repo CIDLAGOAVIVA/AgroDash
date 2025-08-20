@@ -8,17 +8,18 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import type { Quantity } from '@/types';
+import { Textarea } from '../ui/textarea';
 
 const formSchema = z.object({
   id: z.string().optional(),
   nome_grandeza: z.string().min(1, "Nome é obrigatório"),
-  unidade_medida: z.string(),
-  descricao_grandeza: z.string(),
+  unidade_medida: z.string().optional(),
+  descricao_grandeza: z.string().optional(),
 });
 
 interface QuantityFormProps {
   initialData?: Quantity;
-  onSave: (data: Quantity) => void;
+  onSave: (data: Omit<Quantity, 'id'> & { id?: string }) => void;
   onClose: () => void;
 }
 
@@ -29,7 +30,7 @@ export const QuantityForm: React.FC<QuantityFormProps> = ({ initialData, onSave,
   });
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
-    onSave(values as Quantity);
+    onSave(values);
   };
 
   return (
@@ -68,7 +69,7 @@ export const QuantityForm: React.FC<QuantityFormProps> = ({ initialData, onSave,
             <FormItem>
               <FormLabel>Descrição</FormLabel>
               <FormControl>
-                <Input placeholder="Temperatura do ar" {...field} />
+                <Textarea placeholder="Temperatura do ar" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>

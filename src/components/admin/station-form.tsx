@@ -9,29 +9,33 @@ import { Input } from '@/components/ui/input';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import type { Station, Property } from '@/types';
+import { Textarea } from '../ui/textarea';
 
 const formSchema = z.object({
   id: z.string().optional(),
   id_propriedade: z.string().min(1, "Propriedade é obrigatória"),
   nome_estacao: z.string().min(1, "Nome é obrigatório"),
-  descricao_estacao: z.string(),
+  descricao_estacao: z.string().optional(),
 });
 
 interface StationFormProps {
   initialData?: Station;
   properties: Property[];
-  onSave: (data: Station) => void;
+  onSave: (data: Omit<Station, 'id'> & { id?: string }) => void;
   onClose: () => void;
 }
 
 export const StationForm: React.FC<StationFormProps> = ({ initialData, properties, onSave, onClose }) => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: initialData || { id_propriedade: '', nome_estacao: '', descricao_estacao: '' },
+    defaultValues: initialData ? {
+        ...initialData,
+        id_propriedade: String(initialData.id_propriedade)
+    } : { id_propriedade: '', nome_estacao: '', descricao_estacao: '' },
   });
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
-    onSave(values as Station);
+    onSave(values);
   };
 
   return (
@@ -51,7 +55,7 @@ export const StationForm: React.FC<StationFormProps> = ({ initialData, propertie
                 </FormControl>
                 <SelectContent>
                   {properties.map(prop => (
-                    <SelectItem key={prop.id} value={prop.id}>{prop.nome_propriedade}</SelectItem>
+                    <SelectItem key={prop.id} value={String(prop.id)}>{prop.nome_propriedade}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -79,7 +83,7 @@ export const StationForm: React.FC<StationFormProps> = ({ initialData, propertie
             <FormItem>
               <FormLabel>Descrição</FormLabel>
               <FormControl>
-                <Input placeholder="Localizada perto do rio" {...field} />
+                <Textarea placeholder="Localizada perto do rio" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>

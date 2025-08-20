@@ -1,16 +1,24 @@
-
 import { AdminClient } from "@/components/admin-client";
-import { initialCrops, initialProperties, initialStations, initialSensors, initialQuantities, initialAlertCriteria } from "@/lib/data";
+import { getProperties, getCrops, getStations, getSensors, getQuantities, getAlertCriteria } from "./actions";
 
-export default function AdminPage() {
-  // No futuro, esses dados virão do banco de dados.
+export default async function AdminPage() {
+  // Agora, esses dados vêm do banco de dados real.
+  const [properties, crops, stations, sensors, quantities, alertCriteria] = await Promise.all([
+    getProperties(),
+    getCrops(),
+    getStations(),
+    getSensors(),
+    getQuantities(),
+    getAlertCriteria(),
+  ]);
+
   const data = {
-    properties: initialProperties,
-    crops: initialCrops.map(c => ({...c, propertyId: 'prop-1'})), // Adicionando mock propertyId
-    stations: initialStations,
-    sensors: initialSensors,
-    quantities: initialQuantities,
-    alertCriteria: initialAlertCriteria,
+    properties,
+    crops,
+    stations,
+    sensors,
+    quantities,
+    alertCriteria,
   };
 
   return (

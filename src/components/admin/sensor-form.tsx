@@ -9,29 +9,33 @@ import { Input } from '@/components/ui/input';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import type { Sensor, Station } from '@/types';
+import { Textarea } from '../ui/textarea';
 
 const formSchema = z.object({
   id: z.string().optional(),
   id_estacao: z.string().min(1, "Estação é obrigatória"),
   nome_sensor: z.string().min(1, "Nome é obrigatório"),
-  descricao_sensor: z.string(),
+  descricao_sensor: z.string().optional(),
 });
 
 interface SensorFormProps {
   initialData?: Sensor;
   stations: Station[];
-  onSave: (data: Sensor) => void;
+  onSave: (data: Omit<Sensor, 'id'> & { id?: string }) => void;
   onClose: () => void;
 }
 
 export const SensorForm: React.FC<SensorFormProps> = ({ initialData, stations, onSave, onClose }) => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: initialData || { id_estacao: '', nome_sensor: '', descricao_sensor: '' },
+    defaultValues: initialData ? {
+        ...initialData,
+        id_estacao: String(initialData.id_estacao)
+    } : { id_estacao: '', nome_sensor: '', descricao_sensor: '' },
   });
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
-    onSave(values as Sensor);
+    onSave(values);
   };
 
   return (
@@ -51,7 +55,7 @@ export const SensorForm: React.FC<SensorFormProps> = ({ initialData, stations, o
                 </FormControl>
                 <SelectContent>
                   {stations.map(st => (
-                    <SelectItem key={st.id} value={st.id}>{st.nome_estacao}</SelectItem>
+                    <SelectItem key={st.id} value={String(st.id)}>{st.nome_estacao} ({st.id})</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -79,7 +83,7 @@ export const SensorForm: React.FC<SensorFormProps> = ({ initialData, stations, o
             <FormItem>
               <FormLabel>Descrição</FormLabel>
               <FormControl>
-                <Input placeholder="Mede a temperatura do ar" {...field} />
+                <Textarea placeholder="Mede a temperatura do ar" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
