@@ -3,7 +3,7 @@
 
 import { Leaf, Wheat } from "lucide-react";
 import { Card, CardDescription, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import type { Crop } from "@/types";
+import type { DashboardCrop } from "@/types";
 
 const Sprout = () => (
     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-sprout"><path d="M7 20h10"/><path d="M12 20V4"/><path d="M12 4c0-2.21-1.79-4-4-4S4 1.79 4 4c0 .62.14 1.2.38 1.72"/><path d="M12 4c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .62-.14 1.2-.38 1.72"/></svg>
@@ -16,7 +16,7 @@ const cropIcons: { [key: string]: React.ComponentType<{ className?: string }> } 
 };
 
 interface CropCardProps {
-    crop: Crop;
+    crop: DashboardCrop;
 }
 
 export function CropCard({ crop }: CropCardProps) {

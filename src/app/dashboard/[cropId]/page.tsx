@@ -1,6 +1,8 @@
+
 import { DashboardClient } from "@/components/dashboard-client";
 import { initialCrops } from "@/lib/data";
 import { notFound } from "next/navigation";
+import type { DashboardCrop } from "@/types";
 
 export async function generateStaticParams() {
   return initialCrops.map((crop) => ({
@@ -16,6 +18,6 @@ export default function DashboardPage({ params }: { params: { cropId: string } }
   }
 
   return (
-      <DashboardClient initialCrop={crop} />
+      <DashboardClient initialCrop={crop as DashboardCrop} />
   );
 }

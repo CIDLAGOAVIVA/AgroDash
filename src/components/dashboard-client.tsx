@@ -3,7 +3,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { generateAnomalyAlerts, generateFieldImage } from "@/app/actions";
-import type { Crop, HistoryData } from "@/types";
+import type { DashboardCrop, HistoryData } from "@/types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Image from "next/image";
 import { WIND_DIRECTIONS } from "@/lib/data";
@@ -78,8 +78,8 @@ type DetailedChartDataType = {
   stroke: string;
 }
 
-export function DashboardClient({ initialCrop }: { initialCrop: Crop }) {
-  const [crop, setCrop] = useState<Crop>(initialCrop);
+export function DashboardClient({ initialCrop }: { initialCrop: DashboardCrop }) {
+  const [crop, setCrop] = useState<DashboardCrop>(initialCrop);
   const [fieldImage, setFieldImage] = useState<string | null>(null);
   const [isImageLoading, setIsImageLoading] = useState(true);
   const [detailedChartData, setDetailedChartData] = useState<DetailedChartDataType | null>(null);
