@@ -1,12 +1,11 @@
-
 import type { Crop, HistoryData } from "@/types";
 import type { ChartConfig } from "@/components/ui/chart"
 
 export const WIND_DIRECTIONS = ["N", "NE", "L", "SE", "S", "SO", "O", "NO"];
 
-export const generateInitialHistory = (baseValues: { 
-  airTemp: number; 
-  airHumidity: number; 
+export const generateInitialHistory = (baseValues: {
+  airTemp: number;
+  airHumidity: number;
   windSpeed: number;
   co2Concentration: number;
   soilMoisture: number;
@@ -16,7 +15,7 @@ export const generateInitialHistory = (baseValues: {
   let { airTemp, airHumidity, windSpeed, co2Concentration, soilMoisture, nitrogen } = baseValues;
   for (let i = 29; i >= 0; i--) {
     const time = new Date(Date.now() - i * 24 * 60 * 60000).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
-    
+
     // Simulate fluctuations
     airTemp += (Math.random() - 0.5) * 0.6;
     airHumidity += (Math.random() - 0.5) * 1.5;
@@ -41,14 +40,14 @@ export const generateInitialHistory = (baseValues: {
 };
 
 const getCurrentDateTime = () => {
-    const now = new Date();
-    return `${now.toLocaleDateString('pt-BR')} ${now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`;
+  const now = new Date();
+  return `${now.toLocaleDateString('pt-BR')} ${now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`;
 }
 
 const getPastDateTime = (minutes: number) => {
-    const now = new Date();
-    now.setMinutes(now.getMinutes() - minutes);
-    return `${now.toLocaleDateString('pt-BR')} ${now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`;
+  const now = new Date();
+  now.setMinutes(now.getMinutes() - minutes);
+  return `${now.toLocaleDateString('pt-BR')} ${now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`;
 }
 
 
@@ -75,7 +74,15 @@ export const initialCrops: Crop[] = [
       { dateTime: getPastDateTime(240), message: "Irrigação concluída com sucesso.", severity: "Normal" },
     ],
     location: { lat: -22.846146, lng: -42.571864 },
-    imageUrl: "https://placehold.co/500x500/228B22/FFFFFF?text=Soja"
+    imageUrl: "https://placehold.co/500x500/228B22/FFFFFF?text=Soja",
+    sensorThresholds: {
+      airTemperature: { min: 20, max: 30 },
+      airHumidity: { min: 40, max: 80 },
+      windSpeed: { max: 20 },
+      co2Concentration: { min: 350, max: 450 },
+      soilMoisture: { min: 30, max: 60 },
+      nitrogen: { min: 30, max: 60 }
+    }
   },
   {
     id: "corn-1",
@@ -95,7 +102,15 @@ export const initialCrops: Crop[] = [
       { dateTime: getPastDateTime(300), message: "Níveis de Nitrogênio estáveis.", severity: "Normal" },
     ],
     location: { lat: -22.85, lng: -42.565 },
-    imageUrl: "https://placehold.co/500x500/228B22/FFFFFF?text=Milho"
+    imageUrl: "https://placehold.co/500x500/228B22/FFFFFF?text=Milho",
+    sensorThresholds: {
+      airTemperature: { min: 15, max: 35 },
+      airHumidity: { min: 50, max: 90 },
+      windSpeed: { max: 25 },
+      co2Concentration: { min: 300, max: 500 },
+      soilMoisture: { min: 20, max: 70 },
+      nitrogen: { min: 20, max: 70 }
+    }
   },
   {
     id: "wheat-1",
@@ -115,7 +130,15 @@ export const initialCrops: Crop[] = [
       { dateTime: getPastDateTime(240), message: "Condições ideais para o desenvolvimento vegetativo.", severity: "Normal" },
     ],
     location: { lat: -22.84, lng: -42.58 },
-    imageUrl: "https://placehold.co/500x500/228B22/FFFFFF?text=Trigo"
+    imageUrl: "https://placehold.co/500x500/228B22/FFFFFF?text=Trigo",
+    sensorThresholds: {
+      airTemperature: { min: 10, max: 25 },
+      airHumidity: { min: 60, max: 85 },
+      windSpeed: { max: 15 },
+      co2Concentration: { min: 350, max: 450 },
+      soilMoisture: { min: 25, max: 75 },
+      nitrogen: { min: 10, max: 50 }
+    }
   },
 ];
 

@@ -1,4 +1,3 @@
-
 export interface HistoryData {
   time: string;
   airTemperature: number;
@@ -16,6 +15,11 @@ export interface AlertEntry {
   dateTime: string;
   message: string;
   severity: AlertSeverity;
+}
+
+export interface SensorThreshold {
+  min?: number;
+  max?: number;
 }
 
 export interface Crop {
@@ -36,4 +40,12 @@ export interface Crop {
     lng: number;
   };
   imageUrl: string;
+  sensorThresholds?: {
+    airTemperature?: SensorThreshold;
+    airHumidity?: SensorThreshold;
+    windSpeed?: SensorThreshold;
+    co2Concentration?: SensorThreshold;
+    soilMoisture?: SensorThreshold;
+    nitrogen?: SensorThreshold;
+  };
 }
