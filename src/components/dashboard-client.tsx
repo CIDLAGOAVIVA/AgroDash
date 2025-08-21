@@ -81,7 +81,7 @@ type DetailedChartDataType = {
   stroke: string;
 }
 
-export function DashboardClient({ initialCrop }: { initialCrop: Crop }) {
+export function DashboardClient({ initialCrop, allCrops }: { initialCrop: Crop; allCrops: Crop[] }) {
   const [crop, setCrop] = useState<Crop>(initialCrop);
   const [fieldImage, setFieldImage] = useState<string | null>(null);
   const [isImageLoading, setIsImageLoading] = useState(true);
@@ -163,19 +163,20 @@ export function DashboardClient({ initialCrop }: { initialCrop: Crop }) {
     }
   };
 
+  // Update the useEffect to depend on crop.cropType instead of initialCrop.cropType
   useEffect(() => {
     setIsImageLoading(true);
-    generateFieldImage(`${initialCrop.cropType} field, high resolution photograph, aerial view`)
+    generateFieldImage(`${crop.cropType} field, high resolution photograph, aerial view`)
       .then(result => {
         if (result.imageUrl) {
           setFieldImage(result.imageUrl);
         }
       })
-      .catch(error => console.error("Failed to generate initial field image:", error))
+      .catch(error => console.error("Failed to generate field image:", error))
       .finally(() => {
         setIsImageLoading(false);
       });
-  }, [initialCrop.cropType]);
+  }, [crop.cropType]); // Now depends on crop.cropType, not initialCrop.cropType
 
   useInterval(updateCropData, 5000);
 
@@ -250,9 +251,31 @@ export function DashboardClient({ initialCrop }: { initialCrop: Crop }) {
     }
   ];
 
+  // Add a function to handle crop changes from the dropdown
+  const handleCropChange = (cropId: string) => {
+    const newCrop = allCrops.find(c => c.id === cropId);
+    if (newCrop) {
+      // Reset states for new crop
+      setFieldImage(null);
+      setIsImageLoading(true);
+      setDetailedChartData(null);
+      setFullscreenContent(null);
+
+      // Update the crop
+      setCrop(newCrop);
+
+      // Update the URL without full page reload
+      window.history.pushState({}, '', `/dashboard/${cropId}`);
+    }
+  };
+
   return (
     <div className="flex flex-col gap-3 dashboard-container">
-      <CropCard crop={crop} />
+      <CropCard
+        crop={crop}
+        allCrops={allCrops}
+        onCropChange={handleCropChange}
+      />
 
       <Tabs defaultValue="sensores" className="w-full">
         <TabsList className="grid grid-cols-3 mb-4">

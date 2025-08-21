@@ -31,5 +31,5 @@ export default function DashboardPage({ params }: { params: { cropId: string } |
     return null;
   }
 
-  return <DashboardClient initialCrop={crop} />;
+  return <DashboardClient initialCrop={crop} allCrops={initialCrops} />;
 }
