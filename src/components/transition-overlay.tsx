@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 import { Leaf } from "lucide-react";
 
 export function TransitionOverlay() {
-    const { isTransitioning, isInitialLoad } = useTransition();
+    const { isTransitioning, isInitialLoad, transitionCropId } = useTransition();
     const [showOverlay, setShowOverlay] = useState(false);
 
     useEffect(() => {

@@ -50,12 +50,17 @@ export function CropCard({ crop, allCrops = [], onCropChange }: CropCardProps) {
   const { startTransition } = useTransition();
 
   const handleCropSelect = (cropId: string) => {
+    // Always start the transition animation regardless of which behavior follows
+    startTransition(cropId);
+
     if (onCropChange) {
-      onCropChange(cropId);
+      // If we have a custom change handler, call it after a brief delay
+      // to allow the transition animation to begin
+      setTimeout(() => {
+        onCropChange(cropId);
+      }, 300);
     } else {
       // Default behavior if no onCropChange handler is provided
-      startTransition(cropId);
-
       setTimeout(() => {
         router.push(`/dashboard/${cropId}`);
       }, 300);

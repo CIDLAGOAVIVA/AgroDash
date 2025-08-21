@@ -253,6 +253,8 @@ export function DashboardClient({ initialCrop, allCrops }: { initialCrop: Crop; 
 
   // Add a function to handle crop changes from the dropdown
   const handleCropChange = (cropId: string) => {
+    // The transition animation is already started by the CropCard component
+    // We just need to wait for it and then update the crop data
     const newCrop = allCrops.find(c => c.id === cropId);
     if (newCrop) {
       // Reset states for new crop
