@@ -58,6 +58,7 @@
   * {
     @apply border-border;
   }
+
   body {
     @apply bg-background text-foreground;
   }
@@ -66,5 +67,65 @@
 @layer components {
   .spinner {
     @apply w-12 h-12 border-4 border-primary border-solid border-t-transparent rounded-full animate-spin;
+  }
+
+  .transition-overlay {
+    @apply fixed inset-0 z-50 bg-background pointer-events-none opacity-0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .transition-overlay.active {
+    @apply opacity-100;
+    animation: zoomTransition 1000ms ease-in-out;
+  }
+
+  .transition-overlay.initial-load {
+    @apply opacity-100;
+    animation: zoomOutTransition 1000ms ease-in-out;
+  }
+
+  @keyframes zoomTransition {
+    0% {
+      opacity: 0;
+      transform: scale(0.1);
+    }
+
+    50% {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    100% {
+      opacity: 0;
+      transform: scale(1.2);
+    }
+  }
+
+  @keyframes zoomOutTransition {
+    0% {
+      opacity: 1;
+      transform: scale(1.2);
+    }
+
+    50% {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    100% {
+      opacity: 0;
+      transform: scale(0.9);
+    }
+  }
+
+  .dashboard-container {
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
+  }
+
+  .dashboard-container.fade-in {
+    opacity: 1;
   }
 }

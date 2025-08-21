@@ -1,4 +1,3 @@
-
 "use client";
 
 import Link from "next/link";
@@ -23,6 +22,8 @@ import {
 import { useSidebar } from "@/hooks/use-sidebar";
 import { cn } from "@/lib/utils";
 import type { Crop } from "@/types";
+import { useTransition } from "@/hooks/use-transition";
+import { useRouter } from "next/navigation";
 
 const Sprout = () => (
   <svg
@@ -57,6 +58,18 @@ interface SidebarProps {
 function SidebarDesktop({ crops }: SidebarProps) {
   const pathname = usePathname();
   const { isOpen, toggle } = useSidebar();
+  const { startTransition } = useTransition();
+  const router = useRouter();
+
+  const handleCropClick = (cropId: string, href: string) => (e: React.MouseEvent) => {
+    e.preventDefault();
+    startTransition(cropId);
+
+    // Navegar após pequeno delay para permitir a animação iniciar
+    setTimeout(() => {
+      router.push(href);
+    }, 300);
+  };
 
   return (
     <aside
@@ -116,6 +129,7 @@ function SidebarDesktop({ crops }: SidebarProps) {
                           "flex items-center gap-3 rounded-md px-3 py-2 text-muted-foreground transition-all hover:bg-accent hover:text-accent-foreground",
                           pathname === href && "bg-accent text-accent-foreground"
                         )}
+                        onClick={handleCropClick(crop.id, href)}
                       >
                         <Icon className="h-5 w-5" />
                         <span
@@ -156,60 +170,73 @@ function SidebarDesktop({ crops }: SidebarProps) {
 }
 
 function SidebarMobile({ crops }: SidebarProps) {
-    const pathname = usePathname();
-    const [open, setOpen] = React.useState(false);
+  const pathname = usePathname();
+  const [open, setOpen] = React.useState(false);
+  const { startTransition } = useTransition();
+  const router = useRouter();
 
-    return (
-      <header className="sticky top-0 z-40 flex h-16 items-center justify-between border-b bg-background px-4 md:hidden">
-        <Sheet open={open} onOpenChange={setOpen}>
-          <SheetTrigger asChild>
-            <Button size="icon" variant="outline">
-              <Menu className="h-5 w-5" />
-              <span className="sr-only">Toggle navigation menu</span>
-            </Button>
-          </SheetTrigger>
-          <SheetContent side="left" className="flex flex-col">
+  const handleCropClick = (cropId: string, href: string) => (e: React.MouseEvent) => {
+    e.preventDefault();
+    setOpen(false);
+    startTransition(cropId);
+
+    // Navegar após pequeno delay para permitir a animação iniciar
+    setTimeout(() => {
+      router.push(href);
+    }, 300);
+  };
+
+  return (
+    <header className="sticky top-0 z-40 flex h-16 items-center justify-between border-b bg-background px-4 md:hidden">
+      <Sheet open={open} onOpenChange={setOpen}>
+        <SheetTrigger asChild>
+          <Button size="icon" variant="outline">
+            <Menu className="h-5 w-5" />
+            <span className="sr-only">Toggle navigation menu</span>
+          </Button>
+        </SheetTrigger>
+        <SheetContent side="left" className="flex flex-col">
           <SheetHeader className="sr-only">
-              <SheetTitle>Navegação Principal</SheetTitle>
-            </SheetHeader>
-            <nav className="grid gap-2 text-lg font-medium">
-              <Link
-                href="/"
-                className="flex items-center gap-2 text-lg font-semibold mb-4"
-                onClick={() => setOpen(false)}
-              >
-                <span>AgriDash</span>
-              </Link>
-              <Link
-                href="/"
-                onClick={() => setOpen(false)}
-                className={cn("mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground", pathname === "/" && "bg-muted text-foreground")}
-              >
+            <SheetTitle>Navegação Principal</SheetTitle>
+          </SheetHeader>
+          <nav className="grid gap-2 text-lg font-medium">
+            <Link
+              href="/"
+              className="flex items-center gap-2 text-lg font-semibold mb-4"
+              onClick={() => setOpen(false)}
+            >
+              <span>AgriDash</span>
+            </Link>
+            <Link
+              href="/"
+              onClick={() => setOpen(false)}
+              className={cn("mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground", pathname === "/" && "bg-muted text-foreground")}
+            >
 
-                <Home className="h-5 w-5" />
-                Visão Geral
-              </Link>
-               {crops.map((crop) => {
-                const Icon = cropIcons[crop.cropType] || Leaf;
-                const href = `/dashboard/${crop.id}`;
-                return (
-                    <Link
-                    key={crop.id}
-                    href={href}
-                    onClick={() => setOpen(false)}
-                    className={cn("mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground", pathname === href && "bg-muted text-foreground")}
-                  >
-                    <Icon className="h-5 w-5" />
-                    {crop.fieldName}
-                  </Link>
-                );
-              })}
-            </nav>
-          </SheetContent>
-        </Sheet>
-      </header>
-    );
-  }
+              <Home className="h-5 w-5" />
+              Visão Geral
+            </Link>
+            {crops.map((crop) => {
+              const Icon = cropIcons[crop.cropType] || Leaf;
+              const href = `/dashboard/${crop.id}`;
+              return (
+                <Link
+                  key={crop.id}
+                  href={href}
+                  onClick={handleCropClick(crop.id, href)}
+                  className={cn("mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground", pathname === href && "bg-muted text-foreground")}
+                >
+                  <Icon className="h-5 w-5" />
+                  {crop.fieldName}
+                </Link>
+              );
+            })}
+          </nav>
+        </SheetContent>
+      </Sheet>
+    </header>
+  );
+}
 
 export function Sidebar({ crops }: SidebarProps) {
   const [isClient, setIsClient] = React.useState(false)

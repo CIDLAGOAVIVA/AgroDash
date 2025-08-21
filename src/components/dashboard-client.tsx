@@ -17,6 +17,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Activity, Map, Bell } from "lucide-react";
 import { AbnormalSensors } from "./abnormal-sensors";
+import { useTransition } from "@/hooks/use-transition";
 
 function useInterval(callback: () => void, delay: number | null) {
   const savedCallback = useRef<() => void>();
@@ -86,6 +87,20 @@ export function DashboardClient({ initialCrop }: { initialCrop: Crop }) {
   const [isImageLoading, setIsImageLoading] = useState(true);
   const [detailedChartData, setDetailedChartData] = useState<DetailedChartDataType | null>(null);
   const [fullscreenContent, setFullscreenContent] = useState<React.ReactNode | null>(null);
+  const { transitionCropId, isInitialLoad } = useTransition();
+
+  // Efeito para aplicar uma classe de "entrada" quando o componente carrega
+  useEffect(() => {
+    // Pequeno atraso para permitir que a transição de zoom termine primeiro
+    const timer = setTimeout(() => {
+      const container = document.querySelector('.dashboard-container');
+      if (container) {
+        container.classList.add('fade-in');
+      }
+    }, isInitialLoad ? 800 : 300);
+
+    return () => clearTimeout(timer);
+  }, [isInitialLoad]);
 
   const updateCropData = async () => {
     const newAirTemp = crop.airTemperature + (Math.random() - 0.5) * 0.3;
@@ -236,7 +251,7 @@ export function DashboardClient({ initialCrop }: { initialCrop: Crop }) {
   ];
 
   return (
-    <div className="flex flex-col gap-3">
+    <div className="flex flex-col gap-3 dashboard-container">
       <CropCard crop={crop} />
 
       <Tabs defaultValue="sensores" className="w-full">
