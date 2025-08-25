@@ -1,5 +1,4 @@
 
-
 export interface HistoryData {
   time: string;
   airTemperature: number;
@@ -19,7 +18,16 @@ export interface AlertEntry {
   severity: AlertSeverity;
 }
 
+
+export interface SensorThreshold {
+  min?: number;
+  max?: number;
+}
+
+export interface Crop {
+
 export interface DashboardCrop {
+
   id: string;
   cropType: string;
   fieldName: string;
@@ -37,6 +45,14 @@ export interface DashboardCrop {
     lng: number;
   };
   imageUrl: string;
+  sensorThresholds?: {
+    airTemperature?: SensorThreshold;
+    airHumidity?: SensorThreshold;
+    windSpeed?: SensorThreshold;
+    co2Concentration?: SensorThreshold;
+    soilMoisture?: SensorThreshold;
+    nitrogen?: SensorThreshold;
+  };
 }
 
 // Representa a tabela tab_propriedade

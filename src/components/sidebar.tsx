@@ -1,4 +1,3 @@
-
 "use client";
 
 import Link from "next/link";
@@ -23,7 +22,11 @@ import {
 } from "@/components/ui/tooltip";
 import { useSidebar } from "@/hooks/use-sidebar";
 import { cn } from "@/lib/utils";
+import type { Crop } from "@/types";
+import { useTransition } from "@/hooks/use-transition";
+import { useRouter } from "next/navigation";
 import type { DashboardCrop } from "@/types";
+
 
 const Sprout = () => (
   <svg
@@ -58,37 +61,50 @@ interface SidebarProps {
 function SidebarDesktop({ crops }: SidebarProps) {
   const pathname = usePathname();
   const { isOpen, toggle } = useSidebar();
+  const { startTransition } = useTransition();
+  const router = useRouter();
+
+  const handleCropClick = (cropId: string, href: string) => (e: React.MouseEvent) => {
+    e.preventDefault();
+    startTransition(cropId);
+
+    setTimeout(() => {
+      router.push(href);
+    }, 300);
+  };
 
   return (
     <aside
       className={cn(
-        "relative hidden h-screen shrink-0 border-r bg-background transition-[width] duration-300 md:flex md:flex-col",
-        isOpen ? "w-64" : "w-20"
+        "relative hidden h-screen shrink-0 border-r border-border/50 bg-background transition-all duration-200 ease-in-out md:flex md:flex-col",
+        isOpen ? "w-52" : "w-14" // Reduced width when expanded
       )}
     >
-      <div className="flex h-16 shrink-0 items-center justify-center border-b px-4">
-        <Link href="/" className="flex items-center gap-2 font-semibold">
-          <Leaf className="h-6 w-6 text-primary" />
-          <span className={cn("transition-opacity text-primary font-bold", !isOpen && "opacity-0 w-0")}>
+      <div className="flex h-14 shrink-0 items-center justify-center border-b border-border/50 px-3">
+        <Link href="/" className="flex items-center gap-1.5 font-semibold">
+          <Leaf className="h-5 w-5 text-primary" />
+          <span className={cn("transition-all text-primary font-bold text-sm", !isOpen && "opacity-0 w-0")}>
             AgriDash
           </span>
         </Link>
       </div>
 
-      <nav className="flex-grow space-y-2 overflow-auto px-4 py-4">
-        <TooltipProvider>
-          <ul className="space-y-2">
+      <nav className="flex-grow space-y-1 overflow-auto px-2 py-3">
+        <TooltipProvider delayDuration={300}>
+          <ul className="space-y-1">
             <li>
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Link
                     href="/"
                     className={cn(
-                      "flex items-center gap-3 rounded-md px-3 py-2 text-muted-foreground transition-all hover:bg-accent hover:text-accent-foreground",
-                      pathname === "/" && "bg-accent text-accent-foreground"
+                      "flex items-center gap-2 rounded-md px-2.5 py-1.5 text-sm transition-all hover:bg-accent/50",
+                      pathname === "/"
+                        ? "bg-accent/70 text-accent-foreground font-medium"
+                        : "text-muted-foreground"
                     )}
                   >
-                    <Home className="h-5 w-5" />
+                    <Home className="h-4 w-4" />
                     <span
                       className={cn(
                         "overflow-hidden transition-all",
@@ -100,7 +116,7 @@ function SidebarDesktop({ crops }: SidebarProps) {
                   </Link>
                 </TooltipTrigger>
                 {!isOpen && (
-                  <TooltipContent side="right">Visão Geral</TooltipContent>
+                  <TooltipContent side="right" className="text-xs">Visão Geral</TooltipContent>
                 )}
               </Tooltip>
             </li>
@@ -114,14 +130,17 @@ function SidebarDesktop({ crops }: SidebarProps) {
                       <Link
                         href={href}
                         className={cn(
-                          "flex items-center gap-3 rounded-md px-3 py-2 text-muted-foreground transition-all hover:bg-accent hover:text-accent-foreground",
-                          pathname === href && "bg-accent text-accent-foreground"
+                          "flex items-center gap-2 rounded-md px-2.5 py-1.5 text-sm transition-all hover:bg-accent/50",
+                          pathname === href
+                            ? "bg-accent/70 text-accent-foreground font-medium"
+                            : "text-muted-foreground"
                         )}
+                        onClick={handleCropClick(crop.id, href)}
                       >
-                        <Icon className="h-5 w-5" />
+                        <Icon className="h-4 w-4" />
                         <span
                           className={cn(
-                            "overflow-hidden transition-all",
+                            "overflow-hidden transition-all truncate",
                             isOpen ? "w-auto opacity-100" : "w-0 opacity-0"
                           )}
                         >
@@ -130,7 +149,7 @@ function SidebarDesktop({ crops }: SidebarProps) {
                       </Link>
                     </TooltipTrigger>
                     {!isOpen && (
-                      <TooltipContent side="right">
+                      <TooltipContent side="right" className="text-xs">
                         {crop.fieldName}
                       </TooltipContent>
                     )}
@@ -168,13 +187,14 @@ function SidebarDesktop({ crops }: SidebarProps) {
         </TooltipProvider>
       </nav>
 
-      <div className="mt-auto border-t p-4">
+      <div className="mt-auto border-t border-border/50 p-2">
         <Button
           onClick={toggle}
           variant="ghost"
-          className="w-full justify-center"
+          size="sm"
+          className="w-full justify-center h-8"
         >
-          <PanelLeft className="h-5 w-5" />
+          <PanelLeft className="h-4 w-4" />
           <span className="sr-only">Toggle sidebar</span>
         </Button>
       </div>
@@ -183,69 +203,92 @@ function SidebarDesktop({ crops }: SidebarProps) {
 }
 
 function SidebarMobile({ crops }: SidebarProps) {
-    const pathname = usePathname();
-    const [open, setOpen] = React.useState(false);
+  const pathname = usePathname();
+  const [open, setOpen] = React.useState(false);
+  const { startTransition } = useTransition();
+  const router = useRouter();
 
-    return (
-      <header className="sticky top-0 z-40 flex h-16 items-center justify-between border-b bg-background px-4 md:hidden">
-        <Sheet open={open} onOpenChange={setOpen}>
-          <SheetTrigger asChild>
-            <Button size="icon" variant="outline">
-              <Menu className="h-5 w-5" />
-              <span className="sr-only">Toggle navigation menu</span>
-            </Button>
-          </SheetTrigger>
-          <SheetContent side="left" className="flex flex-col">
+  const handleCropClick = (cropId: string, href: string) => (e: React.MouseEvent) => {
+    e.preventDefault();
+    setOpen(false);
+    startTransition(cropId);
+
+    setTimeout(() => {
+      router.push(href);
+    }, 300);
+  };
+
+  return (
+    <header className="sticky top-0 z-40 flex h-14 items-center justify-between border-b border-border/50 bg-background px-3 md:hidden">
+      <Sheet open={open} onOpenChange={setOpen}>
+        <SheetTrigger asChild>
+          <Button size="icon" variant="ghost" className="h-8 w-8">
+            <Menu className="h-4 w-4" />
+            <span className="sr-only">Toggle navigation menu</span>
+          </Button>
+        </SheetTrigger>
+        <SheetContent side="left" className="flex flex-col w-64 p-4">
           <SheetHeader className="sr-only">
-              <SheetTitle>Navegação Principal</SheetTitle>
-            </SheetHeader>
-            <nav className="grid gap-2 text-lg font-medium">
-              <Link
-                href="/"
-                className="flex items-center gap-2 text-lg font-semibold mb-4"
-                onClick={() => setOpen(false)}
-              >
-                <Leaf className="h-6 w-6 text-primary" />
-                <span>AgriDash</span>
-              </Link>
-              <Link
-                href="/"
-                onClick={() => setOpen(false)}
-                className={cn("mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground", pathname === "/" && "bg-muted text-foreground")}
-              >
 
-                <Home className="h-5 w-5" />
-                Visão Geral
-              </Link>
-               {crops.map((crop) => {
-                const Icon = cropIcons[crop.cropType] || Leaf;
-                const href = `/dashboard/${crop.id}`;
-                return (
-                    <Link
-                    key={crop.id}
-                    href={href}
-                    onClick={() => setOpen(false)}
-                    className={cn("mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground", pathname === href && "bg-muted text-foreground")}
-                  >
-                    <Icon className="h-5 w-5" />
-                    {crop.fieldName}
-                  </Link>
-                );
-              })}
-               <Link
-                href="/admin"
-                onClick={() => setOpen(false)}
-                className={cn("mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground", pathname === "/admin" && "bg-muted text-foreground")}
-              >
-                <Settings className="h-5 w-5" />
-                Administração
-              </Link>
-            </nav>
-          </SheetContent>
-        </Sheet>
-      </header>
-    );
-  }
+            <SheetTitle>Navegação Principal</SheetTitle>
+          </SheetHeader>
+          <nav className="grid gap-1 text-sm font-medium">
+            <Link
+              href="/"
+              className="flex items-center gap-1.5 text-primary font-semibold mb-4"
+              onClick={() => setOpen(false)}
+            >
+              <Leaf className="h-5 w-5" />
+              <span>AgriDash</span>
+            </Link>
+            <Link
+              href="/"
+              onClick={() => setOpen(false)}
+              className={cn(
+                "flex items-center gap-2 rounded-md px-2.5 py-1.5",
+                pathname === "/"
+                  ? "bg-accent/70 text-accent-foreground"
+                  : "text-muted-foreground hover:text-foreground hover:bg-accent/50"
+              )}
+            >
+              <Home className="h-4 w-4" />
+              Visão Geral
+            </Link>
+            {crops.map((crop) => {
+              const Icon = cropIcons[crop.cropType] || Leaf;
+              const href = `/dashboard/${crop.id}`;
+              return (
+                <Link
+                  key={crop.id}
+                  href={href}
+                  onClick={handleCropClick(crop.id, href)}
+                  className={cn(
+                    "flex items-center gap-2 rounded-md px-2.5 py-1.5",
+                    pathname === href
+                      ? "bg-accent/70 text-accent-foreground"
+                      : "text-muted-foreground hover:text-foreground hover:bg-accent/50"
+                  )}
+                >
+                  <Icon className="h-4 w-4" />
+                  {crop.fieldName}
+                </Link>
+              );
+            })}
+          </nav>
+        </SheetContent>
+      </Sheet>
+
+      <Link href="/" className="flex items-center gap-1.5">
+        <Leaf className="h-5 w-5 text-primary" />
+        <span className="font-semibold text-primary">AgriDash</span>
+      </Link>
+
+      <div className="flex items-center gap-2">
+        {/* You can add additional header controls here if needed */}
+      </div>
+    </header>
+  );
+}
 
 export function Sidebar({ crops }: SidebarProps) {
   const [isClient, setIsClient] = useState(false)

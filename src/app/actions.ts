@@ -15,11 +15,35 @@ export async function generateAnomalyAlerts(
   input: AnomalyAlertsInput
 ): Promise<AnomalyAlertsOutput> {
   try {
+    // Verificar os limiares antes de chamar a IA
+    const anomalies = [];
+    const sensorThresholds = input.sensorThresholds;
+
+    if (sensorThresholds) {
+      if (sensorThresholds.airTemperature) {
+        const { min, max } = sensorThresholds.airTemperature;
+        if ((min !== undefined && input.airTemperature < min) ||
+          (max !== undefined && input.airTemperature > max)) {
+          anomalies.push(`Temperatura do ar ${input.airTemperature}°C fora dos limites ideais (${min}-${max}°C)`);
+        }
+      }
+      // Similarmente para outros sensores...
+    }
+
+    // Se já detectamos anomalias pelos limiares, podemos retornar diretamente
+    if (anomalies.length > 0) {
+      return {
+        alertMessage: anomalies.join('. '),
+        alertSeverity: 'Atenção'
+      };
+    }
+
+    // Caso contrário, chamamos a IA
     const result = await genkitGenerateAnomalyAlerts(input);
     return result;
   } catch (error) {
     console.error('Error generating anomaly alert:', error);
-    return {alertMessage: 'Não foi possível obter recomendação da IA.', alertSeverity: 'Atenção'};
+    return { alertMessage: 'Não foi possível obter recomendação da IA.', alertSeverity: 'Atenção' };
   }
 }
 
