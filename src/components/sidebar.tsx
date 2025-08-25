@@ -2,12 +2,13 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Home,
   Leaf,
   Menu,
   PanelLeft,
+  Settings,
   Wheat,
 } from "lucide-react";
 
@@ -24,6 +25,8 @@ import { cn } from "@/lib/utils";
 import type { Crop } from "@/types";
 import { useTransition } from "@/hooks/use-transition";
 import { useRouter } from "next/navigation";
+import type { DashboardCrop } from "@/types";
+
 
 const Sprout = () => (
   <svg
@@ -52,7 +55,7 @@ const cropIcons: { [key: string]: React.ComponentType<{ className?: string }> } 
 };
 
 interface SidebarProps {
-  crops: Crop[];
+  crops: DashboardCrop[];
 }
 
 function SidebarDesktop({ crops }: SidebarProps) {
@@ -154,6 +157,32 @@ function SidebarDesktop({ crops }: SidebarProps) {
                 </li>
               );
             })}
+             <li>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Link
+                    href="/admin"
+                    className={cn(
+                      "flex items-center gap-3 rounded-md px-3 py-2 text-muted-foreground transition-all hover:bg-accent hover:text-accent-foreground",
+                      pathname === "/admin" && "bg-accent text-accent-foreground"
+                    )}
+                  >
+                    <Settings className="h-5 w-5" />
+                    <span
+                      className={cn(
+                        "overflow-hidden transition-all",
+                        isOpen ? "w-auto opacity-100" : "w-0 opacity-0"
+                      )}
+                    >
+                      Administração
+                    </span>
+                  </Link>
+                </TooltipTrigger>
+                {!isOpen && (
+                  <TooltipContent side="right">Administração</TooltipContent>
+                )}
+              </Tooltip>
+            </li>
           </ul>
         </TooltipProvider>
       </nav>
@@ -200,6 +229,7 @@ function SidebarMobile({ crops }: SidebarProps) {
         </SheetTrigger>
         <SheetContent side="left" className="flex flex-col w-64 p-4">
           <SheetHeader className="sr-only">
+
             <SheetTitle>Navegação Principal</SheetTitle>
           </SheetHeader>
           <nav className="grid gap-1 text-sm font-medium">
@@ -261,9 +291,9 @@ function SidebarMobile({ crops }: SidebarProps) {
 }
 
 export function Sidebar({ crops }: SidebarProps) {
-  const [isClient, setIsClient] = React.useState(false)
+  const [isClient, setIsClient] = useState(false)
 
-  React.useEffect(() => {
+  useEffect(() => {
     setIsClient(true)
   }, [])
 

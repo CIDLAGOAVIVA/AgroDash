@@ -1,5 +1,5 @@
-"use client";
 
+"use client";
 import { DashboardClient } from "@/components/dashboard-client";
 import { initialCrops } from "@/lib/data";
 import { notFound } from "next/navigation";
@@ -11,6 +11,7 @@ export default function DashboardPage({ params }: { params: { cropId: string } |
   const resolvedParams = typeof params === 'object' && !('then' in params)
     ? params
     : use(params as Promise<{ cropId: string }>);
+import type { DashboardCrop } from "@/types";
 
   const crop = initialCrops.find((c) => c.id === resolvedParams.cropId);
   const { isInitialLoad } = useTransition();
@@ -33,3 +34,4 @@ export default function DashboardPage({ params }: { params: { cropId: string } |
 
   return <DashboardClient initialCrop={crop} allCrops={initialCrops} />;
 }
+

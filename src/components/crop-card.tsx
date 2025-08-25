@@ -2,6 +2,7 @@
 
 import { Leaf, Wheat, ChevronDown } from "lucide-react";
 import { Card, CardDescription, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,6 +12,8 @@ import {
 import type { Crop } from "@/types";
 import { useRouter } from "next/navigation";
 import { useTransition } from "@/hooks/use-transition";
+import type { DashboardCrop } from "@/types";
+
 
 const Sprout = () => (
   <svg
@@ -39,9 +42,12 @@ const cropIcons: { [key: string]: React.ComponentType<{ className?: string }> } 
 };
 
 interface CropCardProps {
+
   crop: Crop;
   allCrops?: Crop[];
   onCropChange?: (cropId: string) => void;
+
+    crop: DashboardCrop;
 }
 
 export function CropCard({ crop, allCrops = [], onCropChange }: CropCardProps) {

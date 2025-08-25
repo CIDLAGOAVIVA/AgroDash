@@ -1,0 +1,513 @@
+{
+    "database": "agrodata",
+    "tables": {
+        "tab_medicao": {
+            "columns": [
+                {
+                    "name": "id",
+                    "type": "BIGINT"
+                },
+                {
+                    "name": "received_ts",
+                    "type": "TIMESTAMP"
+                },
+                {
+                    "name": "received_json",
+                    "type": "BIGINT"
+                },
+                {
+                    "name": "estacao",
+                    "type": "VARCHAR(64)"
+                },
+                {
+                    "name": "sensor",
+                    "type": "VARCHAR(64)"
+                },
+                {
+                    "name": "medicoes",
+                    "type": "TEXT"
+                },
+                {
+                    "name": "processed",
+                    "type": "BOOLEAN"
+                }
+            ],
+            "foreign_keys": [],
+            "sample_data": [
+                {
+                    "id": 77043,
+                    "received_ts": "2025-08-15T04:26:15.611867+00:00",
+                    "received_json": 61834060,
+                    "estacao": "SFX2",
+                    "sensor": "sv",
+                    "medicoes": "{\"vel\": 13.89, \"dir\": 353}",
+                    "processed": true
+                },
+                {
+                    "id": 285,
+                    "received_ts": "2025-08-01T13:31:21.731966+00:00",
+                    "received_json": 876031,
+                    "estacao": "SFX2",
+                    "sensor": "stu",
+                    "medicoes": "{\"t\": 24.86, \"u\": 83.214}",
+                    "processed": true
+                },
+                {
+                    "id": 27887,
+                    "received_ts": "2025-08-14T12:27:54.152011+00:00",
+                    "received_json": 4332562,
+                    "estacao": "SFX2",
+                    "sensor": "sco2",
+                    "medicoes": "{\"ppm\": 758}",
+                    "processed": true
+                },
+                {
+                    "id": 27886,
+                    "received_ts": "2025-08-14T12:27:54.152011+00:00",
+                    "received_json": 4332562,
+                    "estacao": "SFX2",
+                    "sensor": "sv",
+                    "medicoes": "{\"vel\": 3.63, \"dir\": 195}",
+                    "processed": true
+                },
+                {
+                    "id": 21706,
+                    "received_ts": "2025-08-13T16:46:28.105060+00:00",
+                    "received_json": 180036,
+                    "estacao": "SFX2",
+                    "sensor": "sv",
+                    "medicoes": "{\"vel\": 11.175, \"dir\": 202}",
+                    "processed": true
+                }
+            ]
+        },
+        "tab_cultura": {
+            "columns": [
+                {
+                    "name": "id",
+                    "type": "BIGINT"
+                },
+                {
+                    "name": "id_propriedade",
+                    "type": "BIGINT"
+                },
+                {
+                    "name": "produto",
+                    "type": "VARCHAR(32)"
+                },
+                {
+                    "name": "nome_cultura",
+                    "type": "VARCHAR(128)"
+                }
+            ],
+            "foreign_keys": [],
+            "sample_data": [
+                {
+                    "id": 0,
+                    "id_propriedade": 0,
+                    "produto": "Produto Nulo",
+                    "nome_cultura": "Cultura Nula"
+                }
+            ]
+        },
+        "tab_medida_individual": {
+            "columns": [
+                {
+                    "name": "id",
+                    "type": "BIGINT"
+                },
+                {
+                    "name": "id_sensor",
+                    "type": "BIGINT"
+                },
+                {
+                    "name": "id_grandeza",
+                    "type": "BIGINT"
+                },
+                {
+                    "name": "ts_medida",
+                    "type": "TIMESTAMP"
+                },
+                {
+                    "name": "valor",
+                    "type": "DOUBLE PRECISION"
+                }
+            ],
+            "foreign_keys": [],
+            "sample_data": [
+                {
+                    "id": 258553,
+                    "id_sensor": 17,
+                    "id_grandeza": 37,
+                    "ts_medida": "2025-08-13T16:46:28.105060+00:00",
+                    "valor": 23.855
+                },
+                {
+                    "id": 258554,
+                    "id_sensor": 17,
+                    "id_grandeza": 38,
+                    "ts_medida": "2025-08-13T16:46:28.105060+00:00",
+                    "valor": 94.572
+                },
+                {
+                    "id": 258555,
+                    "id_sensor": 18,
+                    "id_grandeza": 39,
+                    "ts_medida": "2025-08-13T16:46:28.105060+00:00",
+                    "valor": 11.175
+                },
+                {
+                    "id": 258556,
+                    "id_sensor": 18,
+                    "id_grandeza": 40,
+                    "ts_medida": "2025-08-13T16:46:28.105060+00:00",
+                    "valor": 202.0
+                },
+                {
+                    "id": 258557,
+                    "id_sensor": 19,
+                    "id_grandeza": 41,
+                    "ts_medida": "2025-08-13T16:46:28.105060+00:00",
+                    "valor": 760.0
+                }
+            ]
+        },
+        "tab_midia": {
+            "columns": [
+                {
+                    "name": "id",
+                    "type": "BIGINT"
+                },
+                {
+                    "name": "id_sensor",
+                    "type": "BIGINT"
+                },
+                {
+                    "name": "ts_inicio_midia",
+                    "type": "TIMESTAMP"
+                },
+                {
+                    "name": "mimetype",
+                    "type": "VARCHAR(64)"
+                },
+                {
+                    "name": "filename",
+                    "type": "VARCHAR(256)"
+                },
+                {
+                    "name": "filedata",
+                    "type": "BYTEA"
+                }
+            ],
+            "foreign_keys": [],
+            "sample_data": []
+        },
+        "tab_propriedade": {
+            "columns": [
+                {
+                    "name": "id",
+                    "type": "BIGINT"
+                },
+                {
+                    "name": "uf",
+                    "type": "CHAR(2)"
+                },
+                {
+                    "name": "municipio",
+                    "type": "VARCHAR(64)"
+                },
+                {
+                    "name": "nome_propriedade",
+                    "type": "VARCHAR(128)"
+                },
+                {
+                    "name": "operacao_inicio",
+                    "type": "TIMESTAMP"
+                },
+                {
+                    "name": "operacao_fim",
+                    "type": "TIMESTAMP"
+                }
+            ],
+            "foreign_keys": [],
+            "sample_data": [
+                {
+                    "id": 0,
+                    "uf": "RJ",
+                    "municipio": "Rio de Janeiro",
+                    "nome_propriedade": "Propriedade Nula",
+                    "operacao_inicio": "2025-01-01T03:00:00+00:00",
+                    "operacao_fim": null
+                }
+            ]
+        },
+        "tab_alerta": {
+            "columns": [
+                {
+                    "name": "id",
+                    "type": "BIGINT"
+                },
+                {
+                    "name": "id_sensor",
+                    "type": "BIGINT"
+                },
+                {
+                    "name": "ts_alerta",
+                    "type": "TIMESTAMP"
+                },
+                {
+                    "name": "fim_alerta",
+                    "type": "BOOLEAN"
+                },
+                {
+                    "name": "alerta",
+                    "type": "TEXT"
+                }
+            ],
+            "foreign_keys": [],
+            "sample_data": []
+        },
+        "tab_criterio_alerta": {
+            "columns": [
+                {
+                    "name": "id_sensor",
+                    "type": "BIGINT"
+                },
+                {
+                    "name": "id_grandeza",
+                    "type": "BIGINT"
+                },
+                {
+                    "name": "comparacao",
+                    "type": "VARCHAR(11)"
+                },
+                {
+                    "name": "valor_critico_1",
+                    "type": "DOUBLE PRECISION"
+                },
+                {
+                    "name": "valor_critico_2",
+                    "type": "DOUBLE PRECISION"
+                },
+                {
+                    "name": "alerta",
+                    "type": "TEXT"
+                },
+                {
+                    "name": "repeticao_seg",
+                    "type": "INTEGER"
+                },
+                {
+                    "name": "ativo",
+                    "type": "BOOLEAN"
+                }
+            ],
+            "foreign_keys": [],
+            "sample_data": []
+        },
+        "tab_pos_estacao": {
+            "columns": [
+                {
+                    "name": "id",
+                    "type": "BIGINT"
+                },
+                {
+                    "name": "id_estacao",
+                    "type": "BIGINT"
+                },
+                {
+                    "name": "id_cultura",
+                    "type": "BIGINT"
+                },
+                {
+                    "name": "latitude",
+                    "type": "DOUBLE PRECISION"
+                },
+                {
+                    "name": "longitude",
+                    "type": "DOUBLE PRECISION"
+                },
+                {
+                    "name": "descricao_pos_estacao",
+                    "type": "VARCHAR(128)"
+                },
+                {
+                    "name": "pos_inicio",
+                    "type": "TIMESTAMP"
+                },
+                {
+                    "name": "pos_fim",
+                    "type": "TIMESTAMP"
+                }
+            ],
+            "foreign_keys": [],
+            "sample_data": [
+                {
+                    "id": 6,
+                    "id_estacao": 5,
+                    "id_cultura": 0,
+                    "latitude": 0.0,
+                    "longitude": 0.0,
+                    "descricao_pos_estacao": "Estação Desconhecida SFX2",
+                    "pos_inicio": "2025-01-01T03:00:00+00:00",
+                    "pos_fim": null
+                }
+            ]
+        },
+        "tab_sensor": {
+            "columns": [
+                {
+                    "name": "id",
+                    "type": "BIGINT"
+                },
+                {
+                    "name": "id_estacao",
+                    "type": "BIGINT"
+                },
+                {
+                    "name": "nome_sensor",
+                    "type": "VARCHAR(64)"
+                },
+                {
+                    "name": "descricao_sensor",
+                    "type": "VARCHAR(128)"
+                },
+                {
+                    "name": "operacao_inicio",
+                    "type": "TIMESTAMP"
+                },
+                {
+                    "name": "operacao_fim",
+                    "type": "TIMESTAMP"
+                }
+            ],
+            "foreign_keys": [],
+            "sample_data": [
+                {
+                    "id": 17,
+                    "id_estacao": 5,
+                    "nome_sensor": "stu",
+                    "descricao_sensor": "Sensor desconhecido stu",
+                    "operacao_inicio": "2025-01-01T03:00:00+00:00",
+                    "operacao_fim": null
+                },
+                {
+                    "id": 18,
+                    "id_estacao": 5,
+                    "nome_sensor": "sv",
+                    "descricao_sensor": "Sensor desconhecido sv",
+                    "operacao_inicio": "2025-01-01T03:00:00+00:00",
+                    "operacao_fim": null
+                },
+                {
+                    "id": 19,
+                    "id_estacao": 5,
+                    "nome_sensor": "sco2",
+                    "descricao_sensor": "Sensor desconhecido sco2",
+                    "operacao_inicio": "2025-01-01T03:00:00+00:00",
+                    "operacao_fim": null
+                },
+                {
+                    "id": 20,
+                    "id_estacao": 5,
+                    "nome_sensor": "ss",
+                    "descricao_sensor": "Sensor desconhecido ss",
+                    "operacao_inicio": "2025-01-01T03:00:00+00:00",
+                    "operacao_fim": null
+                }
+            ]
+        },
+        "tab_estacao": {
+            "columns": [
+                {
+                    "name": "id",
+                    "type": "BIGINT"
+                },
+                {
+                    "name": "id_propriedade",
+                    "type": "BIGINT"
+                },
+                {
+                    "name": "nome_estacao",
+                    "type": "VARCHAR(64)"
+                },
+                {
+                    "name": "descricao_estacao",
+                    "type": "VARCHAR(128)"
+                },
+                {
+                    "name": "operacao_inicio",
+                    "type": "TIMESTAMP"
+                },
+                {
+                    "name": "operacao_fim",
+                    "type": "TIMESTAMP"
+                }
+            ],
+            "foreign_keys": [],
+            "sample_data": [
+                {
+                    "id": 5,
+                    "id_propriedade": 0,
+                    "nome_estacao": "SFX2",
+                    "descricao_estacao": "Estação Desconhecida SFX2",
+                    "operacao_inicio": "2025-01-01T03:00:00+00:00",
+                    "operacao_fim": null
+                }
+            ]
+        },
+        "tab_grandeza": {
+            "columns": [
+                {
+                    "name": "id",
+                    "type": "BIGINT"
+                },
+                {
+                    "name": "nome_grandeza",
+                    "type": "VARCHAR(32)"
+                },
+                {
+                    "name": "unidade_medida",
+                    "type": "VARCHAR(32)"
+                },
+                {
+                    "name": "descricao_grandeza",
+                    "type": "VARCHAR(128)"
+                }
+            ],
+            "foreign_keys": [],
+            "sample_data": [
+                {
+                    "id": 37,
+                    "nome_grandeza": "t",
+                    "unidade_medida": "°C",
+                    "descricao_grandeza": "temperatura do ar"
+                },
+                {
+                    "id": 38,
+                    "nome_grandeza": "u",
+                    "unidade_medida": "%",
+                    "descricao_grandeza": "umidade do ar"
+                },
+                {
+                    "id": 41,
+                    "nome_grandeza": "ppm",
+                    "unidade_medida": "",
+                    "descricao_grandeza": "concentração de CO₂ em p.p.m."
+                },
+                {
+                    "id": 48,
+                    "nome_grandeza": "k",
+                    "unidade_medida": "",
+                    "descricao_grandeza": "concentração de potássio no solo"
+                },
+                {
+                    "id": 46,
+                    "nome_grandeza": "n",
+                    "unidade_medida": "",
+                    "descricao_grandeza": "concentração de nitrogênio no solo"
+                }
+            ]
+        }
+    }
+}
