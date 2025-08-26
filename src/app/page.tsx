@@ -66,8 +66,11 @@ export default function Home() {
     <div ref={containerRef} className="min-h-full w-full bg-background text-foreground flex flex-col items-center justify-center p-4 dashboard-container">
       <div className="text-center mb-8">
         <h1 className="text-3xl font-bold tracking-tight text-primary sm:text-5xl">
-          Visão Geral da Fazenda
+          AgriDash
         </h1>
+        <p className="mt-2 text-xl text-primary/80 font-medium">
+          Dados que cultivam o futuro
+        </p>
         <p className="mt-4 text-base text-muted-foreground sm:text-lg">
           Selecione uma propriedade para ver as culturas disponíveis.
         </p>

@@ -167,7 +167,7 @@ function SidebarDesktop({ properties }: { properties: Property[] }) {
                   <Link
                     href="/admin"
                     className={cn(
-                      "flex items-center gap-3 rounded-md px-3 py-2 text-muted-foreground transition-all hover:bg-accent hover:text-accent-foreground",
+                      "flex items-center gap-2 rounded-md px-2.5 py-1.5 text-sm transition-all hover:bg-accent/50",
                       pathname === "/admin" && "bg-accent text-accent-foreground"
                     )}
                   >
