@@ -39,6 +39,7 @@ const cropIcons: { [key: string]: React.ComponentType<{ className?: string }> } 
   "Soja": Leaf,
   "Milho": Sprout,
   "Trigo": Wheat,
+  // Adicione outros tipos se necessário
 };
 
 interface CropCardProps {
@@ -47,7 +48,7 @@ interface CropCardProps {
   allCrops?: Crop[];
   onCropChange?: (cropId: string) => void;
 
-    crop: DashboardCrop;
+  crop: DashboardCrop;
 }
 
 export function CropCard({ crop, allCrops = [], onCropChange }: CropCardProps) {

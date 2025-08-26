@@ -61,6 +61,7 @@ export default function PropertyPage({ params }: { params: { propertyId: string 
                 </CardContent>
             </Card>
 
+            {/* Painel da cultura selecionada */}
             <DashboardClient initialCrop={selectedCrop} allCrops={property.crops} />
         </div>
     );

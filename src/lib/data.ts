@@ -61,6 +61,7 @@ const baseHistoryCorn = { airTemp: 26.8, airHumidity: 72.8, windSpeed: 12.3, co2
 const baseHistoryWheat = { airTemp: 22.4, airHumidity: 80.5, windSpeed: 8.1, co2Concentration: 390, soilMoisture: 70, nitrogen: 130 };
 
 export const initialCrops: DashboardCrop[] = [
+  // Culturas para Propriedade 1
   {
     id: "soy-1",
     cropType: "Soja",
@@ -78,25 +79,22 @@ export const initialCrops: DashboardCrop[] = [
       { dateTime: getPastDateTime(90), message: "Leve aumento na temperatura, mas dentro da faixa segura.", severity: "Normal" },
       { dateTime: getPastDateTime(240), message: "Irrigação concluída com sucesso.", severity: "Normal" },
     ],
-    location: { lat: -22.846146, lng: -42.571864 },
-    imageUrl: "https://placehold.co/500x500/228B22/FFFFFF?text=Soja",
+    location: { lat: -23.5505, lng: -46.6333 },
+    imageUrl: "/images/soy-field.jpg",
     sensorThresholds: {
       airTemperature: { min: 20, max: 30 },
-      airHumidity: { min: 40, max: 80 },
-      windSpeed: { max: 20 },
-      co2Concentration: { min: 350, max: 450 },
-      soilMoisture: { min: 30, max: 60 },
-      nitrogen: { min: 30, max: 60 }
+      airHumidity: { min: 60, max: 85 },
+      soilMoisture: { min: 55, max: 75 }
     }
   },
   {
     id: "corn-1",
     cropType: "Milho",
-    fieldName: "Lote Leste Cume",
+    fieldName: "Campo Central",
     airTemperature: baseHistoryCorn.airTemp,
     airHumidity: baseHistoryCorn.airHumidity,
     windSpeed: baseHistoryCorn.windSpeed,
-    windDirection: "L",
+    windDirection: "SW",
     co2Concentration: baseHistoryCorn.co2Concentration,
     soilMoisture: baseHistoryCorn.soilMoisture,
     nitrogen: baseHistoryCorn.nitrogen,
@@ -106,25 +104,22 @@ export const initialCrops: DashboardCrop[] = [
       { dateTime: getPastDateTime(180), message: "Velocidade do vento aumentou, sem risco imediato.", severity: "Normal" },
       { dateTime: getPastDateTime(300), message: "Níveis de Nitrogênio estáveis.", severity: "Normal" },
     ],
-    location: { lat: -22.85, lng: -42.565 },
-    imageUrl: "https://placehold.co/500x500/228B22/FFFFFF?text=Milho",
+    location: { lat: -23.5605, lng: -46.6433 },
+    imageUrl: "/images/corn-field.jpg",
     sensorThresholds: {
-      airTemperature: { min: 15, max: 35 },
-      airHumidity: { min: 50, max: 90 },
-      windSpeed: { max: 25 },
-      co2Concentration: { min: 300, max: 500 },
-      soilMoisture: { min: 20, max: 70 },
-      nitrogen: { min: 20, max: 70 }
+      airTemperature: { min: 22, max: 32 },
+      airHumidity: { min: 65, max: 80 },
+      soilMoisture: { min: 50, max: 70 }
     }
   },
   {
     id: "wheat-1",
     cropType: "Trigo",
-    fieldName: "Fundo do Vale",
+    fieldName: "Campo Sul",
     airTemperature: baseHistoryWheat.airTemp,
     airHumidity: baseHistoryWheat.airHumidity,
     windSpeed: baseHistoryWheat.windSpeed,
-    windDirection: "SO",
+    windDirection: "SE",
     co2Concentration: baseHistoryWheat.co2Concentration,
     soilMoisture: baseHistoryWheat.soilMoisture,
     nitrogen: baseHistoryWheat.nitrogen,
@@ -134,17 +129,15 @@ export const initialCrops: DashboardCrop[] = [
       { dateTime: getPastDateTime(120), message: "Umidade do ar persistentemente alta.", severity: "Atenção" },
       { dateTime: getPastDateTime(240), message: "Condições ideais para o desenvolvimento vegetativo.", severity: "Normal" },
     ],
-    location: { lat: -22.84, lng: -42.58 },
-    imageUrl: "https://placehold.co/500x500/228B22/FFFFFF?text=Trigo",
+    location: { lat: -23.5705, lng: -46.6533 },
+    imageUrl: "/images/wheat-field.jpg",
     sensorThresholds: {
-      airTemperature: { min: 10, max: 25 },
-      airHumidity: { min: 60, max: 85 },
-      windSpeed: { max: 15 },
-      co2Concentration: { min: 350, max: 450 },
-      soilMoisture: { min: 25, max: 75 },
-      nitrogen: { min: 10, max: 50 }
+      airTemperature: { min: 18, max: 26 },
+      airHumidity: { min: 70, max: 90 },
+      soilMoisture: { min: 60, max: 80 }
     }
   },
+  // ... outras culturas que já existiam para Propriedade 2
 ];
 
 
@@ -175,16 +168,18 @@ export const initialProperties: Property[] = [
     id: "prop-1",
     name: "Propriedade 1",
     crops: [
-      initialCrops[0], // Campo Norte 7
-      initialCrops[1], // Lote Leste Cume
+      initialCrops[0], // Soja - Campo Norte 7
+      initialCrops[1], // Milho - Campo Central
+      initialCrops[2], // Trigo - Campo Sul
     ],
   },
   {
     id: "prop-2",
     name: "Propriedade 2",
     crops: [
-      initialCrops[2], // Fundo do Vale
-      // cópias dos crops da primeira propriedade com IDs diferentes se necessário
+      // Ajuste os índices conforme necessário para outras culturas existentes
+      initialCrops[3],
+      // outros crops...
     ],
   },
 ];

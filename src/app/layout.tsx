@@ -3,7 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import { Sidebar } from "@/components/sidebar";
-import { initialProperties } from "@/lib/data";
+import { initialProperties, initialCrops } from "@/lib/data";
 import { TransitionProvider } from "@/hooks/use-transition";
 import { TransitionOverlay } from "@/components/transition-overlay";
 
@@ -24,7 +24,7 @@ export default function RootLayout({
       <body className="font-sans antialiased">
         <TransitionProvider>
           <div className="flex flex-col md:flex-row min-h-screen bg-background">
-            <Sidebar properties={initialProperties} crops={[]} />
+            <Sidebar properties={initialProperties} crops={initialCrops.slice(0, 3)} />
             <main className="flex-1 md:p-4 p-2 overflow-y-auto">
               {children}
             </main>
