@@ -110,3 +110,32 @@ export interface AlertCriterion {
   repeticao_seg: number; // INTEGER
   ativo: boolean; // BOOLEAN
 }
+
+export interface DashboardStation {
+  id: string;
+  name: string;
+  description?: string;
+  location: {
+    lat: number;
+    lng: number;
+  };
+  sensors: {
+    airTemperature: number;
+    airHumidity: number;
+    windSpeed: number;
+    windDirection: string;
+    co2Concentration: number;
+    soilMoisture: number;
+    nitrogen: number;
+  };
+  history: HistoryData[];
+  alertHistory: AlertEntry[];
+  sensorThresholds?: {
+    airTemperature?: SensorThreshold;
+    airHumidity?: SensorThreshold;
+    windSpeed?: SensorThreshold;
+    co2Concentration?: SensorThreshold;
+    soilMoisture?: SensorThreshold;
+    nitrogen?: SensorThreshold;
+  };
+}

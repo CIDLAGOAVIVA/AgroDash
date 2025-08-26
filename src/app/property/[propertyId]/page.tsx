@@ -2,7 +2,7 @@
 
 import { useState, use, useEffect } from "react";
 import { notFound } from "next/navigation";
-import { initialProperties } from "@/lib/data";
+import { initialProperties, dashboardStations } from "@/lib/data";
 import { useTransition } from "@/hooks/use-transition";
 import { DashboardClient } from "@/components/dashboard-client";
 import { PropertyCard } from "@/components/property-card";
@@ -43,7 +43,7 @@ export default function PropertyPage({ params }: { params: { propertyId: string 
 
     return (
         <div className="flex flex-col gap-6 max-w-7xl mx-auto">
-            {/* Novo card de propriedade */}
+            {/* Card de propriedade existente */}
             <PropertyCard
                 propertyName={property.name}
                 crops={property.crops}
@@ -51,8 +51,8 @@ export default function PropertyPage({ params }: { params: { propertyId: string 
                 onCropChange={handleCropChange}
             />
 
-            {/* Painel da cultura selecionada */}
-            <DashboardClient initialCrop={selectedCrop} allCrops={property.crops} />
+            {/* Painel da cultura selecionada - agora com estações */}
+            <DashboardClient initialCrop={selectedCrop} allCrops={property.crops} stations={dashboardStations} />
         </div>
     );
 }

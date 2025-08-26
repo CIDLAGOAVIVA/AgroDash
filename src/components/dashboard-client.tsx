@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { generateAnomalyAlerts, generateFieldImage } from "@/app/actions";
-import type { DashboardCrop, HistoryData } from "@/types";
+import type { DashboardCrop, HistoryData, DashboardStation } from "@/types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Image from "next/image";
 import { WIND_DIRECTIONS } from "@/lib/data";
@@ -18,6 +18,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Activity, Map, Bell } from "lucide-react";
 import { AbnormalSensors } from "./abnormal-sensors";
 import { useTransition } from "@/hooks/use-transition";
+import { StationSelector } from "./station-selector";
 
 // Add the Sprout component definition
 const Sprout = () => (
@@ -110,8 +111,18 @@ type DetailedChartDataType = {
 }
 
 
-export function DashboardClient({ initialCrop, allCrops }: { initialCrop: DashboardCrop; allCrops: DashboardCrop[] }) {
-  const [crop, setCrop] = useState<Crop>(initialCrop);
+export function DashboardClient({
+  initialCrop,
+  allCrops,
+  stations = dashboardStations // Adicione estações como prop com valor default
+}: {
+  initialCrop: DashboardCrop;
+  allCrops: DashboardCrop[];
+  stations?: DashboardStation[];
+}) {
+  const [crop, setCrop] = useState<DashboardCrop>(initialCrop);
+  const [selectedStationId, setSelectedStationId] = useState<string>(stations[0].id);
+  const [station, setStation] = useState<DashboardStation>(stations[0]);
 
   const [fieldImage, setFieldImage] = useState<string | null>(null);
   const [isImageLoading, setIsImageLoading] = useState(true);
@@ -239,45 +250,45 @@ export function DashboardClient({ initialCrop, allCrops }: { initialCrop: Dashbo
   const sensorsList = [
     {
       name: "Temp. Ar",
-      value: crop.airTemperature,
+      value: station.sensors.airTemperature,
       unit: "°C",
-      status: getSensorStatus("Temp. Ar", crop.airTemperature, crop.sensorThresholds?.airTemperature),
-      threshold: crop.sensorThresholds?.airTemperature
+      status: getSensorStatus("Temp. Ar", station.sensors.airTemperature, station.sensorThresholds?.airTemperature),
+      threshold: station.sensorThresholds?.airTemperature
     },
     {
       name: "Umid. Ar",
-      value: crop.airHumidity,
+      value: station.sensors.airHumidity,
       unit: "%",
-      status: getSensorStatus("Umid. Ar", crop.airHumidity, crop.sensorThresholds?.airHumidity),
-      threshold: crop.sensorThresholds?.airHumidity
+      status: getSensorStatus("Umid. Ar", station.sensors.airHumidity, station.sensorThresholds?.airHumidity),
+      threshold: station.sensorThresholds?.airHumidity
     },
     {
       name: "Vento",
-      value: crop.windSpeed,
+      value: station.sensors.windSpeed,
       unit: "km/h",
-      status: getSensorStatus("Vento", crop.windSpeed, crop.sensorThresholds?.windSpeed),
-      threshold: crop.sensorThresholds?.windSpeed
+      status: getSensorStatus("Vento", station.sensors.windSpeed, station.sensorThresholds?.windSpeed),
+      threshold: station.sensorThresholds?.windSpeed
     },
     {
       name: "CO2",
-      value: crop.co2Concentration,
+      value: station.sensors.co2Concentration,
       unit: "ppm",
-      status: getSensorStatus("CO2", crop.co2Concentration, crop.sensorThresholds?.co2Concentration),
-      threshold: crop.sensorThresholds?.co2Concentration
+      status: getSensorStatus("CO2", station.sensors.co2Concentration, station.sensorThresholds?.co2Concentration),
+      threshold: station.sensorThresholds?.co2Concentration
     },
     {
       name: "Umid. Solo",
-      value: crop.soilMoisture,
+      value: station.sensors.soilMoisture,
       unit: "%",
-      status: getSensorStatus("Umid. Solo", crop.soilMoisture, crop.sensorThresholds?.soilMoisture),
-      threshold: crop.sensorThresholds?.soilMoisture
+      status: getSensorStatus("Umid. Solo", station.sensors.soilMoisture, station.sensorThresholds?.soilMoisture),
+      threshold: station.sensorThresholds?.soilMoisture
     },
     {
       name: "Nitrogênio",
-      value: crop.nitrogen,
+      value: station.sensors.nitrogen,
       unit: "ppm",
-      status: getSensorStatus("Nitrogênio", crop.nitrogen, crop.sensorThresholds?.nitrogen),
-      threshold: crop.sensorThresholds?.nitrogen
+      status: getSensorStatus("Nitrogênio", station.sensors.nitrogen, station.sensorThresholds?.nitrogen),
+      threshold: station.sensorThresholds?.nitrogen
     }
   ];
 
@@ -298,26 +309,91 @@ export function DashboardClient({ initialCrop, allCrops }: { initialCrop: Dashbo
     }
   };
 
-  // Substitua o CropCard pela informação contextual
+  // Adicione esta função para lidar com mudanças de estação
+  const handleStationChange = (stationId: string) => {
+    const newStation = stations.find(s => s.id === stationId);
+    if (newStation) {
+      setSelectedStationId(stationId);
+      setStation(newStation);
+
+      // Reset states para nova estação
+      setFieldImage(null);
+      setIsImageLoading(true);
+      setDetailedChartData(null);
+      setFullscreenContent(null);
+
+      // Gerar nova imagem para a estação
+      setIsImageLoading(true);
+      generateFieldImage(`Weather monitoring station, high resolution photograph, ${newStation.name}`)
+        .then(setFieldImage)
+        .finally(() => setIsImageLoading(false));
+    }
+  };
+
+  // Modifique o useEffect para usar station em vez de crop
+  useEffect(() => {
+    setIsImageLoading(true);
+    generateFieldImage(`Weather monitoring station, high resolution photograph, ${station.name}`)
+      .then(setFieldImage)
+      .finally(() => setIsImageLoading(false));
+  }, [station.name]);
+
+  // Modificar simulateDataUpdate para usar station
+  const simulateDataUpdate = async () => {
+    try {
+      // Simular flutuações aleatórias nos dados dos sensores
+      const simulatedData = {
+        sensors: {
+          airTemperature: station.sensors.airTemperature + (Math.random() * 2 - 1),
+          airHumidity: Math.max(0, Math.min(100, station.sensors.airHumidity + (Math.random() * 6 - 3))),
+          windSpeed: Math.max(0, station.sensors.windSpeed + (Math.random() * 4 - 2)),
+          windDirection: WIND_DIRECTIONS[Math.floor(Math.random() * WIND_DIRECTIONS.length)],
+          co2Concentration: Math.max(350, station.sensors.co2Concentration + (Math.random() * 20 - 10)),
+          soilMoisture: Math.max(0, Math.min(100, station.sensors.soilMoisture + (Math.random() * 4 - 2))),
+          nitrogen: Math.max(0, station.sensors.nitrogen + (Math.random() * 10 - 5)),
+        }
+      };
+
+      const newHistoryEntry: HistoryData = {
+        time: new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }),
+        airTemperature: parseFloat(simulatedData.sensors.airTemperature.toFixed(1)),
+        airHumidity: parseFloat(simulatedData.sensors.airHumidity.toFixed(1)),
+        windSpeed: parseFloat(simulatedData.sensors.windSpeed.toFixed(1)),
+        windDirection: simulatedData.sensors.windDirection,
+        co2Concentration: Math.round(simulatedData.sensors.co2Concentration),
+        soilMoisture: parseFloat(simulatedData.sensors.soilMoisture.toFixed(1)),
+        nitrogen: Math.round(simulatedData.sensors.nitrogen),
+      };
+
+      const now = new Date();
+      const newAlertEntry = {
+        dateTime: `${now.toLocaleDateString('pt-BR')} ${now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`,
+        message: "Dados simulados atualizados",
+        severity: "info",
+      };
+
+      // Atualizar dados
+      setStation(prevStation => ({
+        ...prevStation,
+        ...simulatedData,
+        history: [...prevStation.history.slice(1), newHistoryEntry],
+        alertHistory: [newAlertEntry, ...prevStation.alertHistory].slice(0, 20),
+      }));
+
+    } catch (error) {
+      console.error("Error updating station data:", error);
+    }
+  };
+
+  // Modificar o componente no return para incluir o seletor de estações
   return (
     <div className="flex flex-col gap-3 dashboard-container">
-      {/* Informação contextual em vez de seletor redundante */}
-      <Card className="bg-background shadow-sm">
-        <CardContent className="py-3 px-4">
-          <div className="flex items-center gap-2">
-            <div className="bg-primary/10 p-1.5 rounded-md">
-              {(() => {
-                const Icon = cropIcons[crop.cropType] || Leaf;
-                return <Icon className="h-5 w-5 text-primary" />;
-              })()}
-            </div>
-            <div className="flex flex-col">
-              <span className="font-medium">{crop.cropType}</span>
-              <span className="text-xs text-muted-foreground">{crop.fieldName}</span>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+      {/* Substitui o card de cultura pelo seletor de estações */}
+      <StationSelector
+        stations={stations}
+        selectedStationId={selectedStationId}
+        onStationChange={handleStationChange}
+      />
 
       <Tabs defaultValue="sensores" className="w-full">
         <TabsList className="grid grid-cols-3 mb-4">

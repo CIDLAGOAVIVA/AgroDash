@@ -1,6 +1,6 @@
 "use client";
 import { DashboardClient } from "@/components/dashboard-client";
-import { initialCrops } from "@/lib/data";
+import { initialCrops, dashboardStations } from "@/lib/data";
 import { notFound } from "next/navigation";
 import { useEffect, useState, use } from "react";
 import { useTransition } from "@/hooks/use-transition";
@@ -31,6 +31,6 @@ export default function DashboardPage({ params }: { params: { cropId: string } |
     return null;
   }
 
-  return <DashboardClient initialCrop={crop} allCrops={initialCrops} />;
+  return <DashboardClient initialCrop={crop} allCrops={initialCrops} stations={dashboardStations} />;
 }
 

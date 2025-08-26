@@ -5,6 +5,7 @@ import type { Crop, HistoryData } from "@/types";
 import type { DashboardCrop, HistoryData, Property, Station, Sensor, Quantity, AlertCriterion } from "@/types";
 
 import type { ChartConfig } from "@/components/ui/chart"
+import { MapPin, Compass, Landmark, Navigation, Map } from "lucide-react";
 
 export const WIND_DIRECTIONS = ["N", "NE", "L", "SE", "S", "SO", "O", "NO"];
 
@@ -205,4 +206,143 @@ export const initialQuantities: Quantity[] = [
 export const initialAlertCriteria: AlertCriterion[] = [
   { id: 'crit-1', id_sensor: 'sensor-1', id_grandeza: 'qty-1', comparacao: '>', valor_critico_1: 35, alerta: 'Temperatura muito alta, risco de estresse térmico para a soja.', repeticao_seg: 600, ativo: true },
   { id: 'crit-2', id_sensor: 'sensor-3', id_grandeza: 'qty-2', comparacao: '<', valor_critico_1: 20, alerta: 'Umidade do solo criticamente baixa, irrigação necessária.', repeticao_seg: 300, ativo: true },
+];
+
+export const stationIcons: { [key: string]: React.ComponentType<{ className?: string }> } = {
+  "Central": MapPin,
+  "Norte": Compass,
+  "Sul": Landmark,
+  "Leste": Navigation,
+  "Oeste": Map,
+};
+
+export const dashboardStations: DashboardStation[] = [
+  {
+    id: "station-1",
+    name: "Estação Central",
+    description: "Estação principal no centro da propriedade",
+    location: { lat: -23.5505, lng: -46.6333 },
+    sensors: {
+      airTemperature: 28.5,
+      airHumidity: 65,
+      windSpeed: 12,
+      windDirection: "NE",
+      co2Concentration: 410,
+      soilMoisture: 45,
+      nitrogen: 220,
+    },
+    history: generateInitialHistory(baseHistorySoy),
+    alertHistory: [
+      { dateTime: getCurrentDateTime(), message: "Nível de umidade do soil está abaixo do recomendado para esta fase da cultura.", severity: "Atenção" },
+      { dateTime: getPastDateTime(60), message: "Todos os sensores operando normalmente.", severity: "Normal" },
+    ],
+    sensorThresholds: {
+      airTemperature: { min: 20, max: 32 },
+      airHumidity: { min: 60, max: 80 },
+      soilMoisture: { min: 40, max: 70 }
+    }
+  },
+  {
+    id: "station-2",
+    name: "Estação Norte",
+    description: "Estação localizada na região norte da propriedade",
+    location: { lat: -23.5405, lng: -46.6233 },
+    sensors: {
+      airTemperature: 27.2,
+      airHumidity: 68,
+      windSpeed: 14,
+      windDirection: "N",
+      co2Concentration: 405,
+      soilMoisture: 52,
+      nitrogen: 190,
+    },
+    history: generateInitialHistory({ ...baseHistorySoy, airTemp: 27.2, airHumidity: 68, windSpeed: 14, soilMoisture: 52, nitrogen: 190 }),
+    alertHistory: [
+      { dateTime: getCurrentDateTime(), message: "Velocidade do vento acima do normal, monitorar possíveis danos às culturas.", severity: "Atenção" },
+      { dateTime: getPastDateTime(120), message: "Todos os parâmetros normais.", severity: "Normal" },
+    ],
+    sensorThresholds: {
+      airTemperature: { min: 20, max: 32 },
+      airHumidity: { min: 60, max: 80 },
+      windSpeed: { min: undefined, max: 15 },
+      soilMoisture: { min: 40, max: 70 }
+    }
+  },
+  {
+    id: "station-3",
+    name: "Estação Sul",
+    description: "Estação localizada próximo ao Campo Sul",
+    location: { lat: -23.5605, lng: -46.6433 },
+    sensors: {
+      airTemperature: 23.8,
+      airHumidity: 78,
+      windSpeed: 8,
+      windDirection: "SE",
+      co2Concentration: 415,
+      soilMoisture: 58,
+      nitrogen: 210,
+    },
+    history: generateInitialHistory({ ...baseHistoryWheat, airTemp: 23.8, airHumidity: 78, windSpeed: 8, soilMoisture: 58, nitrogen: 210 }),
+    alertHistory: [
+      { dateTime: getCurrentDateTime(), message: "Umidade do ar elevada, monitorar para prevenir doenças fúngicas.", severity: "Atenção" },
+      { dateTime: getPastDateTime(180), message: "Sensor de temperatura recalibrado.", severity: "Normal" },
+    ],
+    sensorThresholds: {
+      airTemperature: { min: 18, max: 28 },
+      airHumidity: { min: 65, max: 85 },
+      soilMoisture: { min: 45, max: 75 }
+    }
+  },
+  {
+    id: "station-4",
+    name: "Estação Leste",
+    description: "Estação na divisa leste da propriedade",
+    location: { lat: -23.5485, lng: -46.6203 },
+    sensors: {
+      airTemperature: 26.1,
+      airHumidity: 63,
+      windSpeed: 10,
+      windDirection: "L",
+      co2Concentration: 400,
+      soilMoisture: 42,
+      nitrogen: 175,
+    },
+    history: generateInitialHistory({ ...baseHistorySoy, airTemp: 26.1, airHumidity: 63, windSpeed: 10, soilMoisture: 42, nitrogen: 175 }),
+    alertHistory: [
+      { dateTime: getCurrentDateTime(), message: "Umidade do solo abaixo do recomendado, irrigação necessária.", severity: "Crítico" },
+      { dateTime: getPastDateTime(30), message: "Níveis de nitrogênio adequados.", severity: "Normal" },
+    ],
+    sensorThresholds: {
+      airTemperature: { min: 20, max: 32 },
+      airHumidity: { min: 60, max: 80 },
+      soilMoisture: { min: 45, max: 70 },
+      nitrogen: { min: 150, max: undefined }
+    }
+  },
+  {
+    id: "station-5",
+    name: "Estação Oeste",
+    description: "Estação no extremo oeste da fazenda",
+    location: { lat: -23.5535, lng: -46.6443 },
+    sensors: {
+      airTemperature: 25.4,
+      airHumidity: 70,
+      windSpeed: 11,
+      windDirection: "SO",
+      co2Concentration: 420,
+      soilMoisture: 48,
+      nitrogen: 200,
+    },
+    history: generateInitialHistory({ ...baseHistoryCorn, airTemp: 25.4, airHumidity: 70, windSpeed: 11, soilMoisture: 48, nitrogen: 200 }),
+    alertHistory: [
+      { dateTime: getCurrentDateTime(), message: "Concentração de CO2 ligeiramente elevada.", severity: "Normal" },
+      { dateTime: getPastDateTime(90), message: "Manutenção preventiva realizada em todos os sensores.", severity: "Normal" },
+    ],
+    sensorThresholds: {
+      airTemperature: { min: 20, max: 32 },
+      airHumidity: { min: 60, max: 80 },
+      co2Concentration: { min: undefined, max: 450 },
+      soilMoisture: { min: 40, max: 70 }
+    }
+  }
 ];
