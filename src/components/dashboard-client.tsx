@@ -6,7 +6,7 @@ import type { DashboardCrop, HistoryData } from "@/types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Image from "next/image";
 import { WIND_DIRECTIONS } from "@/lib/data";
-import { Cloud, Droplets, Leaf, Thermometer, Wind, Waves, Expand, X } from "lucide-react";
+import { Cloud, Droplets, Leaf, Thermometer, Wind, Waves, Expand, X, Wheat } from "lucide-react";
 import { AlertLog } from "./alert-log";
 import { DataMetric } from "./data-metric";
 import { DetailedChartModal } from "./detailed-chart-modal";
@@ -18,6 +18,34 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Activity, Map, Bell } from "lucide-react";
 import { AbnormalSensors } from "./abnormal-sensors";
 import { useTransition } from "@/hooks/use-transition";
+
+// Add the Sprout component definition
+const Sprout = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className="lucide lucide-sprout"
+  >
+    <path d="M7 20h10" />
+    <path d="M12 20V4" />
+    <path d="M12 4c0-2.21-1.79-4-4-4S4 1.79 4 4c0 .62.14 1.2.38 1.72" />
+    <path d="M12 4c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .62-.14 1.2-.38 1.72" />
+  </svg>
+);
+
+// Add the cropIcons mapping
+const cropIcons: { [key: string]: React.ComponentType<{ className?: string }> } = {
+  "Soja": Leaf,
+  "Milho": Sprout,
+  "Trigo": Wheat,
+};
 
 function useInterval(callback: () => void, delay: number | null) {
   const savedCallback = useRef<() => void>();
@@ -270,13 +298,26 @@ export function DashboardClient({ initialCrop, allCrops }: { initialCrop: Dashbo
     }
   };
 
+  // Substitua o CropCard pela informação contextual
   return (
     <div className="flex flex-col gap-3 dashboard-container">
-      <CropCard
-        crop={crop}
-        allCrops={allCrops}
-        onCropChange={handleCropChange}
-      />
+      {/* Informação contextual em vez de seletor redundante */}
+      <Card className="bg-background shadow-sm">
+        <CardContent className="py-3 px-4">
+          <div className="flex items-center gap-2">
+            <div className="bg-primary/10 p-1.5 rounded-md">
+              {(() => {
+                const Icon = cropIcons[crop.cropType] || Leaf;
+                return <Icon className="h-5 w-5 text-primary" />;
+              })()}
+            </div>
+            <div className="flex flex-col">
+              <span className="font-medium">{crop.cropType}</span>
+              <span className="text-xs text-muted-foreground">{crop.fieldName}</span>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
       <Tabs defaultValue="sensores" className="w-full">
         <TabsList className="grid grid-cols-3 mb-4">

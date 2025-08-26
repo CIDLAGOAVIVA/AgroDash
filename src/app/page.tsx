@@ -1,7 +1,7 @@
 "use client";
 
 import { initialProperties } from "@/lib/data";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Link from "next/link";
 import { MapPin } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -64,36 +64,41 @@ export default function Home() {
           Selecione uma propriedade para ver as culturas disponíveis.
         </p>
       </div>
-      <Card className="w-full max-w-6xl shadow-2xl overflow-hidden">
-        <CardContent className="p-0">
-          <div className="relative aspect-video w-full">
-            <FarmMap />
-            <div className="absolute inset-0 bg-black/20 pointer-events-none" />
 
-            {initialProperties.map((property) => {
-              const position = property.id === 'prop-1' ? 'top-[30%] left-[35%]' : 'top-[60%] left-[65%]';
-              return (
-                <Link
-                  key={property.id}
-                  href={`/property/${property.id}`}
-                  className={cn("absolute transform -translate-x-1/2 -translate-y-1/2", position)}
-                  onClick={handlePropertyClick(property.id, `/property/${property.id}`)}
-                >
-                  <div className="relative group">
-                    <div className="w-12 h-12 md:w-16 md:h-16 bg-primary/80 rounded-full flex items-center justify-center border-2 md:border-4 border-background/70 shadow-lg hover:scale-110 hover:bg-primary transition-all duration-300 cursor-pointer">
-                      <MapPin className="w-6 h-6 md:w-8 md:h-8 text-primary-foreground" />
+      <div className="w-full max-w-6xl grid md:grid-cols-2 gap-6">
+        {initialProperties.map((property) => (
+          <Card
+            key={property.id}
+            className="overflow-hidden shadow-lg hover:shadow-xl transition-shadow cursor-pointer"
+            onClick={handlePropertyClick(property.id, `/property/${property.id}`)}
+          >
+            <CardHeader className="bg-primary/5 border-b border-border">
+              <CardTitle className="flex items-center gap-2">
+                <MapPin className="h-5 w-5 text-primary" />
+                {property.name}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="p-4">
+              <div className="flex gap-2 mb-3">
+                <Badge variant="outline" className="bg-primary/5">
+                  {property.crops.length} culturas
+                </Badge>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {property.crops.map(crop => {
+                  const Icon = cropIcons[crop.cropType] || Leaf;
+                  return (
+                    <div key={crop.id} className="flex items-center gap-1 text-sm text-muted-foreground">
+                      <Icon className="h-3 w-3" />
+                      <span>{crop.cropType}</span>
                     </div>
-                    <div className="absolute -bottom-12 left-1/2 -translate-x-1/2 w-max px-3 py-1.5 bg-background text-foreground rounded-md shadow-lg text-sm font-semibold opacity-0 group-hover:opacity-100 group-hover:-bottom-16 transition-all duration-300 pointer-events-none">
-                      {property.name}
-                      <div className="absolute bottom-full left-1/2 -translate-x-1/2 w-0 h-0 border-l-8 border-l-transparent border-r-8 border-r-transparent border-b-8 border-b-background"></div>
-                    </div>
-                  </div>
-                </Link>
-              );
-            })}
-          </div>
-        </CardContent>
-      </Card>
+                  );
+                })}
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
     </div>
   );
 }
