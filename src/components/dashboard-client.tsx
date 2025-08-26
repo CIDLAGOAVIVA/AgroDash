@@ -330,7 +330,11 @@ export function DashboardClient({
       // Gerar nova imagem para a estação
       setIsImageLoading(true);
       generateFieldImage(`Weather monitoring station, high resolution photograph, ${newStation.name}`)
-        .then(setFieldImage)
+        .then(result => {
+          if (result.imageUrl) {
+            setFieldImage(result.imageUrl);
+          }
+        })
         .finally(() => setIsImageLoading(false));
     }
   };
@@ -339,7 +343,11 @@ export function DashboardClient({
   useEffect(() => {
     setIsImageLoading(true);
     generateFieldImage(`Weather monitoring station, high resolution photograph, ${station.name}`)
-      .then(setFieldImage)
+      .then(result => {
+        if (result.imageUrl) {
+          setFieldImage(result.imageUrl);
+        }
+      })
       .finally(() => setIsImageLoading(false));
   }, [station.name]);
 
