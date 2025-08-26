@@ -7,6 +7,11 @@ export interface HistoryData {
   co2Concentration: number;
   soilMoisture: number;
   nitrogen: number;
+  potassium?: number;
+  phosphorus?: number;
+  soilTemperature?: number;
+  soilPH?: number;
+  electricalConductivity?: number;
 }
 
 export type AlertSeverity = 'Normal' | 'Atenção' | 'Crítico';
@@ -51,6 +56,11 @@ export interface DashboardCrop {
     co2Concentration?: SensorThreshold;
     soilMoisture?: SensorThreshold;
     nitrogen?: SensorThreshold;
+    potassium?: SensorThreshold;
+    phosphorus?: SensorThreshold;
+    soilTemperature?: SensorThreshold;
+    soilPH?: SensorThreshold;
+    electricalConductivity?: SensorThreshold;
   };
 }
 

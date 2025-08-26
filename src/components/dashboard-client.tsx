@@ -6,7 +6,7 @@ import type { DashboardCrop, HistoryData, DashboardStation } from "@/types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Image from "next/image";
 import { WIND_DIRECTIONS } from "@/lib/data";
-import { Cloud, Droplets, Leaf, Thermometer, Wind, Waves, Expand, X, Wheat } from "lucide-react";
+import { Cloud, Droplets, Leaf, Thermometer, Wind, Waves, Expand, X, Wheat, Beaker, FlaskConical, Scale, Zap } from "lucide-react";
 import { AlertLog } from "./alert-log";
 import { DataMetric } from "./data-metric";
 import { DetailedChartModal } from "./detailed-chart-modal";
@@ -232,6 +232,11 @@ export function DashboardClient({
     { title: "Concentração de CO2", dataKey: "co2Concentration", stroke: "hsl(var(--foreground))", icon: Cloud, value: crop.co2Concentration.toFixed(0), unit: "ppm" },
     { title: "Umidade do Solo", dataKey: "soilMoisture", stroke: "hsl(var(--chart-4))", icon: Leaf, value: crop.soilMoisture.toFixed(1), unit: "%" },
     { title: "Nitrogênio (N)", dataKey: "nitrogen", stroke: "hsl(var(--chart-5))", icon: Waves, value: crop.nitrogen.toFixed(0), unit: "ppm" },
+    { title: "Potássio (K)", dataKey: "potassium", stroke: "hsl(var(--chart-6))", icon: Beaker, value: crop.potassium?.toFixed(0) || "N/A", unit: "ppm" },
+    { title: "Fósforo (P)", dataKey: "phosphorus", stroke: "hsl(var(--chart-7))", icon: FlaskConical, value: crop.phosphorus?.toFixed(0) || "N/A", unit: "ppm" },
+    { title: "Temperatura do Solo", dataKey: "soilTemperature", stroke: "hsl(var(--chart-8))", icon: Thermometer, value: crop.soilTemperature?.toFixed(1) || "N/A", unit: "°C" },
+    { title: "pH do Solo", dataKey: "soilPH", stroke: "hsl(var(--chart-9))", icon: Scale, value: crop.soilPH?.toFixed(1) || "N/A", unit: "" },
+    { title: "Condutividade Elétrica", dataKey: "electricalConductivity", stroke: "hsl(var(--chart-10))", icon: Zap, value: crop.electricalConductivity?.toFixed(2) || "N/A", unit: "mS/cm" }
   ];
 
   // Determinar o status dos sensores com base nos valores e nos limiares

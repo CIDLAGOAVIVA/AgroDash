@@ -161,6 +161,21 @@ export const chartConfigs: { [key: string]: ChartConfig } = {
   nitrogen: {
     nitrogen: { color: "hsl(var(--chart-5))" },
   },
+  potassium: {
+    potassium: { color: "hsl(var(--chart-6))" },
+  },
+  phosphorus: {
+    phosphorus: { color: "hsl(var(--chart-7))" },
+  },
+  soilTemperature: {
+    soilTemperature: { color: "hsl(var(--chart-8))" },
+  },
+  soilPH: {
+    soilPH: { color: "hsl(var(--chart-9))" },
+  },
+  electricalConductivity: {
+    electricalConductivity: { color: "hsl(var(--chart-10))" },
+  },
 };
 
 
