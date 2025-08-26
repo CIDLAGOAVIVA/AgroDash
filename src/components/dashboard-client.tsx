@@ -82,7 +82,7 @@ type DetailedChartDataType = {
 }
 
 
-export function DashboardClient({ initialCrop, allCrops }: { initialCrop: Crop; allCrops: Crop[] }) {
+export function DashboardClient({ initialCrop, allCrops }: { initialCrop: DashboardCrop; allCrops: DashboardCrop[] }) {
   const [crop, setCrop] = useState<Crop>(initialCrop);
 
   const [fieldImage, setFieldImage] = useState<string | null>(null);
@@ -267,9 +267,6 @@ export function DashboardClient({ initialCrop, allCrops }: { initialCrop: Crop; 
 
       // Update the crop
       setCrop(newCrop);
-
-      // Update the URL without full page reload
-      window.history.pushState({}, '', `/dashboard/${cropId}`);
     }
   };
 

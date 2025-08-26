@@ -10,6 +10,7 @@ import {
   PanelLeft,
   Settings,
   Wheat,
+  MapPin,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -22,7 +23,7 @@ import {
 } from "@/components/ui/tooltip";
 import { useSidebar } from "@/hooks/use-sidebar";
 import { cn } from "@/lib/utils";
-import type { Crop } from "@/types";
+import type { Crop, Property } from "@/types";
 import { useTransition } from "@/hooks/use-transition";
 import { useRouter } from "next/navigation";
 import type { DashboardCrop } from "@/types";
@@ -56,17 +57,18 @@ const cropIcons: { [key: string]: React.ComponentType<{ className?: string }> } 
 
 interface SidebarProps {
   crops: DashboardCrop[];
+  properties: Property[];
 }
 
-function SidebarDesktop({ crops }: SidebarProps) {
+function SidebarDesktop({ properties }: { properties: Property[] }) {
   const pathname = usePathname();
   const { isOpen, toggle } = useSidebar();
   const { startTransition } = useTransition();
   const router = useRouter();
 
-  const handleCropClick = (cropId: string, href: string) => (e: React.MouseEvent) => {
+  const handlePropertyClick = (propertyId: string, href: string) => (e: React.MouseEvent) => {
     e.preventDefault();
-    startTransition(cropId);
+    startTransition(propertyId);
 
     setTimeout(() => {
       router.push(href);
@@ -120,44 +122,46 @@ function SidebarDesktop({ crops }: SidebarProps) {
                 )}
               </Tooltip>
             </li>
-            {crops.map((crop) => {
-              const Icon = cropIcons[crop.cropType] || Leaf;
-              const href = `/dashboard/${crop.id}`;
+
+            {/* Listar Propriedades */}
+            {properties.map((property) => {
+              const href = `/property/${property.id}`;
               return (
-                <li key={crop.id}>
+                <li key={property.id}>
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <Link
                         href={href}
                         className={cn(
                           "flex items-center gap-2 rounded-md px-2.5 py-1.5 text-sm transition-all hover:bg-accent/50",
-                          pathname === href
+                          pathname.startsWith(href)
                             ? "bg-accent/70 text-accent-foreground font-medium"
                             : "text-muted-foreground"
                         )}
-                        onClick={handleCropClick(crop.id, href)}
+                        onClick={handlePropertyClick(property.id, href)}
                       >
-                        <Icon className="h-4 w-4" />
+                        <MapPin className="h-4 w-4" />
                         <span
                           className={cn(
                             "overflow-hidden transition-all truncate",
                             isOpen ? "w-auto opacity-100" : "w-0 opacity-0"
                           )}
                         >
-                          {crop.fieldName}
+                          {property.name}
                         </span>
                       </Link>
                     </TooltipTrigger>
                     {!isOpen && (
                       <TooltipContent side="right" className="text-xs">
-                        {crop.fieldName}
+                        {property.name}
                       </TooltipContent>
                     )}
                   </Tooltip>
                 </li>
               );
             })}
-             <li>
+
+            <li>
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Link
@@ -202,7 +206,7 @@ function SidebarDesktop({ crops }: SidebarProps) {
   );
 }
 
-function SidebarMobile({ crops }: SidebarProps) {
+function SidebarMobile({ crops = [] }: { crops: DashboardCrop[] }) {
   const pathname = usePathname();
   const [open, setOpen] = React.useState(false);
   const { startTransition } = useTransition();
@@ -290,7 +294,7 @@ function SidebarMobile({ crops }: SidebarProps) {
   );
 }
 
-export function Sidebar({ crops }: SidebarProps) {
+export function Sidebar({ crops = [], properties = [] }: SidebarProps) {
   const [isClient, setIsClient] = useState(false)
 
   useEffect(() => {
@@ -299,7 +303,7 @@ export function Sidebar({ crops }: SidebarProps) {
 
   return (
     <div className={cn(!isClient && "hidden")}>
-      <SidebarDesktop crops={crops} />
+      <SidebarDesktop properties={properties} />
       <SidebarMobile crops={crops} />
     </div>
   );

@@ -1,9 +1,9 @@
 "use client";
 
-import { initialCrops } from "@/lib/data";
+import { initialProperties } from "@/lib/data";
 import { Card, CardContent } from "@/components/ui/card";
 import Link from "next/link";
-import { Leaf, Wheat } from "lucide-react";
+import { MapPin } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useTransition } from "@/hooks/use-transition";
 import { useRouter } from "next/navigation";
@@ -27,20 +27,6 @@ const FarmMap = () => {
   );
 };
 
-
-const cropIcons: { [key: string]: React.ComponentType<{ className?: string }> } = {
-  "Soja": Leaf,
-  "Milho": Sprout,
-  "Trigo": Wheat,
-};
-
-const cropPositions: { [key: string]: string } = {
-  "soy-1": "top-[30%] left-[25%]",
-  "corn-1": "top-[55%] left-[50%]",
-  "wheat-1": "top-[40%] left-[75%]",
-};
-
-
 export default function Home() {
   const { startTransition, isInitialLoad } = useTransition();
   const router = useRouter();
@@ -58,9 +44,9 @@ export default function Home() {
     return () => clearTimeout(timer);
   }, [isInitialLoad]);
 
-  const handleCropClick = (cropId: string, href: string) => (e: React.MouseEvent) => {
+  const handlePropertyClick = (propertyId: string, href: string) => (e: React.MouseEvent) => {
     e.preventDefault();
-    startTransition(cropId);
+    startTransition(propertyId);
 
     // Navegar após pequeno delay para permitir a animação iniciar
     setTimeout(() => {
@@ -75,7 +61,7 @@ export default function Home() {
           Visão Geral da Fazenda
         </h1>
         <p className="mt-4 text-base text-muted-foreground sm:text-lg">
-          Selecione uma cultura para ver os detalhes de monitoramento.
+          Selecione uma propriedade para ver as culturas disponíveis.
         </p>
       </div>
       <Card className="w-full max-w-6xl shadow-2xl overflow-hidden">
@@ -84,22 +70,21 @@ export default function Home() {
             <FarmMap />
             <div className="absolute inset-0 bg-black/20 pointer-events-none" />
 
-            {initialCrops.map((crop) => {
-              const CropIcon = cropIcons[crop.cropType] || Leaf;
-              const positionClass = cropPositions[crop.id] || "top-1/2 left-1/2";
+            {initialProperties.map((property) => {
+              const position = property.id === 'prop-1' ? 'top-[30%] left-[35%]' : 'top-[60%] left-[65%]';
               return (
                 <Link
-                  key={crop.id}
-                  href={`/dashboard/${crop.id}`}
-                  className={cn("absolute transform -translate-x-1/2 -translate-y-1/2", positionClass)}
-                  onClick={handleCropClick(crop.id, `/dashboard/${crop.id}`)}
+                  key={property.id}
+                  href={`/property/${property.id}`}
+                  className={cn("absolute transform -translate-x-1/2 -translate-y-1/2", position)}
+                  onClick={handlePropertyClick(property.id, `/property/${property.id}`)}
                 >
                   <div className="relative group">
                     <div className="w-12 h-12 md:w-16 md:h-16 bg-primary/80 rounded-full flex items-center justify-center border-2 md:border-4 border-background/70 shadow-lg hover:scale-110 hover:bg-primary transition-all duration-300 cursor-pointer">
-                      <CropIcon className="w-6 h-6 md:w-8 md:h-8 text-primary-foreground" />
+                      <MapPin className="w-6 h-6 md:w-8 md:h-8 text-primary-foreground" />
                     </div>
                     <div className="absolute -bottom-12 left-1/2 -translate-x-1/2 w-max px-3 py-1.5 bg-background text-foreground rounded-md shadow-lg text-sm font-semibold opacity-0 group-hover:opacity-100 group-hover:-bottom-16 transition-all duration-300 pointer-events-none">
-                      {crop.fieldName}
+                      {property.name}
                       <div className="absolute bottom-full left-1/2 -translate-x-1/2 w-0 h-0 border-l-8 border-l-transparent border-r-8 border-r-transparent border-b-8 border-b-background"></div>
                     </div>
                   </div>

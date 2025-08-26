@@ -1,4 +1,3 @@
-
 import type { Crop, HistoryData } from "@/types";
 
 
@@ -172,29 +171,43 @@ export const chartConfigs: { [key: string]: ChartConfig } = {
 
 
 export const initialProperties: Property[] = [
-    { id: 'prop-1', nome_propriedade: 'Fazenda Experimental', municipio: 'Campinas', uf: 'SP' },
-    { id: 'prop-2', nome_propriedade: 'Sítio Belo Campo', municipio: 'Piracicaba', uf: 'SP' },
+  {
+    id: "prop-1",
+    name: "Propriedade 1",
+    crops: [
+      initialCrops[0], // Campo Norte 7
+      initialCrops[1], // Lote Leste Cume
+    ],
+  },
+  {
+    id: "prop-2",
+    name: "Propriedade 2",
+    crops: [
+      initialCrops[2], // Fundo do Vale
+      // cópias dos crops da primeira propriedade com IDs diferentes se necessário
+    ],
+  },
 ];
 
 export const initialStations: Station[] = [
-    { id: 'station-1', id_propriedade: 'prop-1', nome_estacao: 'Estação Central', descricao_estacao: 'Localizada no pátio principal' },
-    { id: 'station-2', id_propriedade: 'prop-1', nome_estacao: 'Estação Norte', descricao_estacao: 'Perto do Campo Norte 7' },
-    { id: 'station-3', id_propriedade: 'prop-2', nome_estacao: 'Estação Única', descricao_estacao: 'Cobre toda a área do sítio' },
+  { id: 'station-1', id_propriedade: 'prop-1', nome_estacao: 'Estação Central', descricao_estacao: 'Localizada no pátio principal' },
+  { id: 'station-2', id_propriedade: 'prop-1', nome_estacao: 'Estação Norte', descricao_estacao: 'Perto do Campo Norte 7' },
+  { id: 'station-3', id_propriedade: 'prop-2', nome_estacao: 'Estação Única', descricao_estacao: 'Cobre toda a área do sítio' },
 ];
 
 export const initialSensors: Sensor[] = [
-    { id: 'sensor-1', id_estacao: 'station-1', nome_sensor: 'DHT22-1', descricao_sensor: 'Temperatura e Umidade do Ar' },
-    { id: 'sensor-2', id_estacao: 'station-2', nome_sensor: 'Anemômetro-1', descricao_sensor: 'Velocidade e direção do vento' },
-    { id: 'sensor-3', id_estacao: 'station-2', nome_sensor: 'SCD-30', descricao_sensor: 'Concentração de CO2' },
+  { id: 'sensor-1', id_estacao: 'station-1', nome_sensor: 'DHT22-1', descricao_sensor: 'Temperatura e Umidade do Ar' },
+  { id: 'sensor-2', id_estacao: 'station-2', nome_sensor: 'Anemômetro-1', descricao_sensor: 'Velocidade e direção do vento' },
+  { id: 'sensor-3', id_estacao: 'station-2', nome_sensor: 'SCD-30', descricao_sensor: 'Concentração de CO2' },
 ];
 
 export const initialQuantities: Quantity[] = [
-    { id: 'qty-1', nome_grandeza: 'Temperatura do Ar', unidade_medida: '°C', descricao_grandeza: 'Mede a temperatura do ambiente' },
-    { id: 'qty-2', nome_grandeza: 'Umidade do Solo', unidade_medida: '%', descricao_grandeza: 'Mede a umidade do solo' },
-    { id: 'qty-3', nome_grandeza: 'Nível de Nitrogênio', unidade_medida: 'ppm', descricao_grandeza: 'Concentração de Nitrogênio no solo' },
+  { id: 'qty-1', nome_grandeza: 'Temperatura do Ar', unidade_medida: '°C', descricao_grandeza: 'Mede a temperatura do ambiente' },
+  { id: 'qty-2', nome_grandeza: 'Umidade do Solo', unidade_medida: '%', descricao_grandeza: 'Mede a umidade do solo' },
+  { id: 'qty-3', nome_grandeza: 'Nível de Nitrogênio', unidade_medida: 'ppm', descricao_grandeza: 'Concentração de Nitrogênio no solo' },
 ];
 
 export const initialAlertCriteria: AlertCriterion[] = [
-    { id: 'crit-1', id_sensor: 'sensor-1', id_grandeza: 'qty-1', comparacao: '>', valor_critico_1: 35, alerta: 'Temperatura muito alta, risco de estresse térmico para a soja.', repeticao_seg: 600, ativo: true },
-    { id: 'crit-2', id_sensor: 'sensor-3', id_grandeza: 'qty-2', comparacao: '<', valor_critico_1: 20, alerta: 'Umidade do solo criticamente baixa, irrigação necessária.', repeticao_seg: 300, ativo: true },
+  { id: 'crit-1', id_sensor: 'sensor-1', id_grandeza: 'qty-1', comparacao: '>', valor_critico_1: 35, alerta: 'Temperatura muito alta, risco de estresse térmico para a soja.', repeticao_seg: 600, ativo: true },
+  { id: 'crit-2', id_sensor: 'sensor-3', id_grandeza: 'qty-2', comparacao: '<', valor_critico_1: 20, alerta: 'Umidade do solo criticamente baixa, irrigação necessária.', repeticao_seg: 300, ativo: true },
 ];
