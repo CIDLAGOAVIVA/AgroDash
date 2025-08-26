@@ -178,9 +178,25 @@ export const initialProperties: Property[] = [
     id: "prop-2",
     name: "Propriedade 2",
     crops: [
-      // Ajuste os índices conforme necessário para outras culturas existentes
-      initialCrops[3],
-      // outros crops...
+      // Usando as mesmas culturas da Propriedade 1 mas com IDs diferentes
+      {
+        ...initialCrops[0],
+        id: "soy-2",
+        fieldName: "Campo Leste 3",
+        location: { lat: -23.5805, lng: -46.6133 }
+      },
+      {
+        ...initialCrops[1],
+        id: "corn-2",
+        fieldName: "Campo Norte 5",
+        location: { lat: -23.5905, lng: -46.6233 }
+      },
+      {
+        ...initialCrops[2],
+        id: "wheat-2",
+        fieldName: "Campo Oeste",
+        location: { lat: -23.6005, lng: -46.6333 }
+      }
     ],
   },
 ];
@@ -188,13 +204,21 @@ export const initialProperties: Property[] = [
 export const initialStations: Station[] = [
   { id: 'station-1', id_propriedade: 'prop-1', nome_estacao: 'Estação Central', descricao_estacao: 'Localizada no pátio principal' },
   { id: 'station-2', id_propriedade: 'prop-1', nome_estacao: 'Estação Norte', descricao_estacao: 'Perto do Campo Norte 7' },
-  { id: 'station-3', id_propriedade: 'prop-2', nome_estacao: 'Estação Única', descricao_estacao: 'Cobre toda a área do sítio' },
+  { id: 'station-3', id_propriedade: 'prop-1', nome_estacao: 'Estação Sul', descricao_estacao: 'Próxima ao Campo Sul' },
+  // Estações para a Propriedade 2
+  { id: 'station-4', id_propriedade: 'prop-2', nome_estacao: 'Estação Principal', descricao_estacao: 'Estação central da Propriedade 2' },
+  { id: 'station-5', id_propriedade: 'prop-2', nome_estacao: 'Estação Leste', descricao_estacao: 'Monitora os campos da região leste' },
+  { id: 'station-6', id_propriedade: 'prop-2', nome_estacao: 'Estação Oeste', descricao_estacao: 'Monitora os campos da região oeste' },
 ];
 
 export const initialSensors: Sensor[] = [
   { id: 'sensor-1', id_estacao: 'station-1', nome_sensor: 'DHT22-1', descricao_sensor: 'Temperatura e Umidade do Ar' },
   { id: 'sensor-2', id_estacao: 'station-2', nome_sensor: 'Anemômetro-1', descricao_sensor: 'Velocidade e direção do vento' },
   { id: 'sensor-3', id_estacao: 'station-2', nome_sensor: 'SCD-30', descricao_sensor: 'Concentração de CO2' },
+  // Sensores para a Propriedade 2
+  { id: 'sensor-4', id_estacao: 'station-4', nome_sensor: 'DHT22-2', descricao_sensor: 'Temperatura e Umidade do Ar' },
+  { id: 'sensor-5', id_estacao: 'station-5', nome_sensor: 'Anemômetro-2', descricao_sensor: 'Velocidade e direção do vento' },
+  { id: 'sensor-6', id_estacao: 'station-6', nome_sensor: 'SoilSense-1', descricao_sensor: 'Umidade e Nutrientes do Solo' },
 ];
 
 export const initialQuantities: Quantity[] = [
@@ -206,6 +230,9 @@ export const initialQuantities: Quantity[] = [
 export const initialAlertCriteria: AlertCriterion[] = [
   { id: 'crit-1', id_sensor: 'sensor-1', id_grandeza: 'qty-1', comparacao: '>', valor_critico_1: 35, alerta: 'Temperatura muito alta, risco de estresse térmico para a soja.', repeticao_seg: 600, ativo: true },
   { id: 'crit-2', id_sensor: 'sensor-3', id_grandeza: 'qty-2', comparacao: '<', valor_critico_1: 20, alerta: 'Umidade do solo criticamente baixa, irrigação necessária.', repeticao_seg: 300, ativo: true },
+  // Critérios para a Propriedade 2
+  { id: 'crit-3', id_sensor: 'sensor-4', id_grandeza: 'qty-1', comparacao: '>', valor_critico_1: 32, alerta: 'Temperatura elevada na Propriedade 2, verificar irrigação.', repeticao_seg: 600, ativo: true },
+  { id: 'crit-4', id_sensor: 'sensor-6', id_grandeza: 'qty-3', comparacao: '<', valor_critico_1: 150, alerta: 'Níveis de nitrogênio baixos, considerar fertilização.', repeticao_seg: 1200, ativo: true },
 ];
 
 export const stationIcons: { [key: string]: React.ComponentType<{ className?: string }> } = {
@@ -342,6 +369,82 @@ export const dashboardStations: DashboardStation[] = [
       airTemperature: { min: 20, max: 32 },
       airHumidity: { min: 60, max: 80 },
       co2Concentration: { min: undefined, max: 450 },
+      soilMoisture: { min: 40, max: 70 }
+    }
+  },
+  {
+    id: "station-6",
+    name: "Estação Principal P2",
+    description: "Estação principal da Propriedade 2",
+    location: { lat: -23.5805, lng: -46.6133 },
+    sensors: {
+      airTemperature: 26.8,
+      airHumidity: 68,
+      windSpeed: 10,
+      windDirection: "SE",
+      co2Concentration: 405,
+      soilMoisture: 50,
+      nitrogen: 185,
+    },
+    history: generateInitialHistory({ ...baseHistorySoy, airTemp: 26.8, airHumidity: 68, windSpeed: 10, soilMoisture: 50, nitrogen: 185 }),
+    alertHistory: [
+      { dateTime: getCurrentDateTime(), message: "Todos os sensores operando normalmente.", severity: "Normal" },
+      { dateTime: getPastDateTime(60), message: "Manutenção preventiva agendada.", severity: "Normal" },
+    ],
+    sensorThresholds: {
+      airTemperature: { min: 20, max: 32 },
+      airHumidity: { min: 60, max: 80 },
+      soilMoisture: { min: 40, max: 70 }
+    }
+  },
+  {
+    id: "station-7",
+    name: "Estação Leste P2",
+    description: "Estação leste da Propriedade 2",
+    location: { lat: -23.5905, lng: -46.6233 },
+    sensors: {
+      airTemperature: 25.2,
+      airHumidity: 72,
+      windSpeed: 8,
+      windDirection: "L",
+      co2Concentration: 410,
+      soilMoisture: 55,
+      nitrogen: 200,
+    },
+    history: generateInitialHistory({ ...baseHistoryCorn, airTemp: 25.2, airHumidity: 72, windSpeed: 8, soilMoisture: 55, nitrogen: 200 }),
+    alertHistory: [
+      { dateTime: getCurrentDateTime(), message: "Umidade do solo adequada para as culturas.", severity: "Normal" },
+      { dateTime: getPastDateTime(120), message: "Temperatura estável nas últimas 24h.", severity: "Normal" },
+    ],
+    sensorThresholds: {
+      airTemperature: { min: 20, max: 32 },
+      airHumidity: { min: 60, max: 80 },
+      soilMoisture: { min: 40, max: 70 }
+    }
+  },
+  {
+    id: "station-8",
+    name: "Estação Oeste P2",
+    description: "Estação oeste da Propriedade 2",
+    location: { lat: -23.6005, lng: -46.6333 },
+    sensors: {
+      airTemperature: 27.5,
+      airHumidity: 65,
+      windSpeed: 12,
+      windDirection: "O",
+      co2Concentration: 400,
+      soilMoisture: 48,
+      nitrogen: 190,
+    },
+    history: generateInitialHistory({ ...baseHistoryWheat, airTemp: 27.5, airHumidity: 65, windSpeed: 12, soilMoisture: 48, nitrogen: 190 }),
+    alertHistory: [
+      { dateTime: getCurrentDateTime(), message: "Velocidade do vento acima do normal, monitorando.", severity: "Atenção" },
+      { dateTime: getPastDateTime(90), message: "Níveis de CO2 estáveis.", severity: "Normal" },
+    ],
+    sensorThresholds: {
+      airTemperature: { min: 20, max: 32 },
+      airHumidity: { min: 60, max: 80 },
+      windSpeed: { min: undefined, max: 15 },
       soilMoisture: { min: 40, max: 70 }
     }
   }

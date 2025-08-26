@@ -19,6 +19,13 @@ export default function PropertyPage({ params }: { params: { propertyId: string 
     const [isReady, setIsReady] = useState(!isInitialLoad);
     const [selectedCrop, setSelectedCrop] = useState<DashboardCrop | null>(property?.crops[0] || null);
 
+    // Filtrar apenas as estações desta propriedade
+    // Para a propriedade 1, usamos stations-1 a station-5
+    // Para a propriedade 2, usamos stations-6 a station-8
+    const filteredStations = resolvedParams.propertyId === "prop-1"
+        ? dashboardStations.slice(0, 5)
+        : dashboardStations.slice(5, 8);
+
     useEffect(() => {
         if (!isInitialLoad) {
             setIsReady(true);
@@ -51,8 +58,12 @@ export default function PropertyPage({ params }: { params: { propertyId: string 
                 onCropChange={handleCropChange}
             />
 
-            {/* Painel da cultura selecionada - agora com estações */}
-            <DashboardClient initialCrop={selectedCrop} allCrops={property.crops} stations={dashboardStations} />
+            {/* Painel da cultura selecionada - agora com estações filtradas por propriedade */}
+            <DashboardClient
+                initialCrop={selectedCrop}
+                allCrops={property.crops}
+                stations={filteredStations}
+            />
         </div>
     );
 }

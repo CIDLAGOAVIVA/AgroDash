@@ -2,8 +2,9 @@
 
 import { initialProperties } from "@/lib/data";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
-import { MapPin } from "lucide-react";
+import { MapPin, Leaf, Wheat } from "lucide-react"; // Adicionar Leaf e Wheat aos imports
 import { cn } from "@/lib/utils";
 import { useTransition } from "@/hooks/use-transition";
 import { useRouter } from "next/navigation";
@@ -11,7 +12,14 @@ import { useEffect, useRef } from "react";
 
 const Sprout = () => (
   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-sprout"><path d="M7 20h10" /><path d="M12 20V4" /><path d="M12 4c0-2.21-1.79-4-4-4S4 1.79 4 4c0 .62.14 1.2.38 1.72" /><path d="M12 4c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .62-.14 1.2-.38 1.72" /></svg>
-)
+);
+
+// Adicionar a definição de cropIcons
+const cropIcons: { [key: string]: React.ComponentType<{ className?: string }> } = {
+  "Soja": Leaf,
+  "Milho": Sprout,
+  "Trigo": Wheat,
+};
 
 const FarmMap = () => {
   const lat = -22.319792;
