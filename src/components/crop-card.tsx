@@ -2,6 +2,7 @@
 
 import { Leaf, Wheat, ChevronDown } from "lucide-react";
 import { Card, CardDescription, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 
 import {
   DropdownMenu,
@@ -43,15 +44,13 @@ const cropIcons: { [key: string]: React.ComponentType<{ className?: string }> } 
 };
 
 interface CropCardProps {
-
-  crop: Crop;
-  allCrops?: Crop[];
-  onCropChange?: (cropId: string) => void;
-
   crop: DashboardCrop;
+  allCrops?: DashboardCrop[];
+  onCropChange?: (cropId: string) => void;
+  isSelected?: boolean;
 }
 
-export function CropCard({ crop, allCrops = [], onCropChange }: CropCardProps) {
+export function CropCard({ crop, allCrops = [], onCropChange, isSelected }: CropCardProps & { isSelected?: boolean }) {
   const CropIcon = cropIcons[crop.cropType] || Leaf;
   const router = useRouter();
   const { startTransition } = useTransition();
@@ -75,11 +74,17 @@ export function CropCard({ crop, allCrops = [], onCropChange }: CropCardProps) {
   };
 
   return (
-    <Card className="w-full">
+    <Card className={cn(
+      "w-full transition-all duration-300",
+      isSelected && "border-primary/50 bg-primary/5"
+    )}>
       <CardHeader className="p-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <div className="bg-primary/10 p-2 rounded-md border border-primary/20">
+            <div className={cn(
+              "bg-primary/10 p-2 rounded-md border border-primary/20",
+              isSelected && "bg-primary/20 border-primary/40"
+            )}>
               <CropIcon className="h-6 w-6 text-primary" />
             </div>
             <div>
@@ -97,7 +102,10 @@ export function CropCard({ crop, allCrops = [], onCropChange }: CropCardProps) {
                 {allCrops.map((c) => (
                   <DropdownMenuItem
                     key={c.id}
-                    className="flex items-center gap-2"
+                    className={cn(
+                      "flex items-center gap-2",
+                      c.id === crop.id && "bg-primary/10 text-primary font-medium"
+                    )}
                     onClick={() => handleCropSelect(c.id)}
                     disabled={c.id === crop.id}
                   >
