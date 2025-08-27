@@ -206,16 +206,16 @@ function SidebarDesktop({ properties }: { properties: Property[] }) {
   );
 }
 
-function SidebarMobile({ crops = [] }: { crops: DashboardCrop[] }) {
+function SidebarMobile({ properties = [] }: { properties: Property[] }) {
   const pathname = usePathname();
   const [open, setOpen] = React.useState(false);
   const { startTransition } = useTransition();
   const router = useRouter();
 
-  const handleCropClick = (cropId: string, href: string) => (e: React.MouseEvent) => {
+  const handlePropertyClick = (propertyId: string, href: string) => (e: React.MouseEvent) => {
     e.preventDefault();
     setOpen(false);
-    startTransition(cropId);
+    startTransition(propertyId);
 
     setTimeout(() => {
       router.push(href);
@@ -233,7 +233,6 @@ function SidebarMobile({ crops = [] }: { crops: DashboardCrop[] }) {
         </SheetTrigger>
         <SheetContent side="left" className="flex flex-col w-64 p-4">
           <SheetHeader className="sr-only">
-
             <SheetTitle>Navegação Principal</SheetTitle>
           </SheetHeader>
           <nav className="grid gap-1 text-sm font-medium">
@@ -258,26 +257,42 @@ function SidebarMobile({ crops = [] }: { crops: DashboardCrop[] }) {
               <Home className="h-4 w-4" />
               Visão Geral
             </Link>
-            {crops.map((crop) => {
-              const Icon = cropIcons[crop.cropType] || Leaf;
-              const href = `/dashboard/${crop.id}`;
+
+            {/* Lista de propriedades */}
+            {properties.map((property) => {
+              const href = `/property/${property.id}`;
               return (
                 <Link
-                  key={crop.id}
+                  key={property.id}
                   href={href}
-                  onClick={handleCropClick(crop.id, href)}
+                  onClick={handlePropertyClick(property.id, href)}
                   className={cn(
                     "flex items-center gap-2 rounded-md px-2.5 py-1.5",
-                    pathname === href
+                    pathname.startsWith(href)
                       ? "bg-accent/70 text-accent-foreground"
                       : "text-muted-foreground hover:text-foreground hover:bg-accent/50"
                   )}
                 >
-                  <Icon className="h-4 w-4" />
-                  {crop.fieldName}
+                  <MapPin className="h-4 w-4" />
+                  {property.name}
                 </Link>
               );
             })}
+
+            {/* Link de administração */}
+            <Link
+              href="/admin"
+              onClick={() => setOpen(false)}
+              className={cn(
+                "flex items-center gap-2 rounded-md px-2.5 py-1.5 mt-2",
+                pathname === "/admin"
+                  ? "bg-accent/70 text-accent-foreground"
+                  : "text-muted-foreground hover:text-foreground hover:bg-accent/50"
+              )}
+            >
+              <Settings className="h-4 w-4" />
+              Administração
+            </Link>
           </nav>
         </SheetContent>
       </Sheet>
@@ -295,16 +310,10 @@ function SidebarMobile({ crops = [] }: { crops: DashboardCrop[] }) {
 }
 
 export function Sidebar({ crops = [], properties = [] }: SidebarProps) {
-  const [isClient, setIsClient] = useState(false)
-
-  useEffect(() => {
-    setIsClient(true)
-  }, [])
-
   return (
-    <div className={cn(!isClient && "hidden")}>
+    <>
       <SidebarDesktop properties={properties} />
-      <SidebarMobile crops={crops} />
-    </div>
+      <SidebarMobile properties={properties} />
+    </>
   );
 }
