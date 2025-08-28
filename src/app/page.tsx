@@ -4,7 +4,7 @@ import { initialProperties } from "@/lib/data";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
-import { MapPin, Leaf, Wheat } from "lucide-react"; // Adicionar Leaf e Wheat aos imports
+import { MapPin, Leaf, Wheat, Flower, Apple } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useTransition } from "@/hooks/use-transition";
 import { useRouter } from "next/navigation";
@@ -14,10 +14,27 @@ const Sprout = () => (
   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-sprout"><path d="M7 20h10" /><path d="M12 20V4" /><path d="M12 4c0-2.21-1.79-4-4-4S4 1.79 4 4c0 .62.14 1.2.38 1.72" /><path d="M12 4c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .62-.14 1.2-.38 1.72" /></svg>
 );
 
+const Corn = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M12 4v16" />
+    <path d="M6 12c1 3 3 4 6 4s5-1 6-4c1-4-2-8-6-8s-7 4-6 8z" />
+    <path d="M6 12c0 0 2 3 6 3s6-3 6-3" />
+  </svg>
+);
+
+const Soybean = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M9 9c-.97.68-1.65 1.79-2 3 .35 1.21 1.03 2.32 2 3 .97-.68 1.65-1.79 2-3-.35-1.21-1.03-2.32-2-3z" />
+    <path d="M15 9c-.97.68-1.65 1.79-2 3 .35 1.21 1.03 2.32 2 3 .97-.68 1.65-1.79 2-3-.35-1.21-1.03-2.32-2-3z" />
+    <path d="M12 4c-.97.68-1.65 1.79-2 3 .35 1.21 1.03 2.32 2 3 .97-.68 1.65-1.79 2-3-.35-1.21-1.03-2.32-2-3z" />
+    <path d="M12 14c-.97.68-1.65 1.79-2 3 .35 1.21 1.03 2.32 2 3 .97-.68 1.65-1.79 2-3-.35-1.21-1.03-2.32-2-3z" />
+  </svg>
+);
+
 // Adicionar a definição de cropIcons
 const cropIcons: { [key: string]: React.ComponentType<{ className?: string }> } = {
-  "Soja": Leaf,
-  "Milho": Sprout,
+  "Soja": Soybean, // Use custom Soybean icon instead of Plant
+  "Milho": Corn,
   "Trigo": Wheat,
 };
 
